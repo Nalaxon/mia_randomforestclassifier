@@ -28,6 +28,6 @@
 *.app
 
 # Folders
-bin\
-build\
-MIA_KU_2015_DataSet\
+bin/
+build/
+MIA_KU_2015_DataSet/
