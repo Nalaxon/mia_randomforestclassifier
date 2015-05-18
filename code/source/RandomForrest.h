@@ -1,5 +1,3 @@
-#include "RFParams.h"
-
 /// class RandomForrest - 
 template <typename T>
 class RandomForrest {
@@ -7,6 +5,7 @@ class RandomForrest {
 protected:
   RFParams m_params;
   size_t m_nClasses;
+  std::vector<RandomTree> m_trees;
   // Operations
 public:
   RandomForrest (RFParams params);

@@ -1,9 +1,9 @@
-/// class RTParams - 
-class RTParams {
+/// class RTParameter - 
+class RTParameter {
   // Attributes
 public:
   size_t m_maxDepth;
-  size_z m_minSamples;
+  size_t m_minSamples;
   int m_randomMode;
 };
 

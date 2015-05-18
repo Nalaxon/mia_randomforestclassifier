@@ -7,7 +7,7 @@
 int main(int argc, char** argv)
 {
 #ifdef _WIN32
-  const std::string imagePath = "..\\..\\MIA_KU_2015_DataSet\\train-volume0001.tif";
+  const std::string imagePath = "..\\..\\data\\MIA_KU_2015_DataSet\\train-volume0001.tif";
 #else
   const std::string imagePath = "../../MIA_KU_2015_DataSet/train-volume0001.tif";
 #endif
