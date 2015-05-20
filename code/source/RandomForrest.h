@@ -1,3 +1,6 @@
+#ifndef RANDOMFORREST_H
+#define RANDOMFORREST_H
+
 /// class RandomForrest - 
 template <typename T>
 class RandomForrest {
@@ -13,3 +16,4 @@ public:
   predict (std::vector<T> data, std::vector<int> labels);
 };
 
+#endif // RANDOMFORREST_H

@@ -1,4 +1,7 @@
-#include "RTParameter.h"
+#ifndef RANDOMTREE_H
+#define RANDOMTREE_H
+
+//#include "RTParameter.h"
 #include "Node.h"
 
 /// class RandomTree - 
@@ -9,3 +12,4 @@ protected:
   Node m_root;
 };
 
+#endif // RANDOMTREE_H
