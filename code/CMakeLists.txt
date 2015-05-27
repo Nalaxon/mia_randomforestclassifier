@@ -34,9 +34,10 @@ find_package(Boost 1.54.0
 
 link_directories(${Boost_LIBRARY_DIRS})
 
+add_definitions(-DBOOST_ALL_NO_LIB)
+
 if (WIN32)
   add_definitions(${Boost_LIB_DIAGNOSTIC_DEFINITIONS})
-  add_definitions(-DBOOST_ALL_NO_LIB)
 endif (WIN32)
 
 include_directories(${Boost_INCLUDE_DIRS})
