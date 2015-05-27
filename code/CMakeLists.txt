@@ -32,8 +32,11 @@ find_package(Boost 1.54.0
              COMPONENTS system filesystem random regex
              REQUIRED)
 
+link_directories(${Boost_LIBRARY_DIRS})
+
 if (WIN32)
   add_definitions(${Boost_LIB_DIAGNOSTIC_DEFINITIONS})
+  add_definitions(-DBOOST_ALL_NO_LIB)
 endif (WIN32)
 
 include_directories(${Boost_INCLUDE_DIRS})
