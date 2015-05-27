@@ -9,6 +9,8 @@
 
 #include <boost/filesystem.hpp>
 
+//#define BOOST_ALL_DYN_LINK 
+
 int main(int argc, char** argv)
 {
     boost::filesystem::path imagePath("../../data/MIA_KU_2015_DataSet/train-volume0001.tif");
@@ -18,11 +20,11 @@ int main(int argc, char** argv)
     std::cout << "Random number: " << uniform_dist(rng) << std::endl;
 
     cv::Mat image;
-    image = cv::imread(imagePath.c_str(), CV_LOAD_IMAGE_COLOR);   // Read the file
+	image = cv::imread(imagePath.string(), CV_LOAD_IMAGE_COLOR);   // Read the file
 
     if (!image.data) // Check for invalid input
     {
-        std::cout << "Could not open or find the image " << imagePath.c_str() << std::endl;
+		std::cout << "Could not open or find the image " << imagePath.string() << std::endl;
         return EXIT_FAILURE;
     }
 
