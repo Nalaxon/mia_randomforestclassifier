@@ -6,8 +6,12 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
-# enable c++11
-add_definitions(-std=c++11)
+add_definitions(
+    -std=c++11
+    -march=native
+    -Wall
+    -pedantic
+)
 
 if (WIN32)
   # for msvc 8 deprecated warning removal
@@ -35,8 +39,8 @@ include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/source)
 
-add_executable(miaKUStub source/main.cpp)
+add_executable(miaKU source/main.cpp)
 
-target_link_libraries(miaKUStub ${OpenCV_LIBS})
-target_link_libraries(miaKUStub ${Boost_LIBRARIES})
+target_link_libraries(miaKU ${OpenCV_LIBS})
+target_link_libraries(miaKU ${Boost_LIBRARIES})
 
