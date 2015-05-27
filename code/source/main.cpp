@@ -4,17 +4,22 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-#include <boost/random.hpp>
-#include <boost/random/random_device.hpp>
+#include <random>
 
-#include <boost/filesystem.hpp>
+std::string& convertPathSeperators(std::string& toConvert) {
+    #ifdef _WIN32
+    std::replace(toConvert.begin(), toConvert.end(), '/', '\\');
+    #endif
+    return toConvert;
+}
 
 int main(int argc, char** argv)
 {
-    boost::filesystem::path imagePath("../../data/MIA_KU_2015_DataSet/train-volume0001.tif");
+    std::string imagePath = "../../data/MIA_KU_2015_DataSet/train-volume0001.tif";
+    convertPathSeperators(imagePath);
 
-    boost::random::random_device rng;
-    boost::random::uniform_int_distribution<> uniform_dist(1, 6);
+    std::random_device rng;
+    std::uniform_int_distribution<> uniform_dist(1, 6);
     std::cout << "Random number: " << uniform_dist(rng) << std::endl;
 
     cv::Mat image;
