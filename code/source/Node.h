@@ -1,3 +1,6 @@
+#ifndef NODE_H
+#define NODE_H
+
 
 /// class Node - 
 template <typename T>
@@ -9,3 +12,4 @@ protected:
   Node m_rightChild;
 };
 
+#endif // NODE_H
