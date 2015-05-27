@@ -28,12 +28,11 @@ endif(WIN32)
 # OpenCV:
 find_package(OpenCV REQUIRED)
 
+set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost 1.54.0
              COMPONENTS system filesystem random regex
              REQUIRED)
-
 link_directories(${Boost_LIBRARY_DIRS})
-
 add_definitions(-DBOOST_ALL_NO_LIB)
 
 if (WIN32)
