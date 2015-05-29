@@ -28,9 +28,18 @@ endif(WIN32)
 # OpenCV:
 find_package(OpenCV REQUIRED)
 
+set(Boost_USE_STATIC_LIBS OFF) 
+set(Boost_USE_MULTITHREADED ON)  
+set(Boost_USE_STATIC_RUNTIME OFF) 
+find_package(Boost 1.45.0 COMPONENTS system filesystem random regex REQUIRED) 
+
+include_directories(${Boost_INCLUDE_DIRS}) 
+link_directories(${Boost_LIBRARY_DIRS})
+add_executable(miaKU source/main.cpp)
+
+target_link_libraries(miaKU ${Boost_LIBRARIES})
+
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/source)
-
-add_executable(miaKU source/main.cpp)
 
 target_link_libraries(miaKU ${OpenCV_LIBS})
