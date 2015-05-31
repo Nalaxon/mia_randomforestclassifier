@@ -25,15 +25,24 @@ if (WIN32)
   set(CMAKE_DEBUG_POSTFIX "D")
 endif(WIN32)
 
+# OpenMP
+find_package(OpenMP)
+if (OPENMP_FOUND)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif(OPENMP_FOUND)
+
+add_executable(miaKU source/main.cpp source/Program.cpp source/Program.h source/SampleExtractor.cpp source/SampleExtractor.h source/utils.h)
+
+
 # OpenCV:
 find_package(OpenCV REQUIRED)
 
 set(Boost_USE_STATIC_LIBS OFF) 
 set(Boost_USE_MULTITHREADED ON)  
 set(Boost_USE_STATIC_RUNTIME OFF) 
-find_package(Boost 1.45.0 COMPONENTS system filesystem random regex REQUIRED) 
-
-include_directories(${Boost_INCLUDE_DIRS}) 
+find_package(Boost 1.55.0 COMPONENTS system filesystem random regex program_options REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 file(GLOB cells_src_files ${CMAKE_CURRENT_SOURCE_DIR}/source/cells/*.cpp)
 file(GLOB cells_header_files ${CMAKE_CURRENT_SOURCE_DIR}/source/cells/*.hpp)
