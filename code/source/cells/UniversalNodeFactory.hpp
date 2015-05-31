@@ -10,7 +10,7 @@
 class UniversalNodeFactory : public NodeFactory<Label, cv::Mat> {
   // Operations
 public:
-  UniversalNodeFactory (std::initializer_list<NodeFactory> list factoryList);
+	UniversalNodeFactory(std::initializer_list<NodeFactory<Label, cv::Mat>> factoryList);
 };
 
 
