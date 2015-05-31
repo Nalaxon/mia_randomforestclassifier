@@ -1,37 +1,31 @@
-#include <cstdlib>
 #include <iostream>
 
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-
-#include <boost/random.hpp>
-#include <boost/random/random_device.hpp>
-
-#include <boost/filesystem.hpp>
+#include "Program.h"
 
 //#define BOOST_ALL_DYN_LINK 
 
+/**
+ * Returns the message of an unknown exception in a catch context.
+ */
+const std::string find_exception_msg() {
+    try {
+        throw;
+    } catch (const std::exception& e) {
+        return e.what();
+    } catch (const std::string& e) {
+        return e;
+    } catch (...) {
+        return "Unknown exception";
+    }
+}
+
 int main(int argc, char** argv)
 {
-    boost::filesystem::path imagePath("../../data/MIA_KU_2015_DataSet/train-volume0001.tif");
-
-    boost::random::random_device rng;
-    boost::random::uniform_int_distribution<> uniform_dist(1, 6);
-    std::cout << "Random number: " << uniform_dist(rng) << std::endl;
-
-    cv::Mat image;
-	image = cv::imread(imagePath.string(), CV_LOAD_IMAGE_COLOR);   // Read the file
-
-    if (!image.data) // Check for invalid input
-    {
-		std::cout << "Could not open or find the image " << imagePath.string() << std::endl;
+    try {
+        Program program;
+        return program.run(argc, argv);
+    } catch (...)  {
+        std::cerr << "Unexpected exception:" << find_exception_msg() << std::endl;
         return EXIT_FAILURE;
     }
-
-    cv::namedWindow("Display window", CV_WINDOW_AUTOSIZE);// Create a window for display.
-    cv::imshow("Display window", image);                  // Show our image inside it.
-
-    cv::waitKey(0);                                         // Wait for a keystroke in the window
-
-    return EXIT_SUCCESS;
 }
