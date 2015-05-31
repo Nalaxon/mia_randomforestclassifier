@@ -1,5 +1,5 @@
 project(MIA_2015)
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.1)
 
 make_directory(${CMAKE_CURRENT_SOURCE_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
@@ -35,11 +35,37 @@ find_package(Boost 1.45.0 COMPONENTS system filesystem random regex REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIRS}) 
 link_directories(${Boost_LIBRARY_DIRS})
-add_executable(miaKU source/main.cpp)
+file(GLOB cells_src_files ${CMAKE_CURRENT_SOURCE_DIR}/source/cells/*.cpp)
+file(GLOB cells_header_files ${CMAKE_CURRENT_SOURCE_DIR}/source/cells/*.hpp)
+add_executable(miaKU source/main.cpp ${cells_src_files} ${cells_header_files})
 
+# add header-only interface library
+add_library(Base INTERFACE)
+target_include_directories(Base INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/source/base>
+  $<INSTALL_INTERFACE:include/Base>
+)
+
+# add header files to IDE
+file(GLOB base_files ${CMAKE_CURRENT_SOURCE_DIR}/source/base/*.hpp)
+target_sources(Base INTERFACE ${base_files})
+
+#file(GLOB node_files ${CMAKE_CURRENT_SOURCE_DIR}/source/node/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/source/node/*.h)
+#FOREACH(infileName ${node_files})
+#    message(STATUS "Process file: ${infileName}")
+#ENDFOREACH(infileName)
+#target_sources(miaKU PUBLIC ${node_files})
+
+target_link_libraries(miaKU Base)
 target_link_libraries(miaKU ${Boost_LIBRARIES})
 
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/source)
+include_directories(${PROJECT_SOURCE_DIR}/source/base)
 
 target_link_libraries(miaKU ${OpenCV_LIBS})
+
+# group files
+SOURCE_GROUP("Header Files\\Base" FILES ${base_files})
+SOURCE_GROUP("Header Files\\Cells" FILES ${cells_header_files})
+SOURCE_GROUP("Source Files\\Cells" FILES ${cells_src_files})
