@@ -2,9 +2,9 @@
 // Created by chri on 30.05.15.
 //
 
-#include "Program.h"
-#include "SampleExtractor.h"
-#include "utils.h"
+#include "Program.hpp"
+#include "SampleExtractor.hpp"
+#include "utils.hpp"
 
 #include <iomanip>
 

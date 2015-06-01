@@ -2,7 +2,7 @@
 // Created by chri on 30.05.15.
 //
 
-#include "SampleExtractor.h"
+#include "SampleExtractor.hpp"
 
 SampleExtractor::SampleExtractor(cv::Mat& sample_image, cv::Mat& ground_truth, unsigned int sample_size)
         : m_rng(),

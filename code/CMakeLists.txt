@@ -32,16 +32,13 @@ if (OPENMP_FOUND)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif(OPENMP_FOUND)
 
-add_executable(miaKU source/main.cpp source/Program.cpp source/Program.h source/SampleExtractor.cpp source/SampleExtractor.h source/utils.h)
-
-
 # OpenCV:
 find_package(OpenCV REQUIRED)
 
 set(Boost_USE_STATIC_LIBS OFF) 
 set(Boost_USE_MULTITHREADED ON)  
 set(Boost_USE_STATIC_RUNTIME OFF) 
-find_package(Boost 1.45.0 COMPONENTS system filesystem random regex REQUIRED) 
+find_package(Boost 1.45.0 COMPONENTS system filesystem random regex program_options REQUIRED) 
 
 include_directories(${Boost_INCLUDE_DIRS}) 
 link_directories(${Boost_LIBRARY_DIRS})
@@ -49,7 +46,9 @@ file(GLOB cells_src_files ${CMAKE_CURRENT_SOURCE_DIR}/source/cells/*.cpp)
 file(GLOB cells_header_files ${CMAKE_CURRENT_SOURCE_DIR}/source/cells/*.hpp)
 file(GLOB tools_src_files ${CMAKE_CURRENT_SOURCE_DIR}/source/tools/*.cpp)
 file(GLOB tools_header_files ${CMAKE_CURRENT_SOURCE_DIR}/source/tools/*.hpp)
-add_executable(miaKU source/main.cpp ${cells_src_files} ${cells_header_files} ${tools_src_files} ${tools_header_files})
+file(GLOB root_src_files ${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp)
+file(GLOB root_header_files ${CMAKE_CURRENT_SOURCE_DIR}/source/*.hpp)
+add_executable(miaKU ${cells_src_files} ${cells_header_files} ${tools_src_files} ${tools_header_files} ${root_src_files} ${root_header_files})
 
 # add header-only interface library
 add_library(Base INTERFACE)
