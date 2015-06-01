@@ -8,7 +8,6 @@ class Sample {
 private:
   LABEL_TYPE m_label;
   DATA_TYPE m_data;
-  
 };
 
 #endif
