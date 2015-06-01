@@ -38,6 +38,7 @@ find_package(OpenCV REQUIRED)
 set(Boost_USE_STATIC_LIBS OFF) 
 set(Boost_USE_MULTITHREADED ON)  
 set(Boost_USE_STATIC_RUNTIME OFF) 
+add_definitions(-DBOOST_ALL_DYN_LINK)
 find_package(Boost 1.45.0 COMPONENTS system filesystem random regex program_options REQUIRED) 
 
 include_directories(${Boost_INCLUDE_DIRS}) 
