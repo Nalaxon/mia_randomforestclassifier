@@ -193,7 +193,7 @@ void Program::extract_training_samples(std::vector<cv::Mat>& foreground_samples,
 {
     std::vector<std::string> foreground_image_paths, background_image_paths;
     #pragma omp parallel for
-    for (size_t i_file = 1; i_file <= 30; ++i_file)
+    for (int i_file = 1; i_file <= 30; ++i_file)
     {
         std::ostringstream volume_file_name, truth_file_name;
         volume_file_name << "train-volume" << std::setfill('0') << std::setw(4) << i_file << ".tif";
