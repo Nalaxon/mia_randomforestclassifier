@@ -38,11 +38,11 @@ find_package(OpenCV REQUIRED)
 set(Boost_USE_STATIC_LIBS OFF) 
 set(Boost_USE_MULTITHREADED ON)  
 set(Boost_USE_STATIC_RUNTIME OFF) 
-find_package(Boost 1.45.0 COMPONENTS system filesystem random regex REQUIRED) 
+find_package(Boost 1.45.0 COMPONENTS system filesystem random regex program_options REQUIRED) 
 
 include_directories(${Boost_INCLUDE_DIRS}) 
 link_directories(${Boost_LIBRARY_DIRS})
-add_executable(miaKU source/main.cpp)
+add_executable(miaKU source/main.cpp source/Program.cpp source/Program.h source/SampleExtractor.cpp source/SampleExtractor.h source/utils.h)
 
 target_link_libraries(miaKU ${Boost_LIBRARIES})
 
