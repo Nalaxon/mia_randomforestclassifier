@@ -8,7 +8,7 @@ template <typename LABEL_TYPE, typename DATA_TYPE>
 class Node {
   // Attributes
 private:
-  Histrogram m_histogram;
+  Histogram m_histogram;
 protected:
   double m_threshold;
   Node m_leftChild;

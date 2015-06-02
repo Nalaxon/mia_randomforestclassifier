@@ -2,7 +2,7 @@
 #define IMAGETOOLS_HPP
 
 #include "Sample.hpp"
-#include "cells\Label.hpp"
+#include "cells/makeLabel.hpp"
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 

@@ -17,7 +17,7 @@ public:
   bool m_bagging;
 private:
   RTParameter m_treeParams;
-  std::function<double(std::vector<Histrogram<LABEL_TYPE, DATA_TYPE)> m_ensemble_fct;
+  std::function<double(std::vector<Histogram<LABEL_TYPE, DATA_TYPE)> m_ensemble_fct;
 };
 
 #endif
