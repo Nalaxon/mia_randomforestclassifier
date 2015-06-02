@@ -4,7 +4,7 @@
 
 #include "Program.hpp"
 #include "SampleExtractor.hpp"
-#include "utils.hpp"
+#include "tools/utils.hpp"
 
 #include <iomanip>
 

@@ -2,8 +2,8 @@
 // Created by chri on 30.05.15.
 //
 
-#ifndef MIA_2015_PROGRAM_H
-#define MIA_2015_PROGRAM_H
+#ifndef MIA_2015_PROGRAM_HPP
+#define MIA_2015_PROGRAM_HPP
 
 #include <string>
 #include <boost/filesystem.hpp>

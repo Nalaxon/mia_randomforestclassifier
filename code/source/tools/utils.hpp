@@ -2,8 +2,8 @@
 // Created by chri on 31.05.15.
 //
 
-#ifndef MIA_2015_UTILS_H
-#define MIA_2015_UTILS_H
+#ifndef MIA_2015_UTILS_HPP
+#define MIA_2015_UTILS_HPP
 
 /**
  * Takes a matrix and returns a row vector containing the data of the matrix.

@@ -2,8 +2,8 @@
 // Created by chri on 30.05.15.
 //
 
-#ifndef MIA_2015_SAMPLEEXTRACTOR_H
-#define MIA_2015_SAMPLEEXTRACTOR_H
+#ifndef MIA_2015_SAMPLEEXTRACTOR_HPP
+#define MIA_2015_SAMPLEEXTRACTOR_HPP
 
 #include <tuple>
 #include <stddef.h>
