@@ -9,10 +9,11 @@
 #include <iomanip>
 
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 #include <boost/program_options.hpp>
 #include <boost/random.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
+
 
 //----------------------------------------------------------------------------------------------------------------------
 int Program::run(int argc, char** argv)
@@ -69,7 +70,7 @@ int Program::run(int argc, char** argv)
     var_type.at<uchar>(num_sample_features, 0) = CV_VAR_CATEGORICAL; // classification problem
 
     // params for the forest
-    CvRTParams rt_params(25, // max depth
+    CvRTParams rt_params(15, // max depth
                          5, // min sample count
                          0, // regression param
                          false, // compute surrogate split
