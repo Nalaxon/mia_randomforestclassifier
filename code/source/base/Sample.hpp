@@ -1,35 +1,40 @@
 #ifndef SAMPLE_HPP
 #define SAMPLE_HPP
 
+#include <vector>
+
 /// class Sample - 
-template <typename LABEL_TYPE, typename DATA_TYPE>
-class Sample {
-  // Attributes
+template<typename LABEL_TYPE, typename DATA_TYPE>
+class Sample
+{
+    // Attributes
 public:
 
-  LABEL_TYPE getLabel() const
-  {
-    return m_label;
-  }
+    typedef std::vector<Sample<LABEL_TYPE, DATA_TYPE>> Vector;
 
-  void setLabel(LABEL_TYPE label)
-  {
-    m_label = label;
-  }
+    LABEL_TYPE getLabel() const
+    {
+        return m_label;
+    }
 
-  DATA_TYPE getData() const
-  {
-    return m_data;
-  }
+    void setLabel(LABEL_TYPE label)
+    {
+        m_label = label;
+    }
 
-  void setData(DATA_TYPE data)
-  {
-    m_data = data;
-  }
+    DATA_TYPE getData() const
+    {
+        return m_data;
+    }
+
+    void setData(DATA_TYPE data)
+    {
+        m_data = data;
+    }
 
 private:
-  LABEL_TYPE m_label;
-  DATA_TYPE m_data;
+    LABEL_TYPE m_label;
+    DATA_TYPE m_data;
 };
 
 #endif

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <source/base/RandomForrest.hpp>
 
 #include "Program.hpp"
 
@@ -22,6 +23,7 @@ const std::string find_exception_msg() {
 int main(int argc, char** argv)
 {
     try {
+        RandomForrest<int, int> forest(reinterpret_cast<RFParameter>(nullptr), reinterpret_cast<NodeFactory<int , int>>(nullptr));
         Program program;
         return program.run(argc, argv);
     } catch (...)  {

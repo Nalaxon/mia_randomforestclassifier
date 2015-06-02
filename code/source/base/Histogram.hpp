@@ -4,7 +4,6 @@
 #include <vector>
 #include <map>
 #include <cmath>
-#include <mpif.h>
 
 #include "Sample.hpp"
 
@@ -15,6 +14,7 @@ class Histogram
   // Attributes
 private:
     unsigned int m_numTotal;
+    LABEL_TYPE m_max;
   std::map<LABEL_TYPE, unsigned int> m_histMap;
   // Operations
 public:
@@ -25,11 +25,17 @@ public:
 
     float entropy() const;
     float informationGain(std::initializer_list<Histogram<LABEL_TYPE, DATA_TYPE>&> splits);
+
+    LABEL_TYPE max() const
+    {
+        return m_max;
+    }
 };
 
 template <typename LABEL_TYPE, typename DATA_TYPE>
 Histogram<LABEL_TYPE, DATA_TYPE>::Histogram(std::vector<Sample<LABEL_TYPE, DATA_TYPE>> &samples)
 {
+    unsigned int max_count = 0;
 	for (auto& sample : samples)
     {
         if (m_histMap.count(sample.getLabel()))
@@ -41,6 +47,12 @@ Histogram<LABEL_TYPE, DATA_TYPE>::Histogram(std::vector<Sample<LABEL_TYPE, DATA_
             m_histMap[sample.getLabel()] += 1;
         }
         ++m_numTotal;
+
+        if (m_histMap[sample.getLabel()] > max_count)
+        {
+            max_count = m_histMap[sample.getLabel()];
+            m_max = sample.getLabel();
+        }
     }
 }
 

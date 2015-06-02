@@ -8,46 +8,64 @@
 #include <vector>
 
 /// class RFParameter - 
-template <typename LABEL_TYPE, typename DATA_TYPE>
-class RFParameter {
-  // Attributes
+template<typename LABEL_TYPE, typename DATA_TYPE>
+class RFParameter
+{
+    // Attributes
 public:
-	RFParameter()
-	{
-		m_bagging = true;
-	}
 
-	RFParameter(bool bagging, RTParameter treeParams, std::function < double(std::vector < Histrogram<LABEL_TYPE, DATA_TYPE)> ensemble_fct)
-	{
-		m_bagging = bagging;
-		m_treeParams = treeParams;
-		m_ensemble_fct = ensemble_fct;
-	}
+    typedef std::function<Histogram<LABEL_TYPE, DATA_TYPE>(std::vector<Histogram<LABEL_TYPE, DATA_TYPE>>)> EnsembleFct;
 
-	RTParameter getTreeParams()
-	{
-		return m_treeParams;
-	}
+    RFParameter()
+    {
+        m_bagging = true;
+    }
 
-	void setTreeParams(RTParameter& treeParams)
-	{
-		m_treeParams = treeParams;
-	}
+    RFParameter(bool bagging, RTParameter treeParams,
+                EnsembleFct ensemble_fct,
+                unsigned int num_trees)
+    {
+        m_numTrees = num_trees;
+        m_bagging = bagging;
+        m_treeParams = treeParams;
+        m_ensemble_fct = ensemble_fct;
+    }
 
-	bool getBagging()
-	{
-		return m_bagging;
-	}
+    EnsembleFct getEnsembleFct() const
+    {
+        return m_ensemble_fct;
+    }
 
-	void setBagging(bool bagging)
-	{
-		m_bagging = bagging;
-	}
+    const RTParameter& getTreeParams() const
+    {
+        return m_treeParams;
+    }
+
+    void setTreeParams(const RTParameter& treeParams)
+    {
+        m_treeParams = treeParams;
+    }
+
+    bool getBagging() const
+    {
+        return m_bagging;
+    }
+
+    void setBagging(bool bagging)
+    {
+        m_bagging = bagging;
+    }
+
+    unsigned int getNumTrees() const
+    {
+        return m_numTrees;
+    }
 
 private:
-  RTParameter m_treeParams;
-  std::function<double(std::vector<Histrogram<LABEL_TYPE, DATA_TYPE)> m_ensemble_fct;
-  bool m_bagging;
+    RTParameter m_treeParams;
+    EnsembleFct m_ensemble_fct;
+    bool m_bagging;
+    unsigned int m_numTrees;
 };
 
 #endif
