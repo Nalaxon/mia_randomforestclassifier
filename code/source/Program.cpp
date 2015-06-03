@@ -110,7 +110,7 @@ int Program::run(int argc, char** argv)
     }
 
     std::cout << num_correct << " correct classification of " << num_test_samples << std::endl;
-
+    
     cv::Mat test_image = cv::imread("../../data/MIA_KU_2015_DataSet/train-volume0001.tif", CV_LOAD_IMAGE_COLOR);
     cv::namedWindow("inputwindow", CV_WINDOW_AUTOSIZE);
     cv::imshow("inputwindow", test_image);

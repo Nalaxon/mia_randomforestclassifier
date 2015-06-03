@@ -25,7 +25,8 @@ public:
      * @param ground_truth the image containing the ground_truth for the sample image
      * @param the size of the samples
      */
-    SampleExtractor(cv::Mat& sample_image, cv::Mat& ground_truth, unsigned int sample_size);
+    SampleExtractor(const cv::Mat& sample_image, const cv::Mat& ground_truth,
+                    unsigned int sample_size);
 
     /**
      * Extracts a random sample from the sample image.
@@ -59,12 +60,12 @@ private:
     /**
      * The sample image.
      */
-    cv::Mat& m_sample_image;
+    const cv::Mat& m_sample_image;
 
     /**
      * The ground truth image.
      */
-    cv::Mat& m_ground_truth;
+    const cv::Mat& m_ground_truth;
 };
 
 

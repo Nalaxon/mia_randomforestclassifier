@@ -4,7 +4,7 @@
 
 #include "SampleExtractor.hpp"
 
-SampleExtractor::SampleExtractor(cv::Mat& sample_image, cv::Mat& ground_truth, unsigned int sample_size)
+SampleExtractor::SampleExtractor(const cv::Mat& sample_image, const cv::Mat& ground_truth, unsigned int sample_size)
         : m_rng(),
           // we do not want to have border issues!
           m_dist_col(sample_size, sample_image.cols - sample_size),
