@@ -6,14 +6,12 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
-if (CMAKE_COMPILER_IS_GNUCXX)
-    message("Adding GCC compiler flags")
-    add_definitions(
-        -std=c++11
-        -march=native
-        -Wall
-        -pedantic)
-endif(CMAKE_COMPILER_IS_GNUCXX)
+message("Adding GCC compiler flags")
+add_definitions(
+    -std=c++11
+    -march=native
+    -Wall
+    -pedantic)
 
 if (WIN32)
   # for msvc 8 deprecated warning removal

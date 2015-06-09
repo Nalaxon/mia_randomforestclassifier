@@ -57,9 +57,11 @@ RandomTree<LABEL_TYPE, DATA_TYPE>::trainInternal(const SampleVector& samples,
   }
 
   SampleVector samples_left, samples_right;
-  auto node = m_nodeFactory.create(samples, samples_left, samples_right);
-  trainInternal(node->getLeft(), samples_left, depth + 1);
-  trainInternal(node->getRight(), samples_right, depth + 1);
+  auto node = m_nodeFactory.create(samples);
+  node->split(samples, samples_left, samples_right);
+  node->setLeft(trainInternal(samples_left, depth + 1));
+  node->setRight(trainInternal(samples_right, depth + 1));
+  
   return node;
 }
 
