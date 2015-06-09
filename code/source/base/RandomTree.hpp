@@ -43,7 +43,7 @@ m_nodeFactory(nodeFactory)
 template<typename LABEL_TYPE, typename DATA_TYPE>
 void RandomTree<LABEL_TYPE, DATA_TYPE>::train(const SampleVector& samples)
 {
-  m_root = trainInternal(m_root, samples, 0);
+  m_root = trainInternal(samples, 0);
 }
 
 template<typename LABEL_TYPE, typename DATA_TYPE>

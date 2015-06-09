@@ -5,7 +5,7 @@
 #include "Node.hpp"
 #include "Label.hpp"
 
-#include <opencv\cv.h>
+#include <opencv/cv.h>
 
 /// class GradientNode - 
 class GradientNode : public Node<Label, cv::Mat> {

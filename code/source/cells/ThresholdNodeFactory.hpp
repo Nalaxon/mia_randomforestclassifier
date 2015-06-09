@@ -4,7 +4,7 @@
 #include "NodeFactory.hpp"
 #include "Label.hpp"
 
-#include <opencv2\opencv.hpp>
+#include <opencv2/opencv.hpp>
 
 /// class ThresholdNodeFactory - 
 class ThresholdNodeFactory : public NodeFactory<Label, cv::Mat> {
