@@ -60,11 +60,11 @@ LABEL_TYPE RandomForest<LABEL_TYPE, DATA_TYPE>::predict(const DATA_TYPE& data) c
 template<typename LABEL_TYPE, typename DATA_TYPE>
 Histogram<LABEL_TYPE, DATA_TYPE> RandomForest<LABEL_TYPE, DATA_TYPE>::predict_prob(const DATA_TYPE& data) const
 {
-  const std::vector<const Histogram<LABEL_TYPE, DATA_TYPE>> histograms;
+  std::vector<Histogram<LABEL_TYPE, DATA_TYPE>> histograms;
 #pragma omp parallel for
-  for (int i = 0; i < m_params.getNumTrees(); ++i)
+  for (unsigned int i = 0; i < m_params.getNumTrees(); ++i)
   {
-    const Histogram<LABEL_TYPE, DATA_TYPE>& treeResult = m_trees[i].predict(data);
+    Histogram<LABEL_TYPE, DATA_TYPE> treeResult = m_trees[i].predict(data);
 #pragma omp critical
     {
       histograms.push_back(treeResult);

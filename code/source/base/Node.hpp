@@ -20,22 +20,22 @@ public:
 
   const Histogram<LABEL_TYPE, DATA_TYPE>& predict(const DATA_TYPE& data) const;
 
-  Node<DATA_TYPE, LABEL_TYPE>& getLeft() const
+  Node<LABEL_TYPE, DATA_TYPE>& getLeft() const
   {
     return *m_leftChild;
   }
 
-  Node<DATA_TYPE, LABEL_TYPE>& getRight() const
+  Node<LABEL_TYPE, DATA_TYPE>& getRight() const
   {
     return *m_rightChild;
   }
 
-  void setLeft(std::unique_ptr<Node<DATA_TYPE, LABEL_TYPE>> left)
+  void setLeft(std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>> left)
   {
     m_leftChild = std::move(left);
   }
 
-  void setRight(std::unique_ptr<Node<DATA_TYPE, LABEL_TYPE>> right)
+  void setRight(std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>> right)
   {
     m_rightChild = std::move(right);
   }
@@ -50,8 +50,8 @@ private:
 protected:
 
   double m_threshold;
-  std::unique_ptr<Node<DATA_TYPE, LABEL_TYPE>> m_leftChild;
-  std::unique_ptr<Node<DATA_TYPE, LABEL_TYPE>> m_rightChild;
+  std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>> m_leftChild;
+  std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>> m_rightChild;
 
   virtual Direction split(const DATA_TYPE& data) const = 0;
 

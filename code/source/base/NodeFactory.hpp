@@ -51,7 +51,7 @@ NodeFactory<LABEL_TYPE, DATA_TYPE>::create(const std::vector<Sample<LABEL_TYPE, 
     Histogram<LABEL_TYPE, DATA_TYPE> hist_left(samples_left);
     Histogram<LABEL_TYPE, DATA_TYPE> hist_right(samples_right);
 
-    float infoGain = hist_samples.informationGain({hist_left, hist_right});
+    float infoGain = hist_samples.informationGain({&hist_left, &hist_right});
     if (infoGain > max_info_gain)
     {
       max_info_gain = infoGain;
@@ -59,7 +59,8 @@ NodeFactory<LABEL_TYPE, DATA_TYPE>::create(const std::vector<Sample<LABEL_TYPE, 
     }
   }
 
-  return std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE >> (max_node);
+  std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>> p(max_node);
+  return p;
 }
 
 #endif

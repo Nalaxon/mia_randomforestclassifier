@@ -29,7 +29,6 @@ protected:
   NodeFactory<LABEL_TYPE, DATA_TYPE>* m_nodeFactory;
   RTParameter m_params;
   std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>> m_root;
-
 } ;
 
 template<typename LABEL_TYPE, typename DATA_TYPE>
@@ -53,11 +52,11 @@ RandomTree<LABEL_TYPE, DATA_TYPE>::trainInternal(const SampleVector& samples,
 {
   if (depth > m_params.m_maxDepth || samples.size() < m_params.m_minSamples)
   {
-    return;
+    return std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>>();
   }
 
   SampleVector samples_left, samples_right;
-  auto node = m_nodeFactory->create(samples);
+  std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>> node = m_nodeFactory->create(samples, 10); // TODO: num_sampless
   node->split(samples, samples_left, samples_right);
   node->setLeft(trainInternal(samples_left, depth + 1));
   node->setRight(trainInternal(samples_right, depth + 1));

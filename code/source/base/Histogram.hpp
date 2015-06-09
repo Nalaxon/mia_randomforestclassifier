@@ -19,7 +19,7 @@ public:
   unsigned int numElementsTotal() const;
 
   float entropy() const;
-  float informationGain(std::initializer_list<Histogram<LABEL_TYPE, DATA_TYPE>&> splits);
+  float informationGain(std::initializer_list<Histogram<LABEL_TYPE, DATA_TYPE>*> splits);
 
   LABEL_TYPE max() const
   {
@@ -88,12 +88,12 @@ float Histogram<LABEL_TYPE, DATA_TYPE>::entropy() const
 }
 
 template <typename LABEL_TYPE, typename DATA_TYPE>
-float Histogram<LABEL_TYPE, DATA_TYPE>::informationGain(std::initializer_list<Histogram<LABEL_TYPE, DATA_TYPE>&> splits)
+float Histogram<LABEL_TYPE, DATA_TYPE>::informationGain(std::initializer_list<Histogram<LABEL_TYPE, DATA_TYPE>*> splits)
 {
   float sum = 0.;
   for (auto& split : splits)
   {
-    sum += ((float) split.m_numTotal) / m_numTotal * split.entropy();
+    sum += ((float) split->m_numTotal) / m_numTotal * split->entropy();
   }
   return entropy() - sum;
 }

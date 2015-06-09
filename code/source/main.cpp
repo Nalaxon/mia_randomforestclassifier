@@ -45,6 +45,10 @@ int main(int argc, char** argv) {
         patch_params.patch_height = 30;
         patch_params.patch_width = 30;
         RandomForest<Label, cv::Mat> forest(rf_params, new CenterPixelNodeFactory(patch_params));
+        cv::Mat arr;
+        std::vector<Sample<Label, cv::Mat>> samples;
+        forest.train(samples);
+        forest.predict(arr);
         Program program;
         return program.run(argc, argv);
     } catch (...) {
