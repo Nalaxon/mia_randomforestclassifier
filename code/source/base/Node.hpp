@@ -39,7 +39,7 @@ protected:
   std::unique_ptr<Node<DATA_TYPE, LABEL_TYPE>> m_leftChild;
   std::unique_ptr<Node<DATA_TYPE, LABEL_TYPE>> m_rightChild;
 
-  virtual Node::Direction split(const DATA_TYPE& data) const = 0;
+  virtual Direction split(const DATA_TYPE& data) const = 0;
 
   void split(const SampleVector& samples,
              SampleVector& samples_left,
