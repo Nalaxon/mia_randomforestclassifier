@@ -12,11 +12,7 @@ class RFParameter
 {
 public:
 
-  using EnsembleFct = std::function<Histogram<LABEL_TYPE, DATA_TYPE>(const std::vector<const Histogram<LABEL_TYPE, DATA_TYPE>>)>;
-
-  RFParameter() : m_bagging(false)
-  {
-  }
+  using EnsembleFct = std::function<Histogram<LABEL_TYPE, DATA_TYPE>(const std::vector<Histogram<LABEL_TYPE, DATA_TYPE>>&)>;
 
   RFParameter(bool bagging, RTParameter treeParams,
               EnsembleFct ensemble_fct,
@@ -58,10 +54,11 @@ public:
   }
 
 private:
-  RTParameter m_treeParams;
-  EnsembleFct m_ensemble_fct;
-  bool m_bagging;
+  
   unsigned int m_numTrees;
+  bool m_bagging;
+  RTParameter m_treeParams;
+  EnsembleFct m_ensemble_fct;  
 } ;
 
 #endif

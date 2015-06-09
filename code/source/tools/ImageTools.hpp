@@ -2,7 +2,7 @@
 #define IMAGETOOLS_HPP
 
 #include "Sample.hpp"
-#include "cells/makeLabel.hpp"
+#include "cells/Label.hpp"
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
@@ -37,6 +37,14 @@ namespace ImageTools
       patches.push_back(cpatch);
     }
   }
-};
+  
+  template<typename PixelType>
+  static const PixelType& getCenterPixel(const cv::Mat& mat)
+  {
+    int center_col = mat.cols / 2;
+    int center_row = mat.rows / 2;
+    return mat.at<PixelType>(center_row, center_col);
+  }
+}
 
 #endif

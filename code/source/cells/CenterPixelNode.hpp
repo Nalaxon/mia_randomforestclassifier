@@ -1,18 +1,28 @@
 #ifndef CENTERPIXELNODE_HPP
 #define CENTERPIXELNODE_HPP
 
-#include "Node.hpp"
+#include "../base/Node.hpp"
 #include "Label.hpp"
 
-#include <opencv\cv.h>
+#include <opencv2/opencv.hpp>
 
 
-/// class CenterPixelNode - 
-class CenterPixelNode : public Node<Label, cv::Mat> {
-  // Attributes
+class CenterPixelNode : public Node<Label, cv::Mat>
+{
+  
+public:
+  CenterPixelNode(int x, int y) : m_x(x), m_y(y)
+  {
+  }
+  
 private:
   int m_x;
   int m_y;
-};
+
+protected:
+  
+  virtual Direction split(const cv::Mat& data) const;
+} ;
+
 
 #endif

@@ -11,7 +11,7 @@ class RandomForest
 public:
   using Params = RFParameter<LABEL_TYPE, DATA_TYPE>;
 
-  RandomForest(Params params, NodeFactory<LABEL_TYPE, DATA_TYPE> nodeFactory);
+  RandomForest(Params params, NodeFactory<LABEL_TYPE, DATA_TYPE>* nodeFactory);
 
   void train(const std::vector<Sample<LABEL_TYPE, DATA_TYPE>>& samples);
 
@@ -20,17 +20,17 @@ public:
   Histogram<LABEL_TYPE, DATA_TYPE> predict_prob(const DATA_TYPE& data) const;
 
 private:
-  NodeFactory<LABEL_TYPE, DATA_TYPE> m_nodeFactory;
 
-protected:
   Params m_params;
   unsigned int m_nClasses;
   std::vector<RandomTree<LABEL_TYPE, DATA_TYPE>> m_trees;
+  NodeFactory<LABEL_TYPE, DATA_TYPE>* m_nodeFactory;
 } ;
 
 template<typename LABEL_TYPE, typename DATA_TYPE>
-RandomForest<LABEL_TYPE, DATA_TYPE>::RandomForest(Params params, NodeFactory<LABEL_TYPE, DATA_TYPE> nodeFactory)
+RandomForest<LABEL_TYPE, DATA_TYPE>::RandomForest(Params params, NodeFactory<LABEL_TYPE, DATA_TYPE>* nodeFactory)
 : m_params(params),
+m_nClasses(0),
 m_nodeFactory(nodeFactory)
 {
   for (unsigned int i = 0; i < m_params.getNumTrees(); ++i)

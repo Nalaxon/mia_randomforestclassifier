@@ -14,7 +14,7 @@ public:
 
   using SampleVector = std::vector<Sample<LABEL_TYPE, DATA_TYPE>>;
 
-  RandomTree(RTParameter params, NodeFactory<LABEL_TYPE, DATA_TYPE> nodeFactory);
+  RandomTree(RTParameter params, NodeFactory<LABEL_TYPE, DATA_TYPE>* nodeFactory);
 
   void train(const SampleVector& samples);
 
@@ -26,7 +26,7 @@ private:
                 unsigned int depth);
 
 protected:
-  NodeFactory<LABEL_TYPE, DATA_TYPE> m_nodeFactory;
+  NodeFactory<LABEL_TYPE, DATA_TYPE>* m_nodeFactory;
   RTParameter m_params;
   std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>> m_root;
 
@@ -34,7 +34,7 @@ protected:
 
 template<typename LABEL_TYPE, typename DATA_TYPE>
 RandomTree<LABEL_TYPE, DATA_TYPE>::RandomTree(RTParameter params,
-                                              NodeFactory<LABEL_TYPE, DATA_TYPE> nodeFactory)
+                                              NodeFactory<LABEL_TYPE, DATA_TYPE>* nodeFactory)
 : m_params(params),
 m_nodeFactory(nodeFactory)
 {
@@ -57,7 +57,7 @@ RandomTree<LABEL_TYPE, DATA_TYPE>::trainInternal(const SampleVector& samples,
   }
 
   SampleVector samples_left, samples_right;
-  auto node = m_nodeFactory.create(samples);
+  auto node = m_nodeFactory->create(samples);
   node->split(samples, samples_left, samples_right);
   node->setLeft(trainInternal(samples_left, depth + 1));
   node->setRight(trainInternal(samples_right, depth + 1));
