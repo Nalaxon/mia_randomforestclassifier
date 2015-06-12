@@ -38,7 +38,7 @@ public:
   void train(const SampleVector& samples)
   {
 #pragma omp parallel for
-    for (int i = 0; i < m_params.getNumTrees(); ++i)
+    for (int i = 0; i < static_cast<int>(m_params.getNumTrees()); ++i)
     {
       // TODO: bagging
       m_trees[i].train(samples);

@@ -64,7 +64,7 @@ public:
 protected:
 
   //----------------------------------------------------------------------------
-  virtual NodeType* createRandomNode() = 0;
+  virtual NodePtr createRandomNode() = 0;
 
   // a random number generator
   boost::random::random_device m_rng;

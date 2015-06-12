@@ -20,7 +20,7 @@ public:
   }
 
 protected:
-  virtual CenterPixelNode* createRandomNode();
+  virtual NodePtr createRandomNode();
 
 private:
   PatchParameter m_params;
