@@ -9,6 +9,34 @@ template <typename LABEL_TYPE, typename DATA_TYPE>
 class Node
 {
 public:
+
+	Node();
+
+	//just try to define move constructor
+	Node(Node&& other)
+		: m_histogram()
+		, m_threshold()
+		, m_leftChild()
+		, m_rightChild()
+	{
+		m_histogram = other.m_histogram;
+		m_threshold = other.m_threshold;
+		m_leftChild = std::move(other.m_leftChild);
+		m_rightChild = std::move(other.m_rightChild);
+
+	}
+
+	Node& operator= (Node&& other)
+	{
+		if (this != other)
+		{
+			m_histogram = other.m_histogram;
+			m_threshold = other.m_threshold;
+			m_leftChild = std::move(other.m_leftChild);
+			m_rightChild = std::move(other.m_rightChild);
+		}
+		return *this;
+	}
   
   using SampleVector = std::vector<Sample<LABEL_TYPE, DATA_TYPE>>;
 

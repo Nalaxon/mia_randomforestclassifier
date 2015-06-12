@@ -20,7 +20,40 @@ public:
 
   const Histogram<LABEL_TYPE, DATA_TYPE>& predict(const DATA_TYPE& data) const;
 
+  //just try to define move constructor
+  RandomTree(RandomTree&& other)
+	  : m_nodeFactory()
+	  , m_root()
+	  , m_params()
+  {
+	  m_nodeFactory = other.m_nodeFactory;
+	  m_root = std::move(other.m_root);
+	  m_params = other.m_params;
+
+	  delete other.m_nodeFactory;
+	  //delete other.m_params;
+	  //delete other.m_root;
+  }
+
+  RandomTree& operator= (RandomTree&& other)
+  {
+	  if (this != other)
+	  {
+		  delete m_nodeFactory;
+		  //delete m_params;
+		  //delete m_root;
+
+		  m_nodeFactory = other.m_nodeFactory;
+		  m_root = std::move(other.m_root);
+		  m_params = other.m_params;
+	  }
+
+	  return *this;
+  }
+
+
 private:
+	
   std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>>
   trainInternal(const SampleVector& samples,
                 unsigned int depth);
