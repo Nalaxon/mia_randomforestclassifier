@@ -22,19 +22,46 @@ public:
   using NodePtr = NodePtr_<LABEL_TYPE, DATA_TYPE>;
 
   //----------------------------------------------------------------------------
+
   RandomTree(RTParameter params, NodeFactoryPtr nodeFactory)
   : m_params(params),
   m_nodeFactory(nodeFactory)
   {
   }
 
+  //just try to define move constructor
+
+  RandomTree(RandomTree&& other)
+  : m_params(std::move(other.m_params)),
+  m_nodeFactory(std::move(other.m_nodeFactory)),
+  m_root(std::move(other.m_root))
+  {
+    m_nodeFactory = other.m_nodeFactory;
+    m_root = std::move(other.m_root);
+    m_params = other.m_params;
+  }
+
+  RandomTree& operator= (RandomTree&& other)
+  {
+    if (this != other)
+    {
+      m_nodeFactory = std::move(other.m_nodeFactory);
+      m_root = std::move(other.m_root);
+      m_params = std::move(other.m_params);
+    }
+
+    return *this;
+  }
+
   //----------------------------------------------------------------------------
+
   void train(const SampleVector& samples)
   {
     m_root = trainInternal(samples, 0);
   }
 
   //----------------------------------------------------------------------------
+
   const HistogramType& predict(const DATA_TYPE& data) const
   {
     return m_root->predict(data);
@@ -43,6 +70,7 @@ public:
 private:
 
   //----------------------------------------------------------------------------
+
   NodePtr trainInternal(const SampleVector& samples, unsigned int depth)
   {
     if (depth > m_params.m_maxDepth || samples.size() < m_params.m_minSamples)
@@ -61,11 +89,11 @@ private:
 
 protected:
 
-  // the node factory
-  NodeFactoryPtr m_nodeFactory;
-
   // the tree parameters
   RTParameter m_params;
+
+  // the node factory
+  NodeFactoryPtr m_nodeFactory;
 
   // the root node
   NodePtr m_root;

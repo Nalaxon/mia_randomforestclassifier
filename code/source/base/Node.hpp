@@ -19,6 +19,30 @@ public:
 
   using HistogramPtr = HistogramPtr_<LABEL_TYPE, DATA_TYPE>;
 
+  Node()
+  {
+  }
+
+  //just try to define move constructor
+
+  Node(Node&& other)
+  : m_histogram(std::move(other.m_histogram)),
+  m_leftChild(std::move(other.m_leftChild)),
+  m_rightChild(std::move(other.m_rightChild))
+  {
+  }
+
+  Node& operator= (Node&& other)
+  {
+    if (this != other)
+    {
+      m_histogram = std::move(other.m_histogram);
+      m_leftChild = std::move(other.m_leftChild);
+      m_rightChild = std::move(other.m_rightChild);
+    }
+    return *this;
+  }
+
   enum class Direction
   {
     LEFT,
@@ -26,24 +50,28 @@ public:
   } ;
 
   //----------------------------------------------------------------------------
+
   void setLeft(NodePtr left)
   {
     m_leftChild = std::move(left);
   }
 
   //----------------------------------------------------------------------------
+
   void setRight(NodePtr right)
   {
     m_rightChild = std::move(right);
   }
 
   //----------------------------------------------------------------------------
+
   void setHistogram(HistogramPtr histogram)
   {
     m_histogram = std::move(histogram);
   }
 
   //----------------------------------------------------------------------------
+
   const HistogramType& predict(const DATA_TYPE& data) const
   {
     if (!m_leftChild || !m_rightChild)
@@ -62,6 +90,7 @@ public:
   }
 
   //----------------------------------------------------------------------------
+
   void split(const SampleVector& samples,
              SampleVector& samples_left,
              SampleVector& samples_right) const
@@ -83,7 +112,7 @@ private:
 
   // a pointer to the histogram in this node
   HistogramPtr m_histogram;
-  
+
   // a pointer to the left child
   NodePtr m_leftChild;
 
