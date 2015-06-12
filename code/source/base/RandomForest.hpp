@@ -62,7 +62,7 @@ Histogram<LABEL_TYPE, DATA_TYPE> RandomForest<LABEL_TYPE, DATA_TYPE>::predict_pr
 {
   std::vector<Histogram<LABEL_TYPE, DATA_TYPE>> histograms;
 #pragma omp parallel for
-  for (unsigned int i = 0; i < m_params.getNumTrees(); ++i)
+  for (int i = 0; i < m_params.getNumTrees(); ++i)
   {
     Histogram<LABEL_TYPE, DATA_TYPE> treeResult = m_trees[i].predict(data);
 #pragma omp critical
