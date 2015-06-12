@@ -4,6 +4,7 @@
 #include "NodeFactory.hpp"
 #include "RFParameter.hpp"
 #include "RandomTree.hpp"
+#include "types.hpp"
 
 template<typename LABEL_TYPE, typename DATA_TYPE>
 class RandomForest
@@ -11,67 +12,75 @@ class RandomForest
 public:
   using Params = RFParameter<LABEL_TYPE, DATA_TYPE>;
 
-  RandomForest(Params params, NodeFactory<LABEL_TYPE, DATA_TYPE>* nodeFactory);
+  using NodeFactoryPtr = NodeFactoryPtr_<LABEL_TYPE, DATA_TYPE>;
 
-  void train(const std::vector<Sample<LABEL_TYPE, DATA_TYPE>>& samples);
+  using SampleVector = SampleVector_<LABEL_TYPE, DATA_TYPE>;
 
-  LABEL_TYPE predict(const DATA_TYPE& data) const;
+  using RandomTreeVector = RandomTreeVector_<LABEL_TYPE, DATA_TYPE>;
 
-  Histogram<LABEL_TYPE, DATA_TYPE> predict_prob(const DATA_TYPE& data) const;
+  using HistogramType = Histogram<LABEL_TYPE, DATA_TYPE>;
 
-private:
+  using HistogramVector = HistogramVector_<LABEL_TYPE, DATA_TYPE>;
 
-  Params m_params;
-  unsigned int m_nClasses;
-  std::vector<RandomTree<LABEL_TYPE, DATA_TYPE>> m_trees;
-  NodeFactory<LABEL_TYPE, DATA_TYPE>* m_nodeFactory;
-} ;
-
-template<typename LABEL_TYPE, typename DATA_TYPE>
-RandomForest<LABEL_TYPE, DATA_TYPE>::RandomForest(Params params, NodeFactory<LABEL_TYPE, DATA_TYPE>* nodeFactory)
-: m_params(params),
-m_nClasses(0),
-m_nodeFactory(nodeFactory)
-{
-  for (unsigned int i = 0; i < m_params.getNumTrees(); ++i)
+  //----------------------------------------------------------------------------
+  RandomForest(Params params, NodeFactoryPtr nodeFactory)
+  : m_params(params),
+  m_nClasses(0),
+  m_nodeFactory(std::move(nodeFactory))
   {
-    m_trees.emplace_back(m_params.getTreeParams(), nodeFactory);
-  }
-}
-
-template<typename LABEL_TYPE, typename DATA_TYPE>
-void RandomForest<LABEL_TYPE, DATA_TYPE>::train(const std::vector<Sample<LABEL_TYPE, DATA_TYPE>>& samples)
-{
-#pragma omp parallel for
-  for (int i = 0; i < m_params.getNumTrees(); ++i)
-  {
-    // TODO: bagging
-    m_trees[i].train(samples);
-  }
-}
-
-template<typename LABEL_TYPE, typename DATA_TYPE>
-LABEL_TYPE RandomForest<LABEL_TYPE, DATA_TYPE>::predict(const DATA_TYPE& data) const
-{
-  Histogram<LABEL_TYPE, DATA_TYPE> ensembleHistogram = predict_prob(data);
-  return ensembleHistogram.max();
-}
-
-template<typename LABEL_TYPE, typename DATA_TYPE>
-Histogram<LABEL_TYPE, DATA_TYPE> RandomForest<LABEL_TYPE, DATA_TYPE>::predict_prob(const DATA_TYPE& data) const
-{
-  std::vector<Histogram<LABEL_TYPE, DATA_TYPE>> histograms;
-#pragma omp parallel for
-  for (unsigned int i = 0; i < m_params.getNumTrees(); ++i)
-  {
-    Histogram<LABEL_TYPE, DATA_TYPE> treeResult = m_trees[i].predict(data);
-#pragma omp critical
+    for (unsigned int i = 0; i < m_params.getNumTrees(); ++i)
     {
-      histograms.push_back(treeResult);
+      m_trees.emplace_back(m_params.getTreeParams(), nodeFactory);
     }
   }
 
-  return m_params.getEnsembleFct()(histograms);
-}
+  //----------------------------------------------------------------------------
+  void train(const SampleVector& samples)
+  {
+#pragma omp parallel for
+    for (int i = 0; i < m_params.getNumTrees(); ++i)
+    {
+      // TODO: bagging
+      m_trees[i].train(samples);
+    }
+  }
+
+  //----------------------------------------------------------------------------
+  LABEL_TYPE predict(const DATA_TYPE& data) const
+  {
+    return predict_prob(data).max();
+  }
+
+  //----------------------------------------------------------------------------
+  HistogramType predict_prob(const DATA_TYPE& data) const
+  {
+    HistogramVector histograms;
+#pragma omp parallel for
+    for (unsigned int i = 0; i < m_params.getNumTrees(); ++i)
+    {
+      auto treeResult = m_trees[i].predict(data);
+#pragma omp critical
+      {
+        histograms.push_back(treeResult);
+      }
+    }
+
+    return m_params.getEnsembleFct()(histograms);
+  }
+
+private:
+
+  // the forest parameters
+  Params m_params;
+
+  // the number of classes
+  unsigned int m_nClasses;
+
+  // the trees
+  RandomTreeVector m_trees;
+
+  // the node factory
+  NodeFactoryPtr m_nodeFactory;
+} ;
 
 #endif

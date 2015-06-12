@@ -2,6 +2,7 @@
 #define NODE_HPP
 
 #include "Histogram.hpp"
+#include "types.hpp"
 
 #include <memory>
 
@@ -9,8 +10,14 @@ template <typename LABEL_TYPE, typename DATA_TYPE>
 class Node
 {
 public:
-  
-  using SampleVector = std::vector<Sample<LABEL_TYPE, DATA_TYPE>>;
+
+  using SampleVector = SampleVector_<LABEL_TYPE, DATA_TYPE>;
+
+  using HistogramType = Histogram<LABEL_TYPE, DATA_TYPE>;
+
+  using NodePtr = NodePtr_<LABEL_TYPE, DATA_TYPE>;
+
+  using HistogramPtr = HistogramPtr_<LABEL_TYPE, DATA_TYPE>;
 
   enum class Direction
   {
@@ -18,79 +25,76 @@ public:
     RIGHT
   } ;
 
-  const Histogram<LABEL_TYPE, DATA_TYPE>& predict(const DATA_TYPE& data) const;
-
-  Node<LABEL_TYPE, DATA_TYPE>& getLeft() const
-  {
-    return *m_leftChild;
-  }
-
-  Node<LABEL_TYPE, DATA_TYPE>& getRight() const
-  {
-    return *m_rightChild;
-  }
-
-  void setLeft(std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>> left)
+  //----------------------------------------------------------------------------
+  void setLeft(NodePtr left)
   {
     m_leftChild = std::move(left);
   }
 
-  void setRight(std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>> right)
+  //----------------------------------------------------------------------------
+  void setRight(NodePtr right)
   {
     m_rightChild = std::move(right);
   }
 
+  //----------------------------------------------------------------------------
+  void setHistogram(HistogramPtr histogram)
+  {
+    m_histogram = std::move(histogram);
+  }
+
+  //----------------------------------------------------------------------------
+  const HistogramType& predict(const DATA_TYPE& data) const
+  {
+    if (!m_leftChild || !m_rightChild)
+    {
+      return *m_histogram;
+    }
+
+    Direction direction = split(data);
+    if (direction == Direction::LEFT)
+    {
+      return m_leftChild->predict(data);
+    } else
+    {
+      return m_rightChild->predict(data);
+    }
+  }
+
+  //----------------------------------------------------------------------------
   void split(const SampleVector& samples,
              SampleVector& samples_left,
-             SampleVector& samples_right) const;
+             SampleVector& samples_right) const
+  {
+    for (const auto& sample : samples)
+    {
+      Direction direction = split(sample.getData());
+      if (direction == Direction::LEFT)
+      {
+        samples_left.push_back(sample);
+      } else
+      {
+        samples_right.push_back(sample);
+      }
+    }
+  }
 
 private:
-  std::unique_ptr<Histogram<LABEL_TYPE, DATA_TYPE>> m_histogram;
+
+  // a pointer to the histogram in this node
+  HistogramPtr m_histogram;
+  
+  // a pointer to the left child
+  NodePtr m_leftChild;
+
+  // a pointer to the right child
+  NodePtr m_rightChild;
 
 protected:
 
-  double m_threshold;
-  std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>> m_leftChild;
-  std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>> m_rightChild;
-
+  //----------------------------------------------------------------------------
   virtual Direction split(const DATA_TYPE& data) const = 0;
 
 } ;
-
-template <typename LABEL_TYPE, typename DATA_TYPE>
-void Node<LABEL_TYPE, DATA_TYPE>::split(const SampleVector& samples,
-                                        SampleVector& samples_left,
-                                        SampleVector& samples_right) const
-{
-  for (const auto& sample : samples)
-  {
-    Direction direction = split(sample.getData());
-    if (direction == Direction::LEFT)
-    {
-      samples_left.push_back(sample);
-    } else
-    {
-      samples_right.push_back(sample);
-    }
-  }
-}
-
-template <typename LABEL_TYPE, typename DATA_TYPE>
-const Histogram<LABEL_TYPE, DATA_TYPE>& Node<LABEL_TYPE, DATA_TYPE>::predict(const DATA_TYPE& data) const
-{
-  if (!m_leftChild || !m_rightChild)
-  {
-    return *m_histogram;
-  }
-
-  Direction direction = split(data);
-  if (direction == Direction::LEFT)
-  {
-    return m_leftChild->predict(data);
-  } else
-  {
-    return m_rightChild->predict(data);
-  }
-}
 
 #endif

@@ -44,7 +44,8 @@ int main(int argc, char** argv) {
         PatchParameter patch_params;
         patch_params.patch_height = 30;
         patch_params.patch_width = 30;
-        RandomForest<Label, cv::Mat> forest(rf_params, new CenterPixelNodeFactory(patch_params));
+        std::unique_ptr<CenterPixelNodeFactory> factory(new CenterPixelNodeFactory(patch_params));
+        RandomForest<Label, cv::Mat> forest(rf_params, std::move(factory));
         cv::Mat arr;
         std::vector<Sample<Label, cv::Mat>> samples;
         forest.train(samples);
