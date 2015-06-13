@@ -59,7 +59,7 @@ int Program::run(int argc, char** argv) {
     RFParameter<Label, cv::Mat> rf_params(
             true,
             rt_params,
-            ensmble_fct, 10);
+            ensmble_fct, 20);
     PatchParameter patch_params;
     patch_params.patch_height = m_sample_size;
     patch_params.patch_width = m_sample_size;
