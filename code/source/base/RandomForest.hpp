@@ -56,7 +56,7 @@ public:
   {
     HistogramVector histograms;
 #pragma omp parallel for
-    for (unsigned int i = 0; i < m_params.getNumTrees(); ++i)
+    for (int i = 0; i < m_params.getNumTrees(); ++i)
     {
       const auto& treeResult = m_trees[i].predict(data);
 #pragma omp critical
