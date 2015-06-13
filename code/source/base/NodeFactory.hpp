@@ -8,8 +8,13 @@
 #include <boost/random/random_device.hpp>
 
 template<typename LABEL_TYPE, typename DATA_TYPE>
+class UniversalNodeFactory;
+
+template<typename LABEL_TYPE, typename DATA_TYPE>
 class NodeFactory
 {
+  friend class UniversalNodeFactory<LABEL_TYPE, DATA_TYPE>;
+  
 public:
 
   using NodeType = Node<LABEL_TYPE, DATA_TYPE>;

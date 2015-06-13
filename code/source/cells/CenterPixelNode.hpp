@@ -1,7 +1,7 @@
 #ifndef CENTERPIXELNODE_HPP
 #define CENTERPIXELNODE_HPP
 
-#include "../base/Node.hpp"
+#include "base/Node.hpp"
 #include "Label.hpp"
 
 #include <opencv2/opencv.hpp>
