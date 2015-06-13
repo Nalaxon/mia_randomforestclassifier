@@ -10,6 +10,9 @@
 #include "cells/Label.hpp"
 #include "cells/CenterPixelNodeFactory.hpp"
 #include "tools/ImageTools.hpp"
+#include "cells/GradientNodeFactory.hpp"
+#include "cells/TwoPixelNodeFactory.hpp"
+#include "UniversalNodeFactory.hpp"
 
 #include <iomanip>
 
@@ -61,9 +64,17 @@ int Program::run(int argc, char** argv) {
     patch_params.patch_height = m_sample_size;
     patch_params.patch_width = m_sample_size;
     patch_params.max_value = 1.0;
-    std::unique_ptr<CenterPixelNodeFactory> factory(new CenterPixelNodeFactory(patch_params));
 
-    RandomForest<Label, cv::Mat> forest(rf_params, std::move(factory));
+    std::shared_ptr<CenterPixelNodeFactory> center_pixel_factory(new CenterPixelNodeFactory(patch_params));
+    std::shared_ptr<GradientNodeFactory> gradient_factory(new GradientNodeFactory(patch_params));
+    std::shared_ptr<TwoPixelNodeFactory> two_pixel_factory(new TwoPixelNodeFactory(patch_params));
+    std::shared_ptr<UniversalNodeFactory<Label, cv::Mat>> factory(new UniversalNodeFactory<Label, cv::Mat>({
+        center_pixel_factory,
+        gradient_factory,
+        two_pixel_factory
+    }));
+
+    RandomForest<Label, cv::Mat> forest(rf_params, factory);
 
     std::cout << "Start training..." << std::endl;
     forest.train(samples);
@@ -195,7 +206,7 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
         cv::cvtColor(image, channels[0], CV_BGR2GRAY);
     }
     cv::equalizeHist(channels[0], channels[0]);
-    
+
 
     // create gradient
     int scale = 1;
@@ -216,13 +227,13 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
     /// Total Gradient (approximate)
     cv::addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad);
     cv::integral(grad, channels[1], ddepth);
-    
+
     // create integral image
     channels[0].convertTo(channels[0], CV_32FC1, 1 / 255.);
     cv::integral(channels[0], channels[2], ddepth);
 
     cv::copyMakeBorder(channels[0], channels[0], 0, 1, 0, 1, cv::BORDER_DEFAULT);
-    
+
     cv::merge(channels, prepared);
     return prepared;
 }

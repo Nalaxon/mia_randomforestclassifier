@@ -1,25 +1,40 @@
 #ifndef UNIVERSALNODEFACTORY_HPP
-
 #define UNIVERSALNODEFACTORY_HPP
+
 #include "NodeFactory.hpp"
 
 #include <vector>
+#include <memory>
+#include <initializer_list>
 #include <boost/random.hpp>
-
-/// class UniversalNodeFactory - 
 
 template<typename LABEL_TYPE, typename DATA_TYPE>
 class UniversalNodeFactory : public NodeFactory<LABEL_TYPE, DATA_TYPE>
 {
-public:
-  UniversalNodeFactory(std::initializer_list<std::shared_ptr<NodeFactory>> factoryList);
+public:  
+  
+  using SuperType = NodeFactory<LABEL_TYPE, DATA_TYPE>;
+
+  //----------------------------------------------------------------------------
+  UniversalNodeFactory(std::initializer_list<std::shared_ptr<SuperType>> factory_list)
+  : m_dist(0, factory_list.size() - 1),
+  m_factories(factory_list)
+  {
+  }
 
 protected:
-  virtual NodePtr createRandomNode();
+  
+  //----------------------------------------------------------------------------
+  virtual typename SuperType::NodePtr createRandomNode()
+  {
+    unsigned int factory_idx = m_dist(SuperType::m_rng);
+    return m_factories[factory_idx]->createRandomNode();
+  }
 
 private:
+  
   boost::random::uniform_int_distribution<> m_dist;
-  std::vector<std::shared_ptr<NodeFactory>> m_factories;
+  std::vector<std::shared_ptr<SuperType>> m_factories;
 } ;
 
 

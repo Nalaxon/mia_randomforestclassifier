@@ -5,6 +5,7 @@
 #include <map>
 #include <cmath>
 #include <algorithm>
+#include <initializer_list>
 
 #include "Sample.hpp"
 #include "types.hpp"

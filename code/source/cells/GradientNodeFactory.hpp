@@ -16,7 +16,7 @@ class GradientNodeFactory : public NodeFactory<Label, cv::Mat>
 
     GradientNodeFactory(PatchParameter params)
       : m_params(params), 
-      m_dist_threshold((params.patch_width - 1)*(params.patch_height-1)*params.max_value)
+      m_dist_threshold(0,(params.patch_width - 1)*(params.patch_height-1)*params.max_value)
     {
     }
 

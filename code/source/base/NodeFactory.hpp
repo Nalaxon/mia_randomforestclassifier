@@ -7,13 +7,16 @@
 #include <memory>
 #include <boost/random/random_device.hpp>
 
+// forward declaration for friend declaration
 template<typename LABEL_TYPE, typename DATA_TYPE>
 class UniversalNodeFactory;
+
 
 template<typename LABEL_TYPE, typename DATA_TYPE>
 class NodeFactory
 {
-  friend class UniversalNodeFactory<LABEL_TYPE, DATA_TYPE>;
+  // this is necessary to get access to createRandomNode()...
+  friend UniversalNodeFactory<LABEL_TYPE, DATA_TYPE>;
   
 public:
 
@@ -32,6 +35,17 @@ public:
   //----------------------------------------------------------------------------
   NodeFactory() : m_rng()
   {
+  }
+  
+  NodeFactory(const NodeFactory& other)
+  : m_rng()
+  {
+  }
+  
+  NodeFactory& operator=(const NodeFactory& other)
+  {
+    std::swap(*this, other);
+    return *this;
   }
 
   //----------------------------------------------------------------------------
@@ -70,7 +84,7 @@ protected:
 
   //----------------------------------------------------------------------------
   virtual NodePtr createRandomNode() = 0;
-
+  
   // a random number generator
   boost::random::random_device m_rng;
 
