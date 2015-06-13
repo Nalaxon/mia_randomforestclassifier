@@ -10,6 +10,7 @@ nbdist/
 nbactions.xml
 nb-configuration.xml
 .nb-gradle/
+compile_commands.json
 
 
 ### C++ ###
