@@ -1,8 +1,7 @@
 #ifndef RANDOMTREE_HPP
 #define RANDOMTREE_HPP
 
-#include <memory>
-
+#include "memory.hpp"
 #include "RTParameter.hpp"
 #include "Node.hpp"
 #include "NodeFactory.hpp"

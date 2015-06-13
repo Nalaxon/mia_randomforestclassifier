@@ -64,14 +64,11 @@ int Program::run(int argc, char** argv) {
     patch_params.patch_height = m_sample_size;
     patch_params.patch_width = m_sample_size;
     patch_params.max_value = 1.0;
-
-    std::shared_ptr<CenterPixelNodeFactory> center_pixel_factory(new CenterPixelNodeFactory(patch_params));
-    std::shared_ptr<GradientNodeFactory> gradient_factory(new GradientNodeFactory(patch_params));
-    std::shared_ptr<TwoPixelNodeFactory> two_pixel_factory(new TwoPixelNodeFactory(patch_params));
+    
     std::shared_ptr<UniversalNodeFactory<Label, cv::Mat>> factory(new UniversalNodeFactory<Label, cv::Mat>({
-        center_pixel_factory,
-        gradient_factory,
-        two_pixel_factory
+        std::make_shared<CenterPixelNodeFactory>(patch_params),
+        std::make_shared<GradientNodeFactory>(patch_params),
+        std::make_shared<TwoPixelNodeFactory>(patch_params)
     }));
 
     RandomForest<Label, cv::Mat> forest(rf_params, factory);

@@ -1,8 +1,9 @@
 #ifndef TYPES_HPP
 #define	TYPES_HPP
 
+#include "memory.hpp"
+
 #include <vector>
-#include <memory>
 
 template<typename LABEL_TYPE, typename DATA_TYPE>
 class Sample;

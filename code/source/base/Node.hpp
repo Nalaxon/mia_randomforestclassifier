@@ -3,8 +3,7 @@
 
 #include "Histogram.hpp"
 #include "types.hpp"
-
-#include <memory>
+#include "memory.hpp"
 
 template <typename LABEL_TYPE, typename DATA_TYPE>
 class Node

@@ -2,9 +2,9 @@
 #define UNIVERSALNODEFACTORY_HPP
 
 #include "NodeFactory.hpp"
+#include "memory.hpp"
 
 #include <vector>
-#include <memory>
 #include <initializer_list>
 #include <boost/random.hpp>
 

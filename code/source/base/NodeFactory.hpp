@@ -3,8 +3,8 @@
 
 #include "Node.hpp"
 #include "types.hpp"
+#include "memory.hpp"
 
-#include <memory>
 #include <boost/random/random_device.hpp>
 
 // forward declaration for friend declaration
@@ -51,7 +51,7 @@ public:
   //----------------------------------------------------------------------------
   NodePtr create(const SampleVector& samples, unsigned int num_tests)
   {
-    HistogramPtr hist_samples(new HistogramType(samples));
+    auto hist_samples = std::make_unique<HistogramType>(samples);
 
     std::vector<Sample<LABEL_TYPE, DATA_TYPE>> samples_left;
     std::vector<Sample<LABEL_TYPE, DATA_TYPE>> samples_right;
