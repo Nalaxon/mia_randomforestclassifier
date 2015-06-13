@@ -21,7 +21,7 @@
 std::vector<Histogram<Label, cv::Mat>> histogram;
 
 Histogram<Label, cv::Mat> ensemble(const std::vector<Histogram<Label, cv::Mat>>&samples) {
-    return histogram[0];
+    return std::move(histogram[0]);
 }
 
 
@@ -146,15 +146,15 @@ bool Program::parse_command_line(int argc, char** argv) {
 //----------------------------------------------------------------------------------------------------------------------
 
 void Program::extract_training_samples(std::vector<Sample<Label, cv::Mat>>& samples) const {
-#pragma omp parallel for
+//#pragma omp parallel for
     for (int i_file = 1; i_file <= 30; ++i_file) {
         std::ostringstream volume_file_name, truth_file_name;
         volume_file_name << "train-volume" << std::setfill('0') << std::setw(4) << i_file << ".tif";
         truth_file_name << "train-labels" << std::setfill('0') << std::setw(4) << i_file << ".tif";
 
         namespace fs = boost::filesystem;
-        const fs::path volume_file = m_dataset_path / volume_file_name.str();
-        const fs::path truth_file = m_dataset_path / truth_file_name.str();
+        const auto volume_file = m_dataset_path / volume_file_name.str();
+        const auto truth_file = m_dataset_path / truth_file_name.str();
 
         cv::Mat volume = cv::imread(volume_file.string(), CV_LOAD_IMAGE_COLOR);
         cv::Mat truth = cv::imread(truth_file.string(), CV_LOAD_IMAGE_GRAYSCALE);

@@ -30,6 +30,9 @@ public:
   m_leftChild(std::move(other.m_leftChild)),
   m_rightChild(std::move(other.m_rightChild))
   {
+    other.m_histogram = nullptr;
+    other.m_leftChild = nullptr;
+    other.m_rightChild = nullptr;
   }
 
   Node& operator= (Node&& other)

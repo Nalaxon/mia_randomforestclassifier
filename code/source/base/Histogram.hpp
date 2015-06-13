@@ -38,6 +38,25 @@ public:
       }
     }
   }
+  
+  //----------------------------------------------------------------------------
+  Histogram(Histogram&& other)
+  : m_numTotal(other.m_numTotal),
+  m_max(std::move(other.m_max)),
+  m_histMap(std::move(other.m_histMap)) {
+    other.m_numTotal = 0;    
+  }
+  
+  Histogram& operator= (Histogram&& other)
+  {
+    if (this != other)
+    {
+      m_numTotal = other.m_numTotal;
+      m_max = std::move(other.m_max);
+      m_histMap = std::move(other.m_histMap);
+    }
+    return *this;
+  }
 
   //----------------------------------------------------------------------------
   unsigned int numElementsForLabel(const LABEL_TYPE& label) const

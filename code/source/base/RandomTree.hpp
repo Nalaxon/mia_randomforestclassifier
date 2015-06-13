@@ -33,12 +33,12 @@ public:
 
   RandomTree(RandomTree&& other)
   : m_params(std::move(other.m_params)),
-  m_nodeFactory(std::move(other.m_nodeFactory)),
+  m_nodeFactory(other.m_nodeFactory),
   m_root(std::move(other.m_root))
   {
-    m_nodeFactory = other.m_nodeFactory;
-    m_root = std::move(other.m_root);
-    m_params = other.m_params;
+    other.m_nodeFactory = nullptr;
+    other.m_root = nullptr;
+    other.m_params = RTParameter();
   }
 
   RandomTree& operator= (RandomTree&& other)

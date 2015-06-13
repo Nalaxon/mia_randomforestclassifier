@@ -26,7 +26,7 @@ public:
   RandomForest(Params params, NodeFactoryPtr nodeFactory)
   : m_params(params),
   m_nClasses(0),
-  m_nodeFactory(std::move(nodeFactory))
+  m_nodeFactory(nodeFactory)
   {
     for (unsigned int i = 0; i < m_params.getNumTrees(); ++i)
     {
@@ -37,7 +37,7 @@ public:
   //----------------------------------------------------------------------------
   void train(const SampleVector& samples)
   {
-#pragma omp parallel for
+//#pragma omp parallel for
     for (int i = 0; i < static_cast<int>(m_params.getNumTrees()); ++i)
     {
       // TODO: bagging
