@@ -75,14 +75,10 @@ int Program::run(int argc, char** argv) {
     boost::filesystem::path test_volume_path;
     std::tie(test_volume_path, std::ignore) = resolve_data_path(1);
     cv::Mat test_image = cv::imread(test_volume_path.string(), CV_LOAD_IMAGE_COLOR);
+    cv::Mat test_image_prepared = prepare_image(test_image);
     cv::namedWindow("inputwindow", CV_WINDOW_AUTOSIZE);
     cv::imshow("inputwindow", test_image);
-    if (test_image.channels() != 1) {
-        cv::cvtColor(test_image, test_image, CV_BGR2GRAY);
-    }
-    cv::equalizeHist(test_image, test_image);
-    test_image.convertTo(test_image, CV_32FC1, 1 / 255.);
-    cv::Mat classification_image = classify_image(forest, test_image);
+    cv::Mat classification_image = classify_image(forest, test_image_prepared);
 
     cv::namedWindow("resultwindow", CV_WINDOW_AUTOSIZE);
     cv::imshow("resultwindow", classification_image);
@@ -219,10 +215,15 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
     /// Total Gradient (approximate)
     cv::addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad);
     cv::integral(grad, channels[1], ddepth);
+    channels[1] *= 1. / channels[1].at<float>(channels[1].rows-1, channels[1].cols-1);
     
     // create integral image
     cv::integral(channels[0], channels[2], ddepth);
+    channels[2] *= 1. / channels[2].at<float>(channels[2].rows-1, channels[2].cols-1);
     
+    cv::copyMakeBorder(channels[0], channels[0], 0, 1, 0, 1, cv::BORDER_DEFAULT);
+    
+    cv::merge(channels, prepared);
     return prepared;
 }
 //----------------------------------------------------------------------------------------------------------------------
