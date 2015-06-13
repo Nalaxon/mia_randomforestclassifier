@@ -76,7 +76,7 @@ private:
      * Prepares an input image for better training/classification. It will convert the image to grayscale and do
      * histogram equalization.
      */
-    void prepare_image(cv::Mat& image) const;
+    cv::Mat prepare_image(const cv::Mat& image) const;
     
     PathTuple resolve_data_path(unsigned int id) const;
 };

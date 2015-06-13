@@ -9,6 +9,7 @@
 #include "cells/PatchParameter.hpp"
 #include "cells/Label.hpp"
 #include "cells/CenterPixelNodeFactory.hpp"
+#include "tools/ImageTools.hpp"
 
 #include <iomanip>
 
@@ -163,14 +164,14 @@ void Program::extract_training_samples(std::vector<Sample<Label, cv::Mat>>&sampl
         cv::Mat truth = cv::imread(truth_file.string(), CV_LOAD_IMAGE_GRAYSCALE);
 
         // prepare sample image for better classification
-        prepare_image(volume);
+        cv::Mat data_image = prepare_image(volume);
 
         // convert ground truth to grayscalce if needed
         if (truth.channels() != 1) {
             cv::cvtColor(truth, truth, CV_BGR2GRAY);
         }
 
-        SampleExtractor sample_extractor(volume, truth, m_sample_size);
+        SampleExtractor sample_extractor(data_image, truth, m_sample_size);
         for (size_t i_sample = 0; i_sample < m_num_samples_per_image; ++i_sample) {
             cv::Mat sample_image;
             bool foreground;
@@ -188,14 +189,41 @@ void Program::extract_training_samples(std::vector<Sample<Label, cv::Mat>>&sampl
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void Program::prepare_image(cv::Mat& image) const {
-    if (image.channels() != 1) {
-        cv::cvtColor(image, image, CV_BGR2GRAY);
-    }
-    cv::equalizeHist(image, image);
+cv::Mat Program::prepare_image(const cv::Mat& image) const {
+    cv::Mat prepared;
+    prepared.create(image.rows, image.cols, CV_32FC3);
+    auto channels = ImageTools::extractChannels<3>(prepared);
 
-    // TODO: this is only needed for the opencv implementation
-    image.convertTo(image, CV_32FC1, 1 / 255.);
+    if (image.channels() != 1) {
+        cv::cvtColor(image, channels[0], CV_BGR2GRAY);
+    }
+    cv::equalizeHist(channels[0], channels[0]);
+    channels[0].convertTo(channels[0], CV_32FC1, 1 / 255.);
+
+    // create gradient
+    int scale = 1;
+    int delta = 0;
+    int ddepth = CV_32F;
+    int blur_kernel_size = 15;
+    cv::Mat blurred;
+    cv::GaussianBlur(channels[0], blurred, cv::Size(blur_kernel_size, blur_kernel_size), 0.0);
+    /// Gradient X
+    cv::Mat grad;
+    cv::Mat grad_x, grad_y;
+    cv::Mat abs_grad_x, abs_grad_y;
+    cv::Sobel(blurred, grad_x, ddepth, 1, 0, 3, scale, delta, cv::BORDER_DEFAULT);
+    cv::convertScaleAbs(grad_x, abs_grad_x);
+    /// Gradient Y
+    cv::Sobel(blurred, grad_y, ddepth, 0, 1, 3, scale, delta, cv::BORDER_DEFAULT);
+    cv::convertScaleAbs(grad_y, abs_grad_y);
+    /// Total Gradient (approximate)
+    cv::addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad);
+    cv::integral(grad, channels[1], ddepth);
+    
+    // create integral image
+    cv::integral(channels[0], channels[2], ddepth);
+    
+    return prepared;
 }
 //----------------------------------------------------------------------------------------------------------------------
 

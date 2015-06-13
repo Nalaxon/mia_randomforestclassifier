@@ -5,6 +5,7 @@
 #include "cells/Label.hpp"
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <vector>
 
 
 namespace ImageTools
@@ -44,6 +45,21 @@ namespace ImageTools
     int center_col = mat.cols / 2;
     int center_row = mat.rows / 2;
     return mat.at<PixelType>(center_row, center_col);
+  }
+  
+  template<unsigned int N>
+  static std::vector<cv::Mat> extractChannels(const cv::Mat& channelImg)
+  {
+    std::vector<cv::Mat> channels(N);
+    cv::split(channelImg, channels);
+    return channels;
+  }
+  
+  template<unsigned int N, unsigned int i>
+  static cv::Mat extractChannel(const cv::Mat& channelImg)
+  {
+    auto channels = extractChannels<N>(channelImg);
+    return channels[i];
   }
 }
 
