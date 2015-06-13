@@ -200,7 +200,7 @@ void Program::extract_training_samples(std::vector<Sample<Label, cv::Mat>>&sampl
 cv::Mat Program::prepare_image(const cv::Mat& image) const {
     cv::Mat prepared;
     prepared.create(image.rows, image.cols, CV_32FC3);
-    auto channels = ImageTools::extractChannels<3>(prepared);
+    auto channels = ImageTools::extract_channels<3>(prepared);
 
     if (image.channels() != 1) {
         cv::cvtColor(image, channels[0], CV_BGR2GRAY);

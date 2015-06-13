@@ -39,27 +39,26 @@ namespace ImageTools
 //    }
 //  }
   
-  template<typename PixelType>
-  static const PixelType& getCenterPixel(const cv::Mat& mat)
+  template<typename PixelType, unsigned int num_channels, unsigned int channel>
+  static const PixelType& get_pixel(const cv::Mat& mat, unsigned int row, unsigned int col)
+  {
+    return mat.at<cv::Vec<PixelType, num_channels>>(row, col)[channel];
+  }
+  
+  template<typename PixelType, unsigned int num_channels, unsigned int channel>
+  static const PixelType& get_center_pixel(const cv::Mat& mat)
   {
     int center_col = mat.cols / 2;
     int center_row = mat.rows / 2;
-    return mat.at<PixelType>(center_row, center_col);
+    return get_pixel<PixelType, num_channels, channel>(mat, center_row, center_col);
   }
   
   template<unsigned int N>
-  static std::vector<cv::Mat> extractChannels(const cv::Mat& channelImg)
+  static std::vector<cv::Mat> extract_channels(const cv::Mat& channelImg)
   {
     std::vector<cv::Mat> channels(N);
     cv::split(channelImg, channels);
     return channels;
-  }
-  
-  template<unsigned int N, unsigned int i>
-  static cv::Mat extractChannel(const cv::Mat& channelImg)
-  {
-    auto channels = extractChannels<N>(channelImg);
-    return channels[i];
   }
 }
 

@@ -4,9 +4,8 @@
 
 TwoPixelNode::Direction TwoPixelNode::split(const cv::Mat& data) const
 {
-    cv::Mat value_channel = ImageTools::extractChannel<3, 0>(data);
-    const auto& pixel1 = value_channel.at<float>(m_y_1, m_x_1);
-    const auto& pixel2 = value_channel.at<float>(m_y_2, m_x_2);
+    const auto& pixel1 = ImageTools::get_pixel<float, 3, 0>(data, m_y_1, m_x_1);
+    const auto& pixel2 = ImageTools::get_pixel<float, 3, 0>(data, m_y_2, m_x_2);
     if (pixel1 < pixel2) {
         return Node::Direction::LEFT;
     } else {
