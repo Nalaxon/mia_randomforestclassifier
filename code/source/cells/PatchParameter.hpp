@@ -12,6 +12,7 @@ struct PatchParameter
 {
   int patch_width;
   int patch_height;
+  double max_value;
 } ;
 
 #endif	/* PATCHPARAMETER_H */

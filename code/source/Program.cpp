@@ -60,6 +60,7 @@ int Program::run(int argc, char** argv) {
     PatchParameter patch_params;
     patch_params.patch_height = m_sample_size;
     patch_params.patch_width = m_sample_size;
+    patch_params.max_value = 1.0;
     std::unique_ptr<CenterPixelNodeFactory> factory(new CenterPixelNodeFactory(patch_params));
 
     RandomForest<Label, cv::Mat> forest(rf_params, std::move(factory));
