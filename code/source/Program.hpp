@@ -7,6 +7,7 @@
 
 #include "cells/Label.hpp"
 #include "base/Sample.hpp"
+#include "base/RandomForest.hpp"
 
 #include <string>
 #include <boost/filesystem.hpp>
@@ -51,7 +52,7 @@ private:
      * @param image the input image
      * @return the classification image
      */
-    cv::Mat classify_image(CvRTrees& forest, const cv::Mat& image) const;
+    cv::Mat classify_image(const RandomForest<Label, cv::Mat>& forest, const cv::Mat& image) const;
 
     /**
      * Extracts the training samples from the dataset.

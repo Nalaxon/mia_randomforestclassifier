@@ -37,7 +37,7 @@ public:
     std::vector<Sample<LABEL_TYPE, DATA_TYPE>> samples_left;
     std::vector<Sample<LABEL_TYPE, DATA_TYPE>> samples_right;
 
-    float max_info_gain = 0.;
+    float max_info_gain = -0.1;
     NodePtr max_node;
     for (unsigned int i = 0; i < num_tests; ++i)
     {

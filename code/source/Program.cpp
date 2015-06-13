@@ -18,10 +18,13 @@
 #include <boost/program_options.hpp>
 #include <boost/random.hpp>
 
-std::vector<Histogram<Label, cv::Mat>> histogram;
-
-Histogram<Label, cv::Mat> ensemble(const std::vector<Histogram<Label, cv::Mat>>&samples) {
-    return std::move(histogram[0]);
+Histogram<Label, cv::Mat> sum_ensemble(const std::vector<Histogram<Label, cv::Mat>>&histograms) {
+    Histogram<Label, cv::Mat> sum;
+    for (const auto& hist : histograms)
+    {
+        sum += hist;
+    }
+    return sum;
 }
 
 
@@ -46,7 +49,7 @@ int Program::run(int argc, char** argv) {
         samples.pop_back();
     }
 
-    auto ensmble_fct = ensemble;
+    auto ensmble_fct = sum_ensemble;
     RTParameter rt_params;
     rt_params.m_maxDepth = 15;
     rt_params.m_minSamples = 3;
@@ -70,7 +73,7 @@ int Program::run(int argc, char** argv) {
 
     //std::cout << num_correct << " correct classification of " << num_test_samples << std::endl;
 
-    cv::Mat test_image = cv::imread("../../data/MIA_KU_2015_DataSet/train-volume0001.tif", CV_LOAD_IMAGE_COLOR);
+    cv::Mat test_image = cv::imread("../data/MIA_KU_2015_DataSet/train-volume0001.tif", CV_LOAD_IMAGE_COLOR);
     cv::namedWindow("inputwindow", CV_WINDOW_AUTOSIZE);
     cv::imshow("inputwindow", test_image);
     if (test_image.channels() != 1) {
@@ -78,10 +81,10 @@ int Program::run(int argc, char** argv) {
     }
     cv::equalizeHist(test_image, test_image);
     test_image.convertTo(test_image, CV_32FC1, 1 / 255.);
-    //cv::Mat classification_image = classify_image(forest, test_image);
+    cv::Mat classification_image = classify_image(forest, test_image);
 
     cv::namedWindow("resultwindow", CV_WINDOW_AUTOSIZE);
-    //cv::imshow("resultwindow", classification_image);
+    cv::imshow("resultwindow", classification_image);
     cv::waitKey(0);
 
     return EXIT_SUCCESS;
@@ -198,7 +201,7 @@ void Program::prepare_image(cv::Mat& image) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-cv::Mat Program::classify_image(CvRTrees& forest, const cv::Mat& image) const {
+cv::Mat Program::classify_image(const RandomForest<Label, cv::Mat>& forest, const cv::Mat& image) const {
     cv::Mat border_image;
     cv::copyMakeBorder(image, border_image,
             m_sample_size / 2, m_sample_size / 2, m_sample_size / 2, m_sample_size / 2,
@@ -212,8 +215,9 @@ cv::Mat Program::classify_image(CvRTrees& forest, const cv::Mat& image) const {
             cv::Rect patch_definition(col, row, m_sample_size, m_sample_size);
             cv::Mat patch(border_image, patch_definition);
 
-            int classification = forest.predict(convert_to_row_vector<float>(patch));
-            classification_image.at<uchar>(row, col) = 255 - (classification * 255);
+            Label classification = forest.predict(patch);
+            uchar pixel_value = classification == Label::BORDER ? 0 : 255;
+            classification_image.at<uchar>(row, col) = pixel_value;
         }
     }
 

@@ -58,7 +58,7 @@ public:
 #pragma omp parallel for
     for (unsigned int i = 0; i < m_params.getNumTrees(); ++i)
     {
-      auto treeResult = m_trees[i].predict(data);
+      const auto& treeResult = m_trees[i].predict(data);
 #pragma omp critical
       {
         histograms.push_back(treeResult);
