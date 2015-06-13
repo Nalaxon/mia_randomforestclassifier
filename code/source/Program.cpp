@@ -158,7 +158,7 @@ bool Program::parse_command_line(int argc, char** argv) {
 //----------------------------------------------------------------------------------------------------------------------
 
 void Program::extract_training_samples(std::vector<Sample<Label, cv::Mat>>&samples) const {
-    //#pragma omp parallel for
+#pragma omp parallel for
     for (int i_file = 1; i_file <= 30; ++i_file) {
         std::ostringstream volume_file_name, truth_file_name;
         volume_file_name << "train-volume" << std::setfill('0') << std::setw(4) << i_file << ".tif";
