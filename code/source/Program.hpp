@@ -10,6 +10,7 @@
 #include "base/RandomForest.hpp"
 
 #include <string>
+#include <tuple>
 #include <boost/filesystem.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/ml/ml.hpp>
@@ -27,6 +28,8 @@ public:
      * @param argv from main
      */
     int run(int argc, char** argv);
+    
+    using PathTuple = std::tuple<boost::filesystem::path, boost::filesystem::path>;
 
 private:
 
@@ -74,6 +77,8 @@ private:
      * histogram equalization.
      */
     void prepare_image(cv::Mat& image) const;
+    
+    PathTuple resolve_data_path(unsigned int id) const;
 };
 
 

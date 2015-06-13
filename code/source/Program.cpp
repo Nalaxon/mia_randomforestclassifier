@@ -20,8 +20,7 @@
 
 Histogram<Label, cv::Mat> sum_ensemble(const std::vector<Histogram<Label, cv::Mat>>&histograms) {
     Histogram<Label, cv::Mat> sum;
-    for (const auto& hist : histograms)
-    {
+    for (const auto& hist : histograms) {
         sum += hist;
     }
     return sum;
@@ -72,8 +71,9 @@ int Program::run(int argc, char** argv) {
     // test the forest
 
     //std::cout << num_correct << " correct classification of " << num_test_samples << std::endl;
-
-    cv::Mat test_image = cv::imread("../data/MIA_KU_2015_DataSet/train-volume0001.tif", CV_LOAD_IMAGE_COLOR);
+    boost::filesystem::path test_volume_path;
+    std::tie(test_volume_path, std::ignore) = resolve_data_path(1);
+    cv::Mat test_image = cv::imread(test_volume_path.string(), CV_LOAD_IMAGE_COLOR);
     cv::namedWindow("inputwindow", CV_WINDOW_AUTOSIZE);
     cv::imshow("inputwindow", test_image);
     if (test_image.channels() != 1) {
@@ -148,16 +148,16 @@ bool Program::parse_command_line(int argc, char** argv) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void Program::extract_training_samples(std::vector<Sample<Label, cv::Mat>>& samples) const {
-//#pragma omp parallel for
+void Program::extract_training_samples(std::vector<Sample<Label, cv::Mat>>&samples) const {
+    //#pragma omp parallel for
     for (int i_file = 1; i_file <= 30; ++i_file) {
         std::ostringstream volume_file_name, truth_file_name;
         volume_file_name << "train-volume" << std::setfill('0') << std::setw(4) << i_file << ".tif";
         truth_file_name << "train-labels" << std::setfill('0') << std::setw(4) << i_file << ".tif";
 
         namespace fs = boost::filesystem;
-        const auto volume_file = m_dataset_path / volume_file_name.str();
-        const auto truth_file = m_dataset_path / truth_file_name.str();
+        fs::path volume_file, truth_file;
+        std::tie(volume_file, truth_file) = resolve_data_path(i_file);
 
         cv::Mat volume = cv::imread(volume_file.string(), CV_LOAD_IMAGE_COLOR);
         cv::Mat truth = cv::imread(truth_file.string(), CV_LOAD_IMAGE_GRAYSCALE);
@@ -224,3 +224,11 @@ cv::Mat Program::classify_image(const RandomForest<Label, cv::Mat>& forest, cons
     return classification_image;
 }
 //----------------------------------------------------------------------------------------------------------------------
+
+Program::PathTuple Program::resolve_data_path(unsigned int id) const {
+    std::ostringstream volume_file_name, truth_file_name;
+    volume_file_name << "train-volume" << std::setfill('0') << std::setw(4) << id << ".tif";
+    truth_file_name << "train-labels" << std::setfill('0') << std::setw(4) << id << ".tif";
+
+    return std::make_tuple(m_dataset_path / volume_file_name.str(), m_dataset_path / truth_file_name.str());
+}
