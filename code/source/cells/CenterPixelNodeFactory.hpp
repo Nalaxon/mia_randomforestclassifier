@@ -1,7 +1,7 @@
 #include "../base/NodeFactory.hpp"
 #include "Label.hpp"
 #include "CenterPixelNode.hpp"
-#include "PatchParameter.h"
+#include "PatchParameter.hpp"
 
 #include <opencv2/opencv.hpp>
 #include <boost/random.hpp>

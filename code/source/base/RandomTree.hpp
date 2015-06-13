@@ -64,6 +64,9 @@ public:
 
   const HistogramType& predict(const DATA_TYPE& data) const
   {
+    if (!m_root) {
+      throw std::runtime_error("The tree has not been trained yet!");
+    }
     return m_root->predict(data);
   }
 

@@ -5,6 +5,9 @@
 #ifndef MIA_2015_PROGRAM_HPP
 #define MIA_2015_PROGRAM_HPP
 
+#include "cells/Label.hpp"
+#include "base/Sample.hpp"
+
 #include <string>
 #include <boost/filesystem.hpp>
 #include <opencv2/core/core.hpp>
@@ -54,10 +57,8 @@ private:
      * Extracts the training samples from the dataset.
      *
      * @param foreground_samples all foreground samples will be in there.
-     * @param background_samples all background samples will be in there
      */
-    void extract_training_samples(std::vector<cv::Mat>& foreground_samples,
-                                  std::vector<cv::Mat>& background_samples) const;
+    void extract_training_samples(std::vector<Sample<Label, cv::Mat>>& samples) const;
 
     /**
      * Reads the configuration from the commandline.

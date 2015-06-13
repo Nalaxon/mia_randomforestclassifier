@@ -11,6 +11,12 @@ class Sample
 public:
 
   //----------------------------------------------------------------------------
+  Sample(LABEL_TYPE m_label, DATA_TYPE m_data) :
+  m_label(m_label), m_data(m_data)
+  {
+  }
+
+  //----------------------------------------------------------------------------
   const LABEL_TYPE& getLabel() const
   {
     return m_label;

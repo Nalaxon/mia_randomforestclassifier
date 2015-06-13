@@ -26,30 +26,8 @@ const std::string find_exception_msg() {
     }
 }
 
-std::vector<Histogram<Label, cv::Mat>> histogram;
-Histogram<Label, cv::Mat> ensemble(const std::vector<Histogram<Label, cv::Mat>>& samples) {
-    return histogram[0];
-}
-
 int main(int argc, char** argv) {
     try {
-        std::function<Histogram<Label, cv::Mat>(const std::vector<Histogram<Label, cv::Mat>>& samples)> ensmble_fct = ensemble;
-        RTParameter rt_params;
-        rt_params.m_maxDepth = 15;
-        rt_params.m_minSamples = 3;
-        RFParameter<Label, cv::Mat> rf_params(
-                true,
-                rt_params,
-                ensmble_fct, 10);
-        PatchParameter patch_params;
-        patch_params.patch_height = 30;
-        patch_params.patch_width = 30;
-        std::unique_ptr<CenterPixelNodeFactory> factory(new CenterPixelNodeFactory(patch_params));
-        RandomForest<Label, cv::Mat> forest(rf_params, std::move(factory));
-        cv::Mat arr;
-        std::vector<Sample<Label, cv::Mat>> samples;
-        forest.train(samples);
-        forest.predict(arr);
         Program program;
         return program.run(argc, argv);
     } catch (...) {

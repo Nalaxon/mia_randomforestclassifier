@@ -1,7 +1,7 @@
 #ifndef LABEL_HPP
 #define LABEL_HPP
 
-enum Label {
+enum class Label {
   BORDER,
   CELL
 };
