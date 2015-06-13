@@ -194,7 +194,7 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
         cv::cvtColor(image, channels[0], CV_BGR2GRAY);
     }
     cv::equalizeHist(channels[0], channels[0]);
-    channels[0].convertTo(channels[0], CV_32FC1, 1 / 255.);
+    
 
     // create gradient
     int scale = 1;
@@ -215,12 +215,11 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
     /// Total Gradient (approximate)
     cv::addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad);
     cv::integral(grad, channels[1], ddepth);
-    channels[1] *= 1. / channels[1].at<float>(channels[1].rows-1, channels[1].cols-1);
     
     // create integral image
+    channels[0].convertTo(channels[0], CV_32FC1, 1 / 255.);
     cv::integral(channels[0], channels[2], ddepth);
-    channels[2] *= 1. / channels[2].at<float>(channels[2].rows-1, channels[2].cols-1);
-    
+
     cv::copyMakeBorder(channels[0], channels[0], 0, 1, 0, 1, cv::BORDER_DEFAULT);
     
     cv::merge(channels, prepared);
