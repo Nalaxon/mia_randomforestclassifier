@@ -155,19 +155,6 @@ public:
   
   //----------------------------------------------------------------------------
 
-  float probability(const LABEL_TYPE& label) const
-  {
-
-    const unsigned& cnt = m_histMap.at(label);
-    return (float)cnt / m_numTotal;
-  }
-
-  //float probability(const LABEL_TYPE& label) const
-  //{
-  //  const int& cnt = m_histMap[label];
-  //  return (float)cnt / m_numTotal;
-  //}
-
   //----------------------------------------------------------------------------
 
   float informationGain(std::initializer_list<Histogram*> splits) const
