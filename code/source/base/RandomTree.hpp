@@ -7,6 +7,8 @@
 #include "NodeFactory.hpp"
 #include "types.hpp"
 
+#include <iostream>
+
 template<typename LABEL_TYPE, typename DATA_TYPE>
 class RandomTree
 {
@@ -63,10 +65,21 @@ public:
 
   const HistogramType& predict(const DATA_TYPE& data) const
   {
-    if (!m_root) {
+    if (!m_root)
+    {
       throw std::runtime_error("The tree has not been trained yet!");
     }
     return m_root->predict(data);
+  }
+
+  void printDotFormat(std::ostream& stream) const
+  {
+    stream << "digraph randomtree {" << std::endl;
+    if (m_root)
+    {
+      m_root->printDotFormat(stream, 0);
+    }
+    stream << "}";
   }
 
 private:

@@ -6,6 +6,8 @@
 #include "RandomTree.hpp"
 #include "types.hpp"
 
+#include <iostream>
+
 template<typename LABEL_TYPE, typename DATA_TYPE>
 class RandomForest
 {
@@ -66,6 +68,14 @@ public:
     }
 
     return m_params.getEnsembleFct()(histograms);
+  }
+  
+  void printDotFormat(std::ostream& stream) const
+  {
+    for (const auto& tree : m_trees)
+    {
+      tree.printDotFormat(stream);
+    }
   }
 
 private:
