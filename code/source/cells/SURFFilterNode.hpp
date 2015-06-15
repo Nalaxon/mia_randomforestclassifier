@@ -12,7 +12,7 @@ class SURFFilterNode : public Node<Label, cv::Mat> {
   // Attributes
 public:
   SURFFilterNode(bool is_vertical, double threshold) :
-    m_is_vertical(is_vertical), m_threshold(threshold)
+    m_threshold(threshold), m_is_vertical(is_vertical)
   {
   }
 
