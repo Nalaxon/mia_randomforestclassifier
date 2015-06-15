@@ -147,11 +147,26 @@ public:
     float entropy = 0.;
     for (const auto& entry : m_histMap)
     {
-      float prob = ((float) entry.second) / m_numTotal;
+      float prob = ((float)entry.second) / m_numTotal;
       entropy -= prob * log2(prob);
     }
     return entropy;
+  }  
+  
+  //----------------------------------------------------------------------------
+
+  float probability(const LABEL_TYPE& label) const
+  {
+
+    const unsigned& cnt = m_histMap.at(label);
+    return (float)cnt / m_numTotal;
   }
+
+  //float probability(const LABEL_TYPE& label) const
+  //{
+  //  const int& cnt = m_histMap[label];
+  //  return (float)cnt / m_numTotal;
+  //}
 
   //----------------------------------------------------------------------------
 

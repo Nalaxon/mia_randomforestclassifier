@@ -95,6 +95,7 @@ private:
     }
 
     SampleVector samples_left, samples_right;
+
     std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>> node = m_nodeFactory->create(samples, m_params.m_num_tests_per_split);
     node->split(samples, samples_left, samples_right);
     node->setLeft(trainInternal(samples_left, depth + 1));

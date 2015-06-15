@@ -95,7 +95,6 @@ public:
   }
 
 private:
-
   // the forest parameters
   Params m_params;
 

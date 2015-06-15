@@ -12,6 +12,8 @@
 #include "tools/ImageTools.hpp"
 #include "cells/GradientNodeFactory.hpp"
 #include "cells/TwoPixelNodeFactory.hpp"
+#include "cells/HaarWaveletNodeFactory.hpp"
+#include "cells/SURFFilterNodeFactory.hpp"
 #include "UniversalNodeFactory.hpp"
 
 #include <iomanip>
@@ -72,7 +74,9 @@ int Program::run(int argc, char** argv) {
     std::shared_ptr<UniversalNodeFactory<Label, cv::Mat >> factory(new UniversalNodeFactory<Label, cv::Mat>({
         std::make_shared<CenterPixelNodeFactory>(patch_params),
         std::make_shared<GradientNodeFactory>(patch_params),
-        std::make_shared<TwoPixelNodeFactory>(patch_params)
+        std::make_shared<TwoPixelNodeFactory>(patch_params),
+        std::make_shared<HaarWaveletNodeFactory>(patch_params),
+        std::make_shared<SURFFilterNodeFactory>(patch_params)
     }));
 
     RandomForest<Label, cv::Mat> forest(rf_params, factory);
@@ -244,8 +248,7 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
         cv::cvtColor(image, channels[0], CV_BGR2GRAY);
     }
     cv::equalizeHist(channels[0], channels[0]);
-
-
+    
     // create gradient
     int scale = 1;
     int delta = 0;
@@ -288,8 +291,9 @@ cv::Mat Program::classify_image(const RandomForest<Label, cv::Mat>& forest, cons
     cv::Mat classification_image;
     classification_image.create(image.rows, image.cols, CV_32FC1);
 
+#pragma omp parallel for
     for (int row = 0; row < classification_image.rows; ++row) {
-        for (int col = 0; col < classification_image.cols; ++col) {
+      for (int col = 0; col < classification_image.cols; ++col) {
             cv::Rect patch_definition(col, row, m_sample_size, m_sample_size);
             cv::Mat patch(border_image, patch_definition);
 
