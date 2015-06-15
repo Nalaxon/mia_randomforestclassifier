@@ -4,6 +4,7 @@
 #include "memory.hpp"
 
 #include <vector>
+#include <functional>
 
 template<typename LABEL_TYPE, typename DATA_TYPE>
 class Sample;
@@ -37,6 +38,9 @@ using HistogramPtr_ = std::unique_ptr<Histogram<LABEL_TYPE, DATA_TYPE>>;
 
 template<typename LABEL_TYPE, typename DATA_TYPE>
 using NodeFactoryPtr_ = std::shared_ptr<NodeFactory<LABEL_TYPE, DATA_TYPE>>;
+
+template<typename LABEL_TYPE, typename DATA_TYPE>
+using EnsembleFct_ = std::function<HistogramPtr_<LABEL_TYPE, DATA_TYPE>(const HistogramVector_<LABEL_TYPE, DATA_TYPE>&)>;
 
 #endif	/* TYPES_HPP */
 

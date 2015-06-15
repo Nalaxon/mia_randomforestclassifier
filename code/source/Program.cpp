@@ -5,7 +5,7 @@
 #include "Program.hpp"
 #include "SampleExtractor.hpp"
 #include "tools/utils.hpp"
-#include "RandomForest.hpp"
+#include "base/RandomForest.hpp"
 #include "cells/PatchParameter.hpp"
 #include "cells/Label.hpp"
 #include "cells/CenterPixelNodeFactory.hpp"
@@ -24,10 +24,11 @@
 #include <boost/program_options.hpp>
 #include <boost/random.hpp>
 
-Histogram<Label, cv::Mat> sum_ensemble(const std::vector<Histogram<Label, cv::Mat>>&histograms) {
-    Histogram<Label, cv::Mat> sum;
+std::unique_ptr<Histogram<Label, cv::Mat>>
+sum_ensemble(const std::vector<Histogram<Label, cv::Mat>>& histograms) {
+    auto sum = std::make_unique<Histogram<Label, cv::Mat >> ();
     for (const auto& hist : histograms) {
-        sum += hist;
+        *sum += hist;
     }
     return sum;
 }
@@ -54,20 +55,22 @@ int Program::run(int argc, char** argv) {
         samples.pop_back();
     }
 
-    auto ensmble_fct = sum_ensemble;
-    RTParameter rt_params;
-    rt_params.m_maxDepth = 15;
-    rt_params.m_minSamples = 3;
-    RFParameter<Label, cv::Mat> rf_params(
-            true,
-            rt_params,
-            ensmble_fct, 50);
+    // construct forest/tree parameters
+    RFParameter<Label, cv::Mat> rf_params;
+    rf_params.m_bagging = m_bagging;
+    rf_params.m_num_trees = m_num_trees;
+    rf_params.m_tree_params.m_max_depth = m_max_depth;
+    rf_params.m_tree_params.m_min_samples = m_min_samples_per_node;
+    rf_params.m_tree_params.m_num_tests_per_split = m_num_feature_tests;
+
+    // construct patch parameters for the factory
     PatchParameter patch_params;
     patch_params.patch_height = m_sample_size;
     patch_params.patch_width = m_sample_size;
     patch_params.max_value = 1.0;
-    
-    std::shared_ptr<UniversalNodeFactory<Label, cv::Mat>> factory(new UniversalNodeFactory<Label, cv::Mat>({
+
+    // construct the universalnodefactory
+    std::shared_ptr<UniversalNodeFactory<Label, cv::Mat >> factory(new UniversalNodeFactory<Label, cv::Mat>({
         std::make_shared<CenterPixelNodeFactory>(patch_params),
         std::make_shared<GradientNodeFactory>(patch_params),
         std::make_shared<TwoPixelNodeFactory>(patch_params),
@@ -79,8 +82,12 @@ int Program::run(int argc, char** argv) {
 
     std::cout << "Start training..." << std::endl;
     forest.train(samples);
-
     std::cout << "Training done!" << std::endl;
+
+    if (m_print_trees) {
+        std::cout << "Tree structure:" << std::endl;
+        forest.printDotFormat(std::cout);
+    }
 
     // test the forest
 
@@ -118,7 +125,25 @@ bool Program::parse_command_line(int argc, char** argv) {
             "the number of samples that will be extracted from each training image")
 
             ("sample_size", po::value<unsigned int>()->default_value(30),
-            "the size of the samples. (Each sample will be (sample_size x sample_size)");
+            "the size of the samples. (Each sample will be (sample_size x sample_size)")
+
+            ("enable_bagging", po::bool_switch()->default_value(true),
+            "enable bagging of the input samples")
+
+            ("num_trees", po::value<unsigned int>()->default_value(10),
+            "the number of trees to train")
+
+            ("max_depth", po::value<unsigned int>()->default_value(10),
+            "the maximal depth of each tree")
+
+            ("min_samples_per_node", po::value<unsigned int>()->default_value(3),
+            "the minimum number of samples per node at which a node will be splitted again.")
+    
+            ("num_feature_tests", po::value<unsigned int>()->default_value(100),
+            "the number of feature tests to try at each split at each split.")
+
+            ("print_trees", po::bool_switch()->default_value(false),
+            "enable printing of the trees after training in dot format to the standard output.");
 
     // parse commandline input
     po::variables_map given_options;
@@ -149,6 +174,18 @@ bool Program::parse_command_line(int argc, char** argv) {
     m_num_samples_per_image = given_options["num_samples"].as<unsigned int>();
 
     m_sample_size = given_options["sample_size"].as<unsigned int>();
+
+    m_bagging = given_options["enable_bagging"].as<bool>();
+
+    m_num_trees = given_options["num_trees"].as<unsigned int>();
+
+    m_max_depth = given_options["max_depth"].as<unsigned int>();
+
+    m_min_samples_per_node = given_options["min_samples_per_node"].as<unsigned int>();
+    
+    m_num_feature_tests = given_options["num_feature_tests"].as<unsigned int>();
+
+    m_print_trees = given_options["print_trees"].as<bool>();
 
     // handle further options here if needed
 
@@ -256,14 +293,15 @@ cv::Mat Program::classify_image(const RandomForest<Label, cv::Mat>& forest, cons
             cv::Rect patch_definition(col, row, m_sample_size, m_sample_size);
             cv::Mat patch(border_image, patch_definition);
 
-            Histogram<Label, cv::Mat> classification = forest.predict_prob(patch);
-            uchar pixel_value = (classification.max() == Label::CELL) ? 255 : 0;
+            Label classification = forest.predict(patch, sum_ensemble);
+            uchar pixel_value = classification == Label::BORDER ? 0 : 255;
             classification_image.at<uchar>(row, col) = pixel_value;
         }
     }
 
     return classification_image;
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 
 Program::PathTuple Program::resolve_data_path(unsigned int id) const {
