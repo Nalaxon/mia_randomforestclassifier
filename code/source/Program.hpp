@@ -47,6 +47,36 @@ private:
      * The size of the samples. Each sample will be (sample_size x sample_size)
      */
     unsigned int m_sample_size;
+    
+    /**
+     * Defines wether bagging of the input samples will be enabled
+     */
+    bool m_bagging;
+    
+    /**
+     * The number of trees that will be trained
+     */
+    unsigned int m_num_trees;
+    
+    /**
+     * The maximal depth of each tree
+     */
+    unsigned int m_max_depth;
+    
+    /**
+     * The minimum number of samples at which a node will be splitted again
+     */
+    unsigned int m_min_samples_per_node;
+    
+    /**
+     * The number of feature tests to try at each split
+     */
+    unsigned int m_num_feature_tests;
+    
+    /**
+     * Defines wether the trees should be printed after training
+     */
+    bool m_print_trees;
 
     /**
      * Creates the binary classification image (background=255, foreground=0).

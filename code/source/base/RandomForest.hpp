@@ -19,10 +19,12 @@ public:
   using SampleVector = SampleVector_<LABEL_TYPE, DATA_TYPE>;
 
   using RandomTreeVector = RandomTreeVector_<LABEL_TYPE, DATA_TYPE>;
-
-  using HistogramType = Histogram<LABEL_TYPE, DATA_TYPE>;
+  
+  using HistogramPtr = HistogramPtr_<LABEL_TYPE, DATA_TYPE>;
 
   using HistogramVector = HistogramVector_<LABEL_TYPE, DATA_TYPE>;
+  
+  using EnsembleFct = EnsembleFct_<LABEL_TYPE, DATA_TYPE>;
 
   //----------------------------------------------------------------------------
   RandomForest(Params params, NodeFactoryPtr nodeFactory)
@@ -30,9 +32,9 @@ public:
   m_nClasses(0),
   m_nodeFactory(nodeFactory)
   {
-    for (unsigned int i = 0; i < m_params.getNumTrees(); ++i)
+    for (unsigned int i = 0; i < m_params.m_num_trees; ++i)
     {
-      m_trees.emplace_back(m_params.getTreeParams(), nodeFactory);
+      m_trees.emplace_back(m_params.m_tree_params, nodeFactory);
     }
   }
 
@@ -40,7 +42,7 @@ public:
   void train(const SampleVector& samples)
   {
 #pragma omp parallel for
-    for (int i = 0; i < static_cast<int>(m_params.getNumTrees()); ++i)
+    for (int i = 0; i < static_cast<int>(m_params.m_num_trees); ++i)
     {
       // TODO: bagging
       m_trees[i].train(samples);
@@ -48,17 +50,17 @@ public:
   }
 
   //----------------------------------------------------------------------------
-  LABEL_TYPE predict(const DATA_TYPE& data) const
+  LABEL_TYPE predict(const DATA_TYPE& data, EnsembleFct ensemble_fct) const
   {
-    return predict_prob(data).max();
+    return predict_prob(data, ensemble_fct)->max();
   }
 
   //----------------------------------------------------------------------------
-  HistogramType predict_prob(const DATA_TYPE& data) const
+  HistogramPtr predict_prob(const DATA_TYPE& data, EnsembleFct ensemble_fct) const
   {
     HistogramVector histograms;
 #pragma omp parallel for
-    for (int i = 0; i < static_cast<int>(m_params.getNumTrees()); ++i)
+    for (int i = 0; i < static_cast<int>(m_params.m_num_trees); ++i)
     {
       const auto& treeResult = m_trees[i].predict(data);
 #pragma omp critical
@@ -67,9 +69,10 @@ public:
       }
     }
 
-    return m_params.getEnsembleFct()(histograms);
+    return ensemble_fct(histograms);
   }
   
+  //----------------------------------------------------------------------------
   void printDotFormat(std::ostream& stream) const
   {
     for (const auto& tree : m_trees)

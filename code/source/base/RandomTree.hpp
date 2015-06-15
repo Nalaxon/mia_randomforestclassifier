@@ -77,7 +77,8 @@ public:
     stream << "digraph randomtree {" << std::endl;
     if (m_root)
     {
-      m_root->printDotFormat(stream, 0);
+      unsigned int node_counter = 0;
+      m_root->printDotFormat(stream, node_counter);
     }
     stream << "}";
   }
@@ -88,13 +89,13 @@ private:
 
   NodePtr trainInternal(const SampleVector& samples, unsigned int depth)
   {
-    if (depth > m_params.m_maxDepth || samples.size() < m_params.m_minSamples)
+    if (depth > m_params.m_max_depth || samples.size() < m_params.m_min_samples)
     {
       return std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE >> ();
     }
 
     SampleVector samples_left, samples_right;
-    std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>> node = m_nodeFactory->create(samples, 50); // TODO: num_samples
+    std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>> node = m_nodeFactory->create(samples, m_params.m_num_tests_per_split);
     node->split(samples, samples_left, samples_right);
     node->setLeft(trainInternal(samples_left, depth + 1));
     node->setRight(trainInternal(samples_right, depth + 1));
