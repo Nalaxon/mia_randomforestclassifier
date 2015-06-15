@@ -15,6 +15,7 @@
 #include "UniversalNodeFactory.hpp"
 
 #include <iomanip>
+#include <chrono>
 
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -77,8 +78,11 @@ int Program::run(int argc, char** argv) {
     RandomForest<Label, cv::Mat> forest(rf_params, factory);
 
     std::cout << "Start training..." << std::endl;
+    auto start = std::chrono::system_clock::now();
     forest.train(samples);
-    std::cout << "Training done!" << std::endl;
+    auto end = std::chrono::system_clock::now();
+    auto elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+    std::cout << "Training done! Took " << elapsed_seconds << " seconds." << std::endl;
 
     if (m_print_trees) {
         std::cout << "Tree structure:" << std::endl;
@@ -282,16 +286,15 @@ cv::Mat Program::classify_image(const RandomForest<Label, cv::Mat>& forest, cons
             cv::BORDER_REFLECT);
 
     cv::Mat classification_image;
-    classification_image.create(image.rows, image.cols, CV_8UC1);
+    classification_image.create(image.rows, image.cols, CV_32FC1);
 
     for (int row = 0; row < classification_image.rows; ++row) {
         for (int col = 0; col < classification_image.cols; ++col) {
             cv::Rect patch_definition(col, row, m_sample_size, m_sample_size);
             cv::Mat patch(border_image, patch_definition);
 
-            Label classification = forest.predict(patch, sum_ensemble);
-            uchar pixel_value = classification == Label::BORDER ? 0 : 255;
-            classification_image.at<uchar>(row, col) = pixel_value;
+            float pixel_value = forest.predict_prob(patch, Label::CELL, sum_ensemble);
+            classification_image.at<float>(row, col) = pixel_value;
         }
     }
 

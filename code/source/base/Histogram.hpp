@@ -84,14 +84,38 @@ public:
     std::swap(*this, other);
     return *this;
   }
+  
+  //----------------------------------------------------------------------------
 
+  Histogram operator+(const Histogram& other) const
+  {
+    Histogram hist_sum(*this);
+    add(hist_sum, other);
+    return hist_sum;
+  }
+
+  //----------------------------------------------------------------------------
+
+  Histogram& operator+=(const Histogram& other)
+  {
+    add(*this, other);
+    return *this;
+  }
+
+  //----------------------------------------------------------------------------
+  
+  unsigned int operator[](const LABEL_TYPE& label) const
+  {
+    return numElementsForLabel(label);
+  }
+  
   //----------------------------------------------------------------------------
 
   unsigned int numElementsForLabel(const LABEL_TYPE& label) const
   {
     if (m_histMap.count(label))
     {
-      return m_histMap[label];
+      return m_histMap.at(label);
     } else
     {
       return 0;
@@ -103,6 +127,17 @@ public:
   unsigned int numElementsTotal() const
   {
     return m_numTotal;
+  }
+  
+  //----------------------------------------------------------------------------
+  
+  float prob(const LABEL_TYPE& label) const
+  {
+    if (m_numTotal == 0)
+    {
+      return 0.f;
+    }
+    return static_cast<float>(numElementsForLabel(label)) / m_numTotal; 
   }
 
   //----------------------------------------------------------------------------
@@ -137,19 +172,6 @@ public:
     return m_max;
   }
 
-  Histogram operator+(const Histogram& other) const
-  {
-    Histogram hist_sum(*this);
-    add(hist_sum, other);
-    return hist_sum;
-  }
-  
-  Histogram& operator+=(const Histogram& other)
-  {
-    add(*this, other);
-    return *this;
-  }
-
 private:
 
   // total num of samples
@@ -179,7 +201,7 @@ private:
       }
     }
   }
-  
+
 } ;
 
 #endif

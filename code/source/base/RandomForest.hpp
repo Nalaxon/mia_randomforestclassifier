@@ -19,14 +19,15 @@ public:
   using SampleVector = SampleVector_<LABEL_TYPE, DATA_TYPE>;
 
   using RandomTreeVector = RandomTreeVector_<LABEL_TYPE, DATA_TYPE>;
-  
+
   using HistogramPtr = HistogramPtr_<LABEL_TYPE, DATA_TYPE>;
 
   using HistogramVector = HistogramVector_<LABEL_TYPE, DATA_TYPE>;
-  
+
   using EnsembleFct = EnsembleFct_<LABEL_TYPE, DATA_TYPE>;
 
   //----------------------------------------------------------------------------
+
   RandomForest(Params params, NodeFactoryPtr nodeFactory)
   : m_params(params),
   m_nClasses(0),
@@ -39,10 +40,11 @@ public:
   }
 
   //----------------------------------------------------------------------------
+
   void train(const SampleVector& samples)
   {
 #pragma omp parallel for
-    for (int i = 0; i < static_cast<int>(m_params.m_num_trees); ++i)
+    for (int i = 0; i < static_cast<int> (m_params.m_num_trees); ++i)
     {
       // TODO: bagging
       m_trees[i].train(samples);
@@ -50,17 +52,20 @@ public:
   }
 
   //----------------------------------------------------------------------------
+
   LABEL_TYPE predict(const DATA_TYPE& data, EnsembleFct ensemble_fct) const
   {
     return predict_prob(data, ensemble_fct)->max();
   }
 
+
   //----------------------------------------------------------------------------
+
   HistogramPtr predict_prob(const DATA_TYPE& data, EnsembleFct ensemble_fct) const
   {
     HistogramVector histograms;
 #pragma omp parallel for
-    for (int i = 0; i < static_cast<int>(m_params.m_num_trees); ++i)
+    for (int i = 0; i < static_cast<int> (m_params.m_num_trees); ++i)
     {
       const auto& treeResult = m_trees[i].predict(data);
 #pragma omp critical
@@ -71,8 +76,16 @@ public:
 
     return ensemble_fct(histograms);
   }
-  
+
   //----------------------------------------------------------------------------
+
+  float predict_prob(const DATA_TYPE& data, const LABEL_TYPE& label, EnsembleFct ensemble_fct) const
+  {
+    return predict_prob(data, ensemble_fct)->prob(label);
+  }
+
+  //----------------------------------------------------------------------------
+
   void printDotFormat(std::ostream& stream) const
   {
     for (const auto& tree : m_trees)
