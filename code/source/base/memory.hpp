@@ -11,7 +11,8 @@
 #include <memory>
 
 // c++11 does not have std::make_unique but it's possible:
-#if __cplusplus < 201402L
+// Visual Studio 2012 and 2013 do not have a properly set __cplusplus flag
+#if __cplusplus < 201402L && _MSC_VER != 1800 && _MSC_VER != 1700
 
 namespace std
 {
