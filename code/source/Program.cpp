@@ -107,6 +107,58 @@ int Program::run(int argc, char** argv) {
     cv::namedWindow("resultwindow", CV_WINDOW_AUTOSIZE);
     cv::imshow("resultwindow", classification_image);
     cv::waitKey(0);
+    
+    cv::Mat binary_classification_image;
+    cv::threshold(classification_image, binary_classification_image, 0.5, 1.0, cv::THRESH_BINARY);
+    cv::namedWindow("thresholdwindow", CV_WINDOW_AUTOSIZE);
+    cv::imshow("thresholdwindow", binary_classification_image);
+    cv::waitKey(0);
+    
+    cv::Mat markers = cv::Mat::zeros(binary_classification_image.rows, binary_classification_image.cols, CV_32SC1);
+    cv::Size marker_size(10, 10);
+    for (int x = 0; x < binary_classification_image.cols - marker_size.width-1; x += marker_size.width)
+    {
+        for (int y = 0; y < binary_classification_image.rows - marker_size.height-1; y += marker_size.height)
+        {
+            cv::Rect patchPosition(cv::Point(x, y), marker_size);
+            cv::Mat patch(binary_classification_image, patchPosition);
+            if (cv::countNonZero(patch) == 0)
+            {
+                cv::rectangle(markers, patchPosition, 128, CV_FILLED);
+            }
+        }
+    }
+    
+    marker_size = cv::Size(5, 5);
+    for (int x = 0; x < binary_classification_image.cols - marker_size.width-1; x += marker_size.width)
+    {
+        for (int y = 0; y < binary_classification_image.rows - marker_size.height-1; y += marker_size.height)
+        {
+            cv::Rect patchPosition(cv::Point(x, y), marker_size);
+            cv::Mat patch(binary_classification_image, patchPosition);
+            if (cv::countNonZero(patch) == marker_size.area())
+            {
+                cv::rectangle(markers, patchPosition, 255, CV_FILLED);
+            }
+        }
+    }
+    
+    cv::Mat markers_display;
+    markers.convertTo(markers_display, CV_8UC1);
+    cv::namedWindow("markerwindow", CV_WINDOW_AUTOSIZE);
+    cv::imshow("markerwindow", markers_display);
+    cv::waitKey(0);
+    
+    cv::Mat classification_rgb;
+    classification_image.convertTo(classification_rgb, CV_8UC1, 255);
+    cv::cvtColor(classification_rgb, classification_rgb, CV_GRAY2BGR);
+    
+    cv::watershed(classification_rgb, markers);
+    cv::Mat watershed_display;
+    markers.convertTo(watershed_display, CV_8UC1);
+    cv::namedWindow("watershedwindow", CV_WINDOW_AUTOSIZE);
+    cv::imshow("watershedwindow", watershed_display);
+    cv::waitKey(0);
 
     return EXIT_SUCCESS;
 }
