@@ -26,7 +26,7 @@
 #include <boost/random.hpp>
 
 std::unique_ptr<Histogram<Label, cv::Mat>>
-sum_ensemble(const std::vector<Histogram<Label, cv::Mat>>& histograms) {
+sum_ensemble(const std::vector<Histogram<Label, cv::Mat>>&histograms) {
     auto sum = std::make_unique<Histogram<Label, cv::Mat >> ();
     for (const auto& hist : histograms) {
         *sum += hist;
@@ -144,7 +144,7 @@ bool Program::parse_command_line(int argc, char** argv) {
 
             ("min_samples_per_node", po::value<unsigned int>()->default_value(3),
             "the minimum number of samples per node at which a node will be splitted again.")
-    
+
             ("num_feature_tests", po::value<unsigned int>()->default_value(100),
             "the number of feature tests to try at each split at each split.")
 
@@ -188,7 +188,7 @@ bool Program::parse_command_line(int argc, char** argv) {
     m_max_depth = given_options["max_depth"].as<unsigned int>();
 
     m_min_samples_per_node = given_options["min_samples_per_node"].as<unsigned int>();
-    
+
     m_num_feature_tests = given_options["num_feature_tests"].as<unsigned int>();
 
     m_print_trees = given_options["print_trees"].as<bool>();
@@ -221,15 +221,23 @@ void Program::extract_training_samples(std::vector<Sample<Label, cv::Mat>>&sampl
         }
 
         SampleExtractor sample_extractor(data_image, truth, m_sample_size);
-        for (size_t i_sample = 0; i_sample < m_num_samples_per_image; ++i_sample) {
+        unsigned int num_foreground = 0;
+        unsigned int num_background = 0;
+        unsigned int samples_per_class = m_num_samples_per_image / 2;
+        while (num_background < samples_per_class || num_foreground < samples_per_class) {
             cv::Mat sample_image;
             bool foreground;
             // unpack the tuple
             std::tie(sample_image, foreground) = sample_extractor.extractRandomSample();
-            Sample<Label, cv::Mat> sample(foreground ? Label::BORDER : Label::CELL, sample_image);
+            
+            auto& effected_sample_counter = foreground ? num_foreground : num_background;
+            if (effected_sample_counter < samples_per_class) {
+                ++effected_sample_counter;
+                Sample<Label, cv::Mat> sample(foreground ? Label::BORDER : Label::CELL, sample_image);
 #pragma omp critical
-            {
-                samples.push_back(sample);
+                {
+                    samples.push_back(sample);
+                }
             }
         }
     }
@@ -247,7 +255,7 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
         cv::cvtColor(image, channels[0], CV_BGR2GRAY);
     }
     cv::equalizeHist(channels[0], channels[0]);
-    
+
     // create gradient
     int scale = 1;
     int delta = 0;
@@ -292,7 +300,7 @@ cv::Mat Program::classify_image(const RandomForest<Label, cv::Mat>& forest, cons
 
 #pragma omp parallel for
     for (int row = 0; row < classification_image.rows; ++row) {
-      for (int col = 0; col < classification_image.cols; ++col) {
+        for (int col = 0; col < classification_image.cols; ++col) {
             cv::Rect patch_definition(col, row, m_sample_size, m_sample_size);
             cv::Mat patch(border_image, patch_definition);
 
