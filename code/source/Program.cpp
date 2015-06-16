@@ -71,13 +71,15 @@ int Program::run(int argc, char** argv) {
     patch_params.max_value = 1.0;
 
     // construct the universalnodefactory
-    std::shared_ptr<UniversalNodeFactory<Label, cv::Mat >> factory(new UniversalNodeFactory<Label, cv::Mat>({
-        std::make_shared<CenterPixelNodeFactory>(patch_params),
-        std::make_shared<GradientNodeFactory>(patch_params),
-        std::make_shared<TwoPixelNodeFactory>(patch_params),
-        std::make_shared<HaarWaveletNodeFactory>(patch_params),
-        std::make_shared<SURFFilterNodeFactory>(patch_params)
-    }));
+	std::vector<std::shared_ptr<NodeFactory<Label, cv::Mat>>> factory_list;
+	factory_list.push_back(std::make_shared<CenterPixelNodeFactory>(patch_params));
+	factory_list.push_back(std::make_shared<GradientNodeFactory>(patch_params));
+	factory_list.push_back(std::make_shared<TwoPixelNodeFactory>(patch_params));
+	factory_list.push_back(std::make_shared<HaarWaveletNodeFactory>(patch_params));
+	factory_list.push_back(std::make_shared<SURFFilterNodeFactory>(patch_params));
+
+	std::shared_ptr<UniversalNodeFactory<Label, cv::Mat >>
+		factory(new UniversalNodeFactory<Label, cv::Mat>(factory_list));
 
     RandomForest<Label, cv::Mat> forest(rf_params, factory);
 

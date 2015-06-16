@@ -68,7 +68,11 @@ public:
       HistogramType hist_left(samples_left);
       HistogramType hist_right(samples_right);
 
-      float infoGain = hist_samples->informationGain({&hist_left, &hist_right});
+	  std::vector<HistogramType*> hist;
+	  hist.push_back(&hist_left);
+	  hist.push_back(&hist_right);
+
+      float infoGain = hist_samples->informationGain(hist);
       if (infoGain > max_info_gain)
       {
         max_info_gain = infoGain;
