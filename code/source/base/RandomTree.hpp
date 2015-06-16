@@ -71,8 +71,7 @@ public:
     {
       throw std::runtime_error("The tree has not been trained yet!");
     }
-    const auto& prediction = m_root->predict(data);
-    return HistogramPtr(new HistogramType(prediction));
+    return HistogramPtr(new HistogramType(m_root->predict(data)));
   }
 
   void printDotFormat(std::ostream& stream) const
