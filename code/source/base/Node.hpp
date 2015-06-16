@@ -6,6 +6,7 @@
 #include "memory.hpp"
 
 #include <iostream>
+#include <sstream>
 
 template <typename LABEL_TYPE, typename DATA_TYPE>
 class Node
@@ -125,7 +126,21 @@ public:
       stream << this_node_id << " -> " << ++node_id << ";" << std::endl;
       m_rightChild->printDotFormat(stream, node_id);
     }
+    
+    std::ostringstream label;
+    // print class name
+    label << typeid(*this).name() << std::endl;
+    
+    // print histogram data
+    for (const auto& hist_entry : m_histogram->getData())
+    {
+      label << resolve_label_name(hist_entry.first) << ": " << static_cast<float>(hist_entry.second) / m_histogram->numElementsTotal() << std::endl;
+    }
+    
+    stream << this_node_id << R"([label=")" << label.str() << R"("];)" << std::endl;
   }
+  
+  virtual std::string resolve_label_name(const LABEL_TYPE& label) const = 0;
 
 private:
 

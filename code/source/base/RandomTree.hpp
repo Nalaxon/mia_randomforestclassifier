@@ -19,6 +19,8 @@ public:
   using NodeFactoryPtr = NodeFactoryPtr_<LABEL_TYPE, DATA_TYPE>;
 
   using HistogramType = Histogram<LABEL_TYPE, DATA_TYPE>;
+  
+  using HistogramPtr = HistogramPtr_<LABEL_TYPE, DATA_TYPE>;
 
   using NodePtr = NodePtr_<LABEL_TYPE, DATA_TYPE>;
 
@@ -63,13 +65,14 @@ public:
 
   //----------------------------------------------------------------------------
 
-  const HistogramType& predict(const DATA_TYPE& data) const
+  HistogramPtr predict(const DATA_TYPE& data) const
   {
     if (!m_root)
     {
       throw std::runtime_error("The tree has not been trained yet!");
     }
-    return m_root->predict(data);
+    const auto& prediction = m_root->predict(data);
+    return HistogramPtr(new HistogramType(prediction));
   }
 
   void printDotFormat(std::ostream& stream) const

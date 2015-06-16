@@ -19,7 +19,7 @@ public:
   Histogram()
   : m_numTotal(0),
   m_max(),
-  m_histMap()
+  m_hist_map()
   {
 
   }
@@ -34,18 +34,18 @@ public:
     unsigned int max_count = 0;
     for (const auto& sample : samples)
     {
-      if (!m_histMap.count(sample.getLabel()))
+      if (!m_hist_map.count(sample.getLabel()))
       {
-        m_histMap[sample.getLabel()] = 1;
+        m_hist_map[sample.getLabel()] = 1;
       } else
       {
-        m_histMap[sample.getLabel()] += 1;
+        m_hist_map[sample.getLabel()] += 1;
       }
       ++m_numTotal;
 
-      if (m_histMap[sample.getLabel()] > max_count)
+      if (m_hist_map[sample.getLabel()] > max_count)
       {
-        max_count = m_histMap[sample.getLabel()];
+        max_count = m_hist_map[sample.getLabel()];
         m_max = sample.getLabel();
       }
     }
@@ -56,7 +56,7 @@ public:
   Histogram(Histogram&& other)
   : m_numTotal(other.m_numTotal),
   m_max(std::move(other.m_max)),
-  m_histMap(std::move(other.m_histMap))
+  m_hist_map(std::move(other.m_hist_map))
   {
     other.m_numTotal = 0;
   }
@@ -67,7 +67,7 @@ public:
     {
       m_numTotal = other.m_numTotal;
       m_max = std::move(other.m_max);
-      m_histMap = std::move(other.m_histMap);
+      m_hist_map = std::move(other.m_hist_map);
     }
     return *this;
   }
@@ -75,7 +75,7 @@ public:
   Histogram(const Histogram& other)
   : m_numTotal(other.m_numTotal),
   m_max(other.m_max),
-  m_histMap(other.m_histMap)
+  m_hist_map(other.m_hist_map)
   {
   }
 
@@ -113,9 +113,9 @@ public:
 
   unsigned int numElementsForLabel(const LABEL_TYPE& label) const
   {
-    if (m_histMap.count(label))
+    if (m_hist_map.count(label))
     {
-      return m_histMap.at(label);
+      return m_hist_map.at(label);
     } else
     {
       return 0;
@@ -145,7 +145,7 @@ public:
   float entropy() const
   {
     float entropy = 0.;
-    for (const auto& entry : m_histMap)
+    for (const auto& entry : m_hist_map)
     {
       float prob = ((float)entry.second) / m_numTotal;
       entropy -= prob * log2(prob);
@@ -173,6 +173,11 @@ public:
   {
     return m_max;
   }
+  
+  const std::map<LABEL_TYPE, unsigned int>& getData() const
+  {
+    return m_hist_map;
+  }
 
 private:
 
@@ -183,18 +188,18 @@ private:
   LABEL_TYPE m_max;
 
   // num of sampels per label
-  std::map<LABEL_TYPE, unsigned int> m_histMap;
+  std::map<LABEL_TYPE, unsigned int> m_hist_map;
 
   static void add(Histogram& addTo, const Histogram& toAdd)
   {
     addTo.m_numTotal += toAdd.m_numTotal;
-    for (const auto& other_entry : toAdd.m_histMap)
+    for (const auto& other_entry : toAdd.m_hist_map)
     {
-      addTo.m_histMap[other_entry.first] += other_entry.second;
+      addTo.m_hist_map[other_entry.first] += other_entry.second;
     }
 
     unsigned int max_value = 0;
-    for (const auto& entry : addTo.m_histMap)
+    for (const auto& entry : addTo.m_hist_map)
     {
       if (entry.second > max_value)
       {

@@ -2,13 +2,13 @@
 #define HAARWAVELETNODE_HPP
 
 
-#include "Node.hpp"
+#include "BaseNode.hpp"
 #include "Label.hpp"
 
 #include <opencv/cv.h>
 
 /// class GradientNode - 
-class HaarWaveletNode : public Node<Label, cv::Mat> {
+class HaarWaveletNode : public BaseNode {
   // Attributes
 public:
   HaarWaveletNode(bool is_vertical, double threshold) : 

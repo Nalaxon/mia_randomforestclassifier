@@ -2,13 +2,13 @@
 #define GRADIENTNODE_HPP
 
 
-#include "Node.hpp"
+#include "BaseNode.hpp"
 #include "Label.hpp"
 
 #include <opencv/cv.h>
 
 /// class GradientNode - 
-class GradientNode : public Node<Label, cv::Mat> {
+class GradientNode : public BaseNode {
   // Attributes
 public:
   GradientNode(double threshold) : m_threshold(threshold)

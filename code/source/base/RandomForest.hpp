@@ -70,7 +70,7 @@ public:
       const auto& treeResult = m_trees[i].predict(data);
 #pragma omp critical
       {
-        histograms.push_back(treeResult);
+        histograms.push_back(*treeResult);
       }
     }
 

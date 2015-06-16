@@ -1,12 +1,12 @@
 #ifndef TWOPIXELNODE_HPP
 #define TWOPIXELNODE_HPP
 
-#include "base/Node.hpp"
+#include "BaseNode.hpp"
 #include "Label.hpp"
 
 #include <opencv2/opencv.hpp>
 
-class TwoPixelNode : public Node<Label, cv::Mat>
+class TwoPixelNode : public BaseNode
 {
 public:
 

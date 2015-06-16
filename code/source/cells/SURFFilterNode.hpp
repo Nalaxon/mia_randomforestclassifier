@@ -2,13 +2,13 @@
 #define SURFFILTERNODE_HPP
 
 
-#include "Node.hpp"
+#include "BaseNode.hpp"
 #include "Label.hpp"
 
 #include <opencv/cv.h>
 
 /// class GradientNode - 
-class SURFFilterNode : public Node<Label, cv::Mat> {
+class SURFFilterNode : public BaseNode {
   // Attributes
 public:
   SURFFilterNode(bool is_vertical, double threshold) :
