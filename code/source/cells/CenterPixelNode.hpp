@@ -11,13 +11,14 @@ class CenterPixelNode : public BaseNode
 {
   
 public:
-  CenterPixelNode(int x, int y) : m_x(x), m_y(y)
+  CenterPixelNode(int x, int y, float threshold) : m_x(x), m_y(y), m_threshold(threshold)
   {
   }
   
 private:
   int m_x;
   int m_y;
+  float m_threshold;
 
 protected:
   
