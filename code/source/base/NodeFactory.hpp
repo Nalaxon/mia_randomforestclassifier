@@ -35,6 +35,7 @@ public:
   //----------------------------------------------------------------------------
   NodeFactory() : m_rng()
   {
+    static_assert(std::is_base_of<Label<LABEL_TYPE>, LABEL_TYPE>::value, "Type parameter LABEL_TYPE must derive from Label.");
   }
   
   NodeFactory(const NodeFactory& other)

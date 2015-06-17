@@ -1,5 +1,5 @@
 #include "../base/NodeFactory.hpp"
-#include "Label.hpp"
+#include "CellLabel.hpp"
 #include "CenterPixelNode.hpp"
 #include "PatchParameter.hpp"
 
@@ -8,7 +8,7 @@
 
 /// class CenterPixelNodeFactory - 
 
-class CenterPixelNodeFactory : public NodeFactory<Label, cv::Mat>
+class CenterPixelNodeFactory : public NodeFactory<CellLabel, cv::Mat>
 {
 public:
 

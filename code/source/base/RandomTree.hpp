@@ -3,7 +3,7 @@
 
 #include "memory.hpp"
 #include "RTParameter.hpp"
-#include "Node.hpp"
+#include "LeafNode.hpp"
 #include "NodeFactory.hpp"
 #include "types.hpp"
 
@@ -14,30 +14,31 @@ class RandomTree
 {
 public:
 
-  using SampleVector = SampleVector_<LABEL_TYPE, DATA_TYPE>;
+  using SampleVector = SampleVector_ < LABEL_TYPE, DATA_TYPE > ;
 
-  using NodeFactoryPtr = NodeFactoryPtr_<LABEL_TYPE, DATA_TYPE>;
+  using NodeFactoryPtr = NodeFactoryPtr_ < LABEL_TYPE, DATA_TYPE > ;
 
-  using HistogramType = Histogram<LABEL_TYPE, DATA_TYPE>;
-  
-  using HistogramPtr = HistogramPtr_<LABEL_TYPE, DATA_TYPE>;
+  using HistogramType = Histogram < LABEL_TYPE, DATA_TYPE > ;
 
-  using NodePtr = NodePtr_<LABEL_TYPE, DATA_TYPE>;
+  using HistogramPtr = HistogramPtr_ < LABEL_TYPE, DATA_TYPE > ;
+
+  using NodePtr = NodePtr_ < LABEL_TYPE, DATA_TYPE > ;
 
   //----------------------------------------------------------------------------
 
   RandomTree(RTParameter params, NodeFactoryPtr nodeFactory)
-  : m_params(params),
-  m_nodeFactory(nodeFactory)
+    : m_params(params),
+    m_nodeFactory(nodeFactory)
   {
+    static_assert(std::is_base_of<Label<LABEL_TYPE>, LABEL_TYPE>::value, "Type parameter LABEL_TYPE must derive from Label.");
   }
 
   //just try to define move constructor
 
   RandomTree(RandomTree&& other)
-  : m_params(std::move(other.m_params)),
-  m_nodeFactory(other.m_nodeFactory),
-  m_root(std::move(other.m_root))
+    : m_params(std::move(other.m_params)),
+    m_nodeFactory(other.m_nodeFactory),
+    m_root(std::move(other.m_root))
   {
     other.m_nodeFactory = nullptr;
     other.m_root = nullptr;
@@ -92,14 +93,18 @@ private:
 
   NodePtr trainInternal(const SampleVector& samples, unsigned int depth)
   {
-    if (depth > m_params.m_max_depth || samples.size() < m_params.m_min_samples)
+    HistogramPtr hist_samples = std::make_unique<HistogramType>(samples);
+    if (depth > m_params.m_max_depth || samples.size() < m_params.m_min_samples ||
+      hist_samples->entropy() == 0)
     {
-      return std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE >> ();
+      NodePtr leaf = std::make_unique<LeafNode<LABEL_TYPE, DATA_TYPE>>();
+      leaf->setHistogram(std::move(hist_samples));
+      return leaf;
     }
 
     SampleVector samples_left, samples_right;
 
-    std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>> node = m_nodeFactory->create(samples, m_params.m_num_tests_per_split);
+    NodePtr node = m_nodeFactory->create(samples, m_params.m_num_tests_per_split);
     node->split(samples, samples_left, samples_right);
     node->setLeft(trainInternal(samples_left, depth + 1));
     node->setRight(trainInternal(samples_right, depth + 1));
@@ -117,7 +122,7 @@ protected:
 
   // the root node
   NodePtr m_root;
-} ;
+};
 
 #endif
 

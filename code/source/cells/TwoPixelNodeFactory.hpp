@@ -2,7 +2,7 @@
 #define TWOPIXELNODEFACTORY_HPP
 
 #include "../base/NodeFactory.hpp"
-#include "Label.hpp"
+#include "CellLabel.hpp"
 #include "CenterPixelNode.hpp"
 #include "PatchParameter.hpp"
 
@@ -10,7 +10,7 @@
 #include <boost/random.hpp>
 
 
-class TwoPixelNodeFactory : public NodeFactory<Label, cv::Mat>
+class TwoPixelNodeFactory : public NodeFactory<CellLabel, cv::Mat>
 {
 public:
 

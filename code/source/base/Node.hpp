@@ -23,10 +23,10 @@ public:
 
   Node()
   {
+    static_assert(std::is_base_of<Label<LABEL_TYPE>, LABEL_TYPE>::value, "Type parameter LABEL_TYPE must derive from Label.");
   }
 
   //just try to define move constructor
-
   Node(Node&& other)
   : m_histogram(std::move(other.m_histogram)),
   m_leftChild(std::move(other.m_leftChild)),
@@ -51,7 +51,8 @@ public:
   enum class Direction
   {
     LEFT,
-    RIGHT
+    RIGHT,
+    NONE
   } ;
 
   //----------------------------------------------------------------------------
@@ -88,9 +89,14 @@ public:
     if (direction == Direction::LEFT)
     {
       return m_leftChild->predict(data);
-    } else
+    } 
+    else if (direction == Direction::RIGHT)
     {
       return m_rightChild->predict(data);
+    }
+    else
+    {
+      return *m_histogram;
     }
   }
 
@@ -106,7 +112,7 @@ public:
       if (direction == Direction::LEFT)
       {
         samples_left.push_back(sample);
-      } else
+      } else if (direction == Direction::RIGHT)
       {
         samples_right.push_back(sample);
       }
@@ -134,13 +140,12 @@ public:
     // print histogram data
     for (const auto& hist_entry : m_histogram->getData())
     {
-      label << resolve_label_name(hist_entry.first) << ": " << static_cast<float>(hist_entry.second) / m_histogram->numElementsTotal() << std::endl;
+      label << hist_entry.first.resolve_label_name() << ": " << static_cast<float>(hist_entry.second) / m_histogram->numElementsTotal() << std::endl;
     }
     
     stream << this_node_id << R"([label=")" << label.str() << R"("];)" << std::endl;
   }
-  
-  virtual std::string resolve_label_name(const LABEL_TYPE& label) const = 0;
+ 
 
 private:
 

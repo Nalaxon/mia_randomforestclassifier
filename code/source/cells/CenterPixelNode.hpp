@@ -2,7 +2,7 @@
 #define CENTERPIXELNODE_HPP
 
 #include "BaseNode.hpp"
-#include "Label.hpp"
+#include "CellLabel.hpp"
 
 #include <opencv2/opencv.hpp>
 

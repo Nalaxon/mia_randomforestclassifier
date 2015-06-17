@@ -3,7 +3,7 @@
 
 
 #include "BaseNode.hpp"
-#include "Label.hpp"
+#include "CellLabel.hpp"
 
 #include <opencv/cv.h>
 

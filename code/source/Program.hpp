@@ -5,7 +5,7 @@
 #ifndef MIA_2015_PROGRAM_HPP
 #define MIA_2015_PROGRAM_HPP
 
-#include "cells/Label.hpp"
+#include "cells/CellLabel.hpp"
 #include "base/Sample.hpp"
 #include "base/RandomForest.hpp"
 
@@ -85,14 +85,14 @@ private:
      * @param image the input image
      * @return the classification image
      */
-    cv::Mat classify_image(const RandomForest<Label, cv::Mat>& forest, const cv::Mat& image) const;
+    cv::Mat classify_image(const RandomForest<CellLabel, cv::Mat>& forest, const cv::Mat& image) const;
 
     /**
      * Extracts the training samples from the dataset.
      *
      * @param foreground_samples all foreground samples will be in there.
      */
-    void extract_training_samples(std::vector<Sample<Label, cv::Mat>>& samples) const;
+    void extract_training_samples(std::vector<Sample<CellLabel, cv::Mat>>& samples) const;
 
     /**
      * Reads the configuration from the commandline.

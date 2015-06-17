@@ -7,7 +7,7 @@
 #include "tools/utils.hpp"
 #include "base/RandomForest.hpp"
 #include "cells/PatchParameter.hpp"
-#include "cells/Label.hpp"
+#include "cells/CellLabel.hpp"
 #include "cells/CenterPixelNodeFactory.hpp"
 #include "tools/ImageTools.hpp"
 #include "cells/GradientNodeFactory.hpp"
@@ -25,9 +25,9 @@
 #include <boost/program_options.hpp>
 #include <boost/random.hpp>
 
-std::unique_ptr<Histogram<Label, cv::Mat>>
-sum_ensemble(const std::vector<Histogram<Label, cv::Mat>>& histograms) {
-    auto sum = std::make_unique<Histogram<Label, cv::Mat >> ();
+std::unique_ptr<Histogram<CellLabel, cv::Mat>>
+sum_ensemble(const std::vector<Histogram<CellLabel, cv::Mat>>& histograms) {
+  auto sum = std::make_unique<Histogram<CellLabel, cv::Mat >>();
     for (const auto& hist : histograms) {
         *sum += hist;
     }
@@ -42,7 +42,7 @@ int Program::run(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
-    std::vector<Sample<Label, cv::Mat>> samples;
+    std::vector<Sample<CellLabel, cv::Mat>> samples;
     extract_training_samples(samples);
 
     // the following is just tmp code using the OpenCv Random Forest!
@@ -50,14 +50,14 @@ int Program::run(int argc, char** argv) {
 
     // select sum test samples
     unsigned long num_test_samples = 100;
-    std::vector<Sample<Label, cv::Mat>> test_samples;
+    std::vector<Sample<CellLabel, cv::Mat>> test_samples;
     for (unsigned int sample = 0; sample < num_test_samples; ++sample) {
         test_samples.push_back(samples.back());
         samples.pop_back();
     }
 
     // construct forest/tree parameters
-    RFParameter<Label, cv::Mat> rf_params;
+    RFParameter<CellLabel, cv::Mat> rf_params;
     rf_params.m_bagging = m_bagging;
     rf_params.m_num_trees = m_num_trees;
     rf_params.m_tree_params.m_max_depth = m_max_depth;
@@ -71,7 +71,7 @@ int Program::run(int argc, char** argv) {
     patch_params.max_value = 1.0;
 
     // construct the universalnodefactory
-    std::shared_ptr<UniversalNodeFactory<Label, cv::Mat >> factory(new UniversalNodeFactory<Label, cv::Mat>({
+    std::shared_ptr<UniversalNodeFactory<CellLabel, cv::Mat >> factory(new UniversalNodeFactory<CellLabel, cv::Mat>({
         std::make_shared<CenterPixelNodeFactory>(patch_params),
         std::make_shared<GradientNodeFactory>(patch_params),
         std::make_shared<TwoPixelNodeFactory>(patch_params),
@@ -79,7 +79,7 @@ int Program::run(int argc, char** argv) {
         std::make_shared<SURFFilterNodeFactory>(patch_params)
     }));
 
-    RandomForest<Label, cv::Mat> forest(rf_params, factory);
+    RandomForest<CellLabel, cv::Mat> forest(rf_params, factory);
 
     std::cout << "Start training..." << std::endl;
     auto start = std::chrono::system_clock::now();
@@ -88,13 +88,13 @@ int Program::run(int argc, char** argv) {
     auto elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
     std::cout << "Training done! Took " << elapsed_seconds << " seconds." << std::endl;
 
+
     if (m_print_trees) {
-        std::cout << "Tree structure:" << std::endl;
-        forest.printDotFormat(std::cout);
+      std::cout << "Tree structure:" << std::endl;
+      forest.printDotFormat(std::cout);
     }
 
     // test the forest
-
     //std::cout << num_correct << " correct classification of " << num_test_samples << std::endl;
     boost::filesystem::path test_volume_path;
     std::tie(test_volume_path, std::ignore) = resolve_data_path(1);
@@ -199,7 +199,7 @@ bool Program::parse_command_line(int argc, char** argv) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void Program::extract_training_samples(std::vector<Sample<Label, cv::Mat>>&samples) const {
+void Program::extract_training_samples(std::vector<Sample<CellLabel, cv::Mat>>&samples) const {
 #pragma omp parallel for
     for (int i_file = 1; i_file <= 30; ++i_file) {
         std::ostringstream volume_file_name, truth_file_name;
@@ -227,7 +227,7 @@ void Program::extract_training_samples(std::vector<Sample<Label, cv::Mat>>&sampl
             bool foreground;
             // unpack the tuple
             std::tie(sample_image, foreground) = sample_extractor.extractRandomSample();
-            Sample<Label, cv::Mat> sample(foreground ? Label::BORDER : Label::CELL, sample_image);
+            Sample<CellLabel, cv::Mat> sample(foreground ? CellLabel::Border() : CellLabel::Cell(), sample_image);
 #pragma omp critical
             {
                 samples.push_back(sample);
@@ -282,7 +282,7 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-cv::Mat Program::classify_image(const RandomForest<Label, cv::Mat>& forest, const cv::Mat& image) const {
+cv::Mat Program::classify_image(const RandomForest<CellLabel, cv::Mat>& forest, const cv::Mat& image) const {
     cv::Mat border_image;
     cv::copyMakeBorder(image, border_image,
             m_sample_size / 2, m_sample_size / 2, m_sample_size / 2, m_sample_size / 2,
@@ -297,7 +297,7 @@ cv::Mat Program::classify_image(const RandomForest<Label, cv::Mat>& forest, cons
             cv::Rect patch_definition(col, row, m_sample_size, m_sample_size);
             cv::Mat patch(border_image, patch_definition);
 
-            float pixel_value = forest.predict_prob(patch, Label::CELL, sum_ensemble);
+            float pixel_value = forest.predict_prob(patch, CellLabel::Cell(), sum_ensemble);
             classification_image.at<float>(row, col) = pixel_value;
         }
     }

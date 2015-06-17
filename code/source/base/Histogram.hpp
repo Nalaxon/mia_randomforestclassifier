@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <initializer_list>
 
+#include "Label.hpp"
 #include "Sample.hpp"
 #include "types.hpp"
 
@@ -21,7 +22,7 @@ public:
   m_max(),
   m_hist_map()
   {
-
+    static_assert(std::is_base_of<Label<LABEL_TYPE>, LABEL_TYPE>::value, "Type parameter LABEL_TYPE must derive from Label.");
   }
 
   //----------------------------------------------------------------------------

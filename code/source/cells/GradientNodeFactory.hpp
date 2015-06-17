@@ -5,12 +5,12 @@
 
 #include "PatchParameter.hpp"
 
-#include "Label.hpp"
+#include "CellLabel.hpp"
 #include <opencv2/opencv.hpp>
 #include <boost/random.hpp>
 
 /// class GradientNodeFactory - 
-class GradientNodeFactory : public NodeFactory<Label, cv::Mat> 
+class GradientNodeFactory : public NodeFactory<CellLabel, cv::Mat> 
 {
   public:
 

@@ -5,6 +5,7 @@
 #include "RFParameter.hpp"
 #include "RandomTree.hpp"
 #include "types.hpp"
+#include "Label.hpp"
 
 #include <iostream>
 
@@ -33,6 +34,7 @@ public:
   m_nClasses(0),
   m_nodeFactory(nodeFactory)
   {
+    static_assert(std::is_base_of<Label<LABEL_TYPE>, LABEL_TYPE>::value, "Type parameter LABEL_TYPE must derive from Label.");
     for (unsigned int i = 0; i < m_params.m_num_trees; ++i)
     {
       m_trees.emplace_back(m_params.m_tree_params, nodeFactory);
