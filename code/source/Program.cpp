@@ -40,7 +40,9 @@ sum_ensemble(const std::vector<Histogram<CellLabel, cv::Mat>>&histograms) {
 
 Program::~Program() {
     if (m_tree_output_stream != nullptr && m_tree_output_stream != &std::cout)
+    {
         delete m_tree_output_stream;
+    }
 }
 
 int Program::run(int argc, char** argv) {
@@ -153,10 +155,10 @@ int Program::run(int argc, char** argv) {
         cv::Mat test_image_prepared = prepare_image(test_image);
         cv::namedWindow("inputwindow", CV_WINDOW_AUTOSIZE);
         cv::imshow("inputwindow", test_image);
-        cv::Mat classification_image = classify_image(forest, test_image_prepared);
-
+        
+        cv::Mat prob_image = classify_image(forest, test_image_prepared);
         cv::namedWindow("resultwindow", CV_WINDOW_AUTOSIZE);
-        cv::imshow("resultwindow", classification_image);
+        cv::imshow("resultwindow", prob_image);
     }
     cv::waitKey(0);
 
@@ -201,7 +203,7 @@ bool Program::parse_command_line(int argc, char** argv) {
             ("print_trees", po::value<std::string>(),
             "enable printing of the trees after training in dot format to the standard output.")
 
-            ("use_xvalidation", po::value<bool>()->default_value(false),
+            ("use_xvalidation", po::bool_switch()->default_value(false),
             "Use cross validation.")
     
             ("num_xvalidations", po::value<unsigned int>()->default_value(10),
@@ -222,7 +224,7 @@ bool Program::parse_command_line(int argc, char** argv) {
         // notify will validate the input
         po::notify(given_options);
 
-    } catch (const po::error& e) {
+    } catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;
         std::cout << option_desc;
         return false;
@@ -376,7 +378,6 @@ cv::Mat Program::classify_image(const RandomForest<CellLabel, cv::Mat>& forest, 
     cv::Mat classification_image;
     classification_image.create(image.rows, image.cols, CV_32FC1);
 
-#pragma omp parallel for
     for (int row = 0; row < classification_image.rows; ++row) {
         for (int col = 0; col < classification_image.cols; ++col) {
             cv::Rect patch_definition(col, row, m_sample_size, m_sample_size);

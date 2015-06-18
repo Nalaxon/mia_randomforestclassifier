@@ -9,8 +9,6 @@
 #include "cells/CenterPixelNodeFactory.hpp"
 
 
-//#define BOOST_ALL_DYN_LINK 
-
 /**
  * Returns the message of an unknown exception in a catch context.
  */

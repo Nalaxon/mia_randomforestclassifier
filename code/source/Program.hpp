@@ -79,7 +79,7 @@ private:
     /**
     * Defines to which output stream the tree should be printed after training
     */
-    std::ostream* m_tree_output_stream;
+    std::ostream* m_tree_output_stream = nullptr;
 
     /**
     * True if cross validation should be used, otherwise false
@@ -128,7 +128,7 @@ private:
     
     PathTuple resolve_data_path(unsigned int id) const;
 
-	float xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std::vector < Sample<CellLabel, cv::Mat>> &pure_samples, const unsigned int validations);
+    float xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std::vector < Sample<CellLabel, cv::Mat>> &pure_samples, const unsigned int validations);
 };
 
 

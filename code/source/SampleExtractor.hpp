@@ -60,7 +60,7 @@ private:
     /**
      * The sample image.
      */
-    const cv::Mat& m_sample_image;
+    cv::Mat m_sample_image;
 
     /**
      * The ground truth image.
