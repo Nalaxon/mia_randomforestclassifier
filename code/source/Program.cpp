@@ -19,6 +19,7 @@
 
 #include <iomanip>
 #include <chrono>
+#include <fstream>
 
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -38,10 +39,9 @@ sum_ensemble(const std::vector<Histogram<CellLabel, cv::Mat>>&histograms) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Program::~Program()
-{
-  if (m_tree_output_stream != nullptr && m_tree_output_stream != &std::cout)
-    delete m_tree_output_stream;
+Program::~Program() {
+    if (m_tree_output_stream != nullptr && m_tree_output_stream != &std::cout)
+        delete m_tree_output_stream;
 }
 
 int Program::run(int argc, char** argv) {
@@ -81,45 +81,37 @@ int Program::run(int argc, char** argv) {
     RandomForest<CellLabel, cv::Mat> forest(rf_params, factory);
 
     if (m_print_trees) {
-      *m_tree_output_stream << "Tree structure:" << std::endl;
-      forest.printDotFormat(*m_tree_output_stream);
+        *m_tree_output_stream << "Tree structure:" << std::endl;
+        forest.print_dot_format(*m_tree_output_stream);
     }
 
-	bool validate = true;
-	if (validate == true)
-	{
-		//x-validation
-		unsigned int validations = 10;
-		xvalidation(forest, pure_samples, validations);
-	}
-	else
-	{
-		//train forest
-		std::cout << "Start training... " << std::endl;
-		auto start = std::chrono::system_clock::now();
-		forest.train(pure_samples);
-		auto end = std::chrono::system_clock::now();
-		auto elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
-		std::cout << "Training done! Took " << elapsed_seconds << " seconds." << std::endl;
+    bool validate = true;
+    if (validate == true) {
+        //x-validation
+        unsigned int validations = 10;
+        xvalidation(forest, pure_samples, validations);
+    } else {
+        //train forest
+        std::cout << "Start training... " << std::endl;
+        auto start = std::chrono::system_clock::now();
+        forest.train(pure_samples);
+        auto end = std::chrono::system_clock::now();
+        auto elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+        std::cout << "Training done! Took " << elapsed_seconds << " seconds." << std::endl;
 
-		if (m_print_trees) {
-			std::cout << "Tree structure:" << std::endl;
-			forest.printDotFormat(std::cout);
-		}
+        // test the forest
+        boost::filesystem::path test_volume_path;
+        std::tie(test_volume_path, std::ignore) = resolve_data_path(1);
+        cv::Mat test_image = cv::imread(test_volume_path.string(), CV_LOAD_IMAGE_COLOR);
+        cv::Mat test_image_prepared = prepare_image(test_image);
+        cv::namedWindow("inputwindow", CV_WINDOW_AUTOSIZE);
+        cv::imshow("inputwindow", test_image);
+        cv::Mat classification_image = classify_image(forest, test_image_prepared);
 
-		// test the forest
-		boost::filesystem::path test_volume_path;
-		std::tie(test_volume_path, std::ignore) = resolve_data_path(1);
-		cv::Mat test_image = cv::imread(test_volume_path.string(), CV_LOAD_IMAGE_COLOR);
-		cv::Mat test_image_prepared = prepare_image(test_image);
-		cv::namedWindow("inputwindow", CV_WINDOW_AUTOSIZE);
-		cv::imshow("inputwindow", test_image);
-		cv::Mat classification_image = classify_image(forest, test_image_prepared);
-
-		cv::namedWindow("resultwindow", CV_WINDOW_AUTOSIZE);
-		cv::imshow("resultwindow", classification_image);
-	}
-	cv::waitKey(0);
+        cv::namedWindow("resultwindow", CV_WINDOW_AUTOSIZE);
+        cv::imshow("resultwindow", classification_image);
+    }
+    cv::waitKey(0);
 
     return EXIT_SUCCESS;
 }
@@ -203,20 +195,17 @@ bool Program::parse_command_line(int argc, char** argv) {
     m_num_feature_tests = given_options["num_feature_tests"].as<unsigned int>();
 
 
-    if (!given_options.count("print_trees"))
-    {
-      m_tree_output_stream = nullptr;
+    if (!given_options.count("print_trees")) {
+        m_tree_output_stream = nullptr;
+    } else {
+        std::string file_path = given_options["print_trees"].as<std::string>();
+        if (file_path.empty())
+            m_tree_output_stream = &std::cout;
+        else
+            m_tree_output_stream = new std::ofstream(file_path.c_str(), std::ofstream::out);
     }
-    else
-    {
-      std::string file_path = given_options["print_trees"].as<std::string>();
-      if (file_path.empty())
-        m_tree_output_stream = &std::cout;
-      else
-        m_tree_output_stream = new std::ofstream(file_path.c_str(), std::ofstream::out);
-    }
-  
-    
+
+
 
     // handle further options here if needed
 
@@ -300,7 +289,7 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
     /// Total Gradient (approximate)
     cv::addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad);
     cv::Mat grad_f;
-    grad.convertTo(grad_f, CV_32F, 1.0f/255.0f);
+    grad.convertTo(grad_f, CV_32F, 1.0f / 255.0f);
     cv::integral(grad_f, channels[1], ddepth);
 
     // create integral image
@@ -350,46 +339,46 @@ Program::PathTuple Program::resolve_data_path(unsigned int id) const {
 }
 
 float Program::xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std::vector < Sample<CellLabel, cv::Mat>> &pure_samples, const unsigned int validations) {
-	
-	std::vector<Sample<CellLabel, cv::Mat>> ground_truth, samples;
-	unsigned int offset = std::floor(pure_samples.size() / validations);
-	float accuracy = 0.0f;
-	for (unsigned int i = 0; i < validations; ++i) {
-		ground_truth.clear();
-		samples.clear();
 
-		for (int j = i*offset; j < (i + 1)*offset; ++j)
-			samples.push_back(pure_samples[j]);
+    std::vector<Sample<CellLabel, cv::Mat>> ground_truth, samples;
+    unsigned int offset = std::floor(pure_samples.size() / validations);
+    float accuracy = 0.0f;
+    for (unsigned int i = 0; i < validations; ++i) {
+        ground_truth.clear();
+        samples.clear();
 
-		for (int e = (i + 1)*offset; e < pure_samples.size() - 1; ++e)
-			ground_truth.push_back(pure_samples[e]);
+        for (int j = i * offset; j < (i + 1) * offset; ++j)
+            samples.push_back(pure_samples[j]);
 
-		//train forest
-		std::cout << "Start training... " << i + 1 << std::endl;
-		auto start = std::chrono::system_clock::now();
-		forest.train(samples);
-		auto end = std::chrono::system_clock::now();
-		auto elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
-		std::cout << "Training done! Took " << elapsed_seconds << " seconds." << std::endl;
+        for (int e = (i + 1) * offset; e < pure_samples.size() - 1; ++e)
+            ground_truth.push_back(pure_samples[e]);
 
-		if (m_print_trees) {
-			std::cout << "Tree structure:" << std::endl;
-			forest.printDotFormat(std::cout);
-		}
+        //train forest
+        std::cout << "Start training... " << i + 1 << std::endl;
+        auto start = std::chrono::system_clock::now();
+        forest.train(samples);
+        auto end = std::chrono::system_clock::now();
+        auto elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+        std::cout << "Training done! Took " << elapsed_seconds << " seconds." << std::endl;
 
-		// test the forest
-		CellLabel test_label;
-		cv::Mat test_image_prepared;
-		cv::Mat image_labeld;
-		int sum_correct = 0;
-		for (int i = 0; i < samples.size(); ++i) {
-			if (forest.predict(samples[i].getData(), sum_ensemble) == samples[i].getLabel())
-				++sum_correct;
-		}
+        if (m_print_trees) {
+            std::cout << "Tree structure:" << std::endl;
+            forest.print_dot_format(std::cout);
+        }
 
-		accuracy += (float)sum_correct / (float)samples.size();
-		std::cout << sum_correct << " correct classification of " << samples.size() << std::endl;
-	}
-	std::cout << "accuracy: " << accuracy / validations << std::endl;
+        // test the forest
+        CellLabel test_label;
+        cv::Mat test_image_prepared;
+        cv::Mat image_labeld;
+        int sum_correct = 0;
+        for (int i = 0; i < samples.size(); ++i) {
+            if (forest.predict(samples[i].getData(), sum_ensemble) == samples[i].getLabel())
+                ++sum_correct;
+        }
+
+        accuracy += (float) sum_correct / (float) samples.size();
+        std::cout << sum_correct << " correct classification of " << samples.size() << std::endl;
+    }
+    std::cout << "accuracy: " << accuracy / validations << std::endl;
 
 }
