@@ -31,6 +31,8 @@ public:
     
     using PathTuple = std::tuple<boost::filesystem::path, boost::filesystem::path>;
 
+    Program();
+
     /** Destructor */
     virtual ~Program();
 
@@ -79,7 +81,7 @@ private:
     /**
     * Defines to which output stream the tree should be printed after training
     */
-    std::ostream* m_tree_output_stream = nullptr;
+    std::ostream* m_tree_output_stream;
 
     /**
     * True if cross validation should be used, otherwise false

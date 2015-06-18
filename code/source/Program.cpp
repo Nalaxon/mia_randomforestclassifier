@@ -16,6 +16,7 @@
 #include "cells/SURFFilterNodeFactory.hpp"
 #include "UniversalNodeFactory.hpp"
 #include "cells/TwoRegionNodeFactory.hpp"
+#include "cells/SumNodeFactory.hpp"
 
 #include <iomanip>
 #include <chrono>
@@ -34,6 +35,10 @@ sum_ensemble(const std::vector<Histogram<CellLabel, cv::Mat>>&histograms) {
         *sum += hist;
     }
     return sum;
+}
+
+Program::Program() : m_tree_output_stream(nullptr)
+{
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -82,6 +87,7 @@ int Program::run(int argc, char** argv) {
     factory_list.push_back(std::make_shared<HaarWaveletNodeFactory>(patch_params));
     factory_list.push_back(std::make_shared<SURFFilterNodeFactory>(patch_params));
     factory_list.push_back(std::make_shared<TwoRegionNodeFactory>(patch_params));
+    factory_list.push_back(std::make_shared<SumNodeFactory>(patch_params));
 
     std::shared_ptr<UniversalNodeFactory<CellLabel, cv::Mat >>
             factory(new UniversalNodeFactory<CellLabel, cv::Mat>(factory_list));
