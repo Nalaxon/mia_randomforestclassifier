@@ -58,7 +58,7 @@ public:
         shuffled_samples = std::make_unique<SampleVector>(samples);
         std::random_shuffle(shuffled_samples->begin(), shuffled_samples->end());
         // take only 50% of the shuffled samples
-        shuffled_samples->erase(shuffled_samples->begin() + (0.5 * shuffled_samples->size()), shuffled_samples->end());
+        shuffled_samples->erase(shuffled_samples->begin() + (shuffled_samples->size() / 2), shuffled_samples->end());
         samples_to_use = shuffled_samples.get();
       }
       m_trees[i].train(*samples_to_use);
