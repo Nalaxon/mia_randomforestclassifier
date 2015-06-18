@@ -17,25 +17,25 @@ public:
   }
 
   //----------------------------------------------------------------------------
-  const LABEL_TYPE& getLabel() const
+  const LABEL_TYPE& get_label() const
   {
     return m_label;
   }
 
   //----------------------------------------------------------------------------
-  void setLabel(const LABEL_TYPE& label)
+  void set_label(const LABEL_TYPE& label)
   {
     m_label = label;
   }
 
   //----------------------------------------------------------------------------
-  const DATA_TYPE& getData() const
+  const DATA_TYPE& get_data() const
   {
     return m_data;
   }
 
   //----------------------------------------------------------------------------
-  void setData(const DATA_TYPE& data)
+  void set_data(const DATA_TYPE& data)
   {
     m_data = data;
   }

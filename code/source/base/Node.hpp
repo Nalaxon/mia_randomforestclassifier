@@ -108,7 +108,7 @@ public:
   {
     for (const auto& sample : samples)
     {
-      Direction direction = split(sample.getData());
+      Direction direction = split(sample.get_data());
       if (direction == Direction::LEFT)
       {
         samples_left.push_back(sample);

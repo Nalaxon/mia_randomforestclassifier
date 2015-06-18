@@ -81,15 +81,15 @@ private:
     */
     std::ostream *m_tree_output_stream;
 
-	/**
-	* True if cross validation should be used, otherwise false
-	*/
-	bool m_use_xvalidation;
+    /**
+    * True if cross validation should be used, otherwise false
+    */
+    bool m_use_xvalidation;
 
-	/**
-	 * Index of testing image which was not used for training
-	 */
-	int m_test_image_index;
+    /**
+     * Index of testing image which was not used for training
+     */
+    int m_test_image_index;
 
     /**
      * Creates the binary classification image (background=255, foreground=0).

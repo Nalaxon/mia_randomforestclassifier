@@ -35,19 +35,19 @@ public:
     unsigned int max_count = 0;
     for (const auto& sample : samples)
     {
-      if (!m_hist_map.count(sample.getLabel()))
+      if (!m_hist_map.count(sample.get_label()))
       {
-        m_hist_map[sample.getLabel()] = 1;
+        m_hist_map[sample.get_label()] = 1;
       } else
       {
-        m_hist_map[sample.getLabel()] += 1;
+        m_hist_map[sample.get_label()] += 1;
       }
       ++m_numTotal;
 
-      if (m_hist_map[sample.getLabel()] > max_count)
+      if (m_hist_map[sample.get_label()] > max_count)
       {
-        max_count = m_hist_map[sample.getLabel()];
-        m_max = sample.getLabel();
+        max_count = m_hist_map[sample.get_label()];
+        m_max = sample.get_label();
       }
     }
   }
