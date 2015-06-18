@@ -158,7 +158,7 @@ public:
 
   //----------------------------------------------------------------------------
 
-  float informationGain(std::initializer_list<Histogram*> splits) const
+  float informationGain(std::vector<Histogram*> splits) const
   {
     float sum = 0.;
     for (const auto& split : splits)

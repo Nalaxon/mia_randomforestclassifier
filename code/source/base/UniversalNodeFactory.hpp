@@ -16,11 +16,13 @@ public:
   using SuperType = NodeFactory<LABEL_TYPE, DATA_TYPE>;
 
   //----------------------------------------------------------------------------
-  UniversalNodeFactory(std::initializer_list<std::shared_ptr<SuperType>> factory_list)
+  UniversalNodeFactory(std::vector<std::shared_ptr<SuperType>> factory_list)
   : m_dist(0, factory_list.size() - 1),
   m_factories(factory_list)
   {
   }
+
+  std::vector<std::shared_ptr<SuperType>> getFactories() { return m_factories; }
 
 protected:
   
