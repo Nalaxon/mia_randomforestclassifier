@@ -10,11 +10,12 @@ class TwoPixelNode : public BaseNode
 {
 public:
 
-  TwoPixelNode(unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2)
+  TwoPixelNode(unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2, float threshold)
   : m_x_1(x1),
   m_y_1(y1),
   m_x_2(x2),
-  m_y_2(y2)
+  m_y_2(y2),
+  m_threshold(threshold)
   {
   }
 
@@ -27,6 +28,7 @@ private:
   unsigned int m_y_1;
   unsigned int m_x_2;
   unsigned int m_y_2;
+  float m_threshold;
 } ;
 
 
