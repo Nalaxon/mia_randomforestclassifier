@@ -444,9 +444,6 @@ float Program::xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std::
         }
 
         // test the forest
-        CellLabel test_label;
-        cv::Mat test_image_prepared;
-        cv::Mat image_labeld;
         int sum_correct = 0;
         for (unsigned int i = 0; i < samples.size(); ++i) {
             if (forest.predict(samples[i].get_data(), sum_ensemble) == samples[i].get_label())
