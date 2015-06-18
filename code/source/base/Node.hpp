@@ -119,18 +119,18 @@ public:
     }
   }
   
-  void printDotFormat(std::ostream& stream, unsigned int& node_id) const
+  void print_dot_format(std::ostream& stream, unsigned int& node_id) const
   {
     unsigned int this_node_id = node_id;
     if (m_leftChild)
     {
       stream << this_node_id << " -> " << ++node_id << ";" << std::endl;
-      m_leftChild->printDotFormat(stream, node_id);
+      m_leftChild->print_dot_format(stream, node_id);
     }
     if (m_rightChild)
     {
       stream << this_node_id << " -> " << ++node_id << ";" << std::endl;
-      m_rightChild->printDotFormat(stream, node_id);
+      m_rightChild->print_dot_format(stream, node_id);
     }
     
     std::ostringstream label;

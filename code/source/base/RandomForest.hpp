@@ -89,11 +89,11 @@ public:
 
   //----------------------------------------------------------------------------
 
-  void printDotFormat(std::ostream& stream) const
+  void print_dot_format(std::ostream& stream) const
   {
     for (const auto& tree : m_trees)
     {
-      tree.printDotFormat(stream);
+      tree.print_dot_format(stream);
     }
   }
 

@@ -75,13 +75,13 @@ public:
     return HistogramPtr(new HistogramType(m_root->predict(data)));
   }
 
-  void printDotFormat(std::ostream& stream) const
+  void print_dot_format(std::ostream& stream) const
   {
     stream << "digraph randomtree {" << std::endl;
     if (m_root)
     {
       unsigned int node_counter = 0;
-      m_root->printDotFormat(stream, node_counter);
+      m_root->print_dot_format(stream, node_counter);
     }
     stream << "}";
   }
