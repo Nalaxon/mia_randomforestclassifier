@@ -79,14 +79,14 @@ int Program::run(int argc, char** argv) {
         forest.print_dot_format(std::cout);
     }
 
-    bool validate = true;
+    bool validate = false;
     if (validate == true) {
         //x-validation
         unsigned int validations = 10;
         xvalidation(forest, pure_samples, validations);
     } else {
         //train forest
-        std::cout << "Start training... " << i + 1 << std::endl;
+        //std::cout << "Start training... " << i + 1 << std::endl;
         auto start = std::chrono::system_clock::now();
         forest.train(pure_samples);
         auto end = std::chrono::system_clock::now();
@@ -109,6 +109,11 @@ int Program::run(int argc, char** argv) {
 
         cv::namedWindow("resultwindow", CV_WINDOW_AUTOSIZE);
         cv::imshow("resultwindow", classification_image);
+        
+        cv::namedWindow("resultwindow2", CV_WINDOW_AUTOSIZE);
+        cv::Mat thresholded;
+        cv::threshold(classification_image, thresholded, 0.75, 1.0, CV_THRESH_BINARY);
+        cv::imshow("resultwindow2", thresholded);
     }
     cv::waitKey(0);
 
