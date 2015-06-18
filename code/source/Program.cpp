@@ -110,6 +110,11 @@ int Program::run(int argc, char** argv) {
 
         cv::namedWindow("resultwindow", CV_WINDOW_AUTOSIZE);
         cv::imshow("resultwindow", classification_image);
+        
+        cv::Mat thresholded;
+        cv::threshold(classification_image, thresholded, 0.35, 1.0, CV_THRESH_BINARY);
+        cv::namedWindow("resultwindow2", CV_WINDOW_AUTOSIZE);
+        cv::imshow("resultwindow2", thresholded);
     }
     cv::waitKey(0);
 
