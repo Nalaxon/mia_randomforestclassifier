@@ -23,6 +23,8 @@ public:
 
   virtual bool operator<(const CellLabel& label) const;
 
+  bool operator==(const CellLabel& label) const;
+
   enum class cellLabel_t {
     BORDER,
     CELL,

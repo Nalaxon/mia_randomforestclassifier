@@ -44,19 +44,8 @@ int Program::run(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
-    std::vector<Sample<CellLabel, cv::Mat>> samples;
-    extract_training_samples(samples);
-
-    // the following is just tmp code using the OpenCv Random Forest!
-
-
-    // select sum test samples
-    unsigned long num_test_samples = 100;
-    std::vector<Sample<CellLabel, cv::Mat>> test_samples;
-    for (unsigned int sample = 0; sample < num_test_samples; ++sample) {
-        test_samples.push_back(samples.back());
-        samples.pop_back();
-    }
+	std::vector<Sample<CellLabel, cv::Mat>> pure_samples;
+    extract_training_samples(pure_samples);
 
     // construct forest/tree parameters
     RFParameter<CellLabel, cv::Mat> rf_params;
@@ -86,32 +75,46 @@ int Program::run(int argc, char** argv) {
 
     RandomForest<CellLabel, cv::Mat> forest(rf_params, factory);
 
-    std::cout << "Start training..." << std::endl;
-    auto start = std::chrono::system_clock::now();
-    forest.train(samples);
-    auto end = std::chrono::system_clock::now();
-    auto elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
-    std::cout << "Training done! Took " << elapsed_seconds << " seconds." << std::endl;
-
-
     if (m_print_trees) {
       std::cout << "Tree structure:" << std::endl;
       forest.printDotFormat(std::cout);
     }
 
-    // test the forest
-    //std::cout << num_correct << " correct classification of " << num_test_samples << std::endl;
-    boost::filesystem::path test_volume_path;
-    std::tie(test_volume_path, std::ignore) = resolve_data_path(1);
-    cv::Mat test_image = cv::imread(test_volume_path.string(), CV_LOAD_IMAGE_COLOR);
-    cv::Mat test_image_prepared = prepare_image(test_image);
-    cv::namedWindow("inputwindow", CV_WINDOW_AUTOSIZE);
-    cv::imshow("inputwindow", test_image);
-    cv::Mat classification_image = classify_image(forest, test_image_prepared);
+	bool validate = true;
+	if (validate == true)
+	{
+		//x-validation
+		unsigned int validations = 10;
+		xvalidation(forest, pure_samples, validations);
+	}
+	else
+	{
+		//train forest
+		std::cout << "Start training... " << i + 1 << std::endl;
+		auto start = std::chrono::system_clock::now();
+		forest.train(pure_samples);
+		auto end = std::chrono::system_clock::now();
+		auto elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+		std::cout << "Training done! Took " << elapsed_seconds << " seconds." << std::endl;
 
-    cv::namedWindow("resultwindow", CV_WINDOW_AUTOSIZE);
-    cv::imshow("resultwindow", classification_image);
-    cv::waitKey(0);
+		if (m_print_trees) {
+			std::cout << "Tree structure:" << std::endl;
+			forest.printDotFormat(std::cout);
+		}
+
+		// test the forest
+		boost::filesystem::path test_volume_path;
+		std::tie(test_volume_path, std::ignore) = resolve_data_path(1);
+		cv::Mat test_image = cv::imread(test_volume_path.string(), CV_LOAD_IMAGE_COLOR);
+		cv::Mat test_image_prepared = prepare_image(test_image);
+		cv::namedWindow("inputwindow", CV_WINDOW_AUTOSIZE);
+		cv::imshow("inputwindow", test_image);
+		cv::Mat classification_image = classify_image(forest, test_image_prepared);
+
+		cv::namedWindow("resultwindow", CV_WINDOW_AUTOSIZE);
+		cv::imshow("resultwindow", classification_image);
+	}
+	cv::waitKey(0);
 
     return EXIT_SUCCESS;
 }
@@ -204,7 +207,7 @@ bool Program::parse_command_line(int argc, char** argv) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void Program::extract_training_samples(std::vector<Sample<CellLabel, cv::Mat>>&samples) const {
+void Program::extract_training_samples(std::vector<Sample<CellLabel, cv::Mat>>&samples ) const {
 #pragma omp parallel for
     for (int i_file = 1; i_file <= 30; ++i_file) {
 
@@ -323,4 +326,51 @@ Program::PathTuple Program::resolve_data_path(unsigned int id) const {
     truth_file_name << "train-labels" << std::setfill('0') << std::setw(4) << id << ".tif";
 
     return std::make_tuple(m_dataset_path / volume_file_name.str(), m_dataset_path / truth_file_name.str());
+}
+
+float Program::xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std::vector < Sample<CellLabel, cv::Mat>> &pure_samples, const unsigned int validations) {
+	
+	std::vector<Sample<CellLabel, cv::Mat>> ground_truth, samples;
+	unsigned int offset = std::floor(pure_samples.size() / validations);
+	float accuracy = 0.0f;
+	for (unsigned int i = 0; i < validations; ++i) {
+		ground_truth.clear();
+		samples.clear();
+
+		for (int j = i*offset; j < (i + 1)*offset; ++j)
+			samples.push_back(pure_samples[j]);
+
+		for (int e = (i + 1)*offset; e < pure_samples.size() - 1; ++e)
+			ground_truth.push_back(pure_samples[e]);
+		//std::copy(pure_samples.begin() + i*offset, pure_samples.begin() + (i + 1) * offset, ground_truth);
+		//std::copy(pure_samples.begin() + (i + 1) * offset, pure_samples.end(), samples);
+
+		//train forest
+		std::cout << "Start training... " << i + 1 << std::endl;
+		auto start = std::chrono::system_clock::now();
+		forest.train(samples);
+		auto end = std::chrono::system_clock::now();
+		auto elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+		std::cout << "Training done! Took " << elapsed_seconds << " seconds." << std::endl;
+
+		if (m_print_trees) {
+			std::cout << "Tree structure:" << std::endl;
+			forest.printDotFormat(std::cout);
+		}
+
+		// test the forest
+		CellLabel test_label;
+		cv::Mat test_image_prepared;
+		cv::Mat image_labeld;
+		int sum_correct = 0;
+		for (int i = 0; i < samples.size(); ++i) {
+			if (forest.predict(samples[i].getData(), sum_ensemble) == samples[i].getLabel())
+				++sum_correct;
+		}
+
+		accuracy += (float)sum_correct / (float)samples.size();
+		std::cout << sum_correct << " correct classification of " << samples.size() << std::endl;
+	}
+	std::cout << "accuracy: " << accuracy / validations << std::endl;
+
 }
