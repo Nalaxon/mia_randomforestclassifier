@@ -88,7 +88,7 @@ int Program::run(int argc, char** argv) {
 	else
 	{
 		//train forest
-		std::cout << "Start training... " << i + 1 << std::endl;
+		std::cout << "Start training... " << std::endl;
 		auto start = std::chrono::system_clock::now();
 		forest.train(pure_samples);
 		auto end = std::chrono::system_clock::now();
@@ -340,8 +340,6 @@ float Program::xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std::
 
 		for (int e = (i + 1)*offset; e < pure_samples.size() - 1; ++e)
 			ground_truth.push_back(pure_samples[e]);
-		//std::copy(pure_samples.begin() + i*offset, pure_samples.begin() + (i + 1) * offset, ground_truth);
-		//std::copy(pure_samples.begin() + (i + 1) * offset, pure_samples.end(), samples);
 
 		//train forest
 		std::cout << "Start training... " << i + 1 << std::endl;
