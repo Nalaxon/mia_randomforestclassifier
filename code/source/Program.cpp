@@ -300,8 +300,11 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
     // create integral image
     channels[0].convertTo(channels[0], CV_32FC1, 1 / 255.);
     cv::integral(channels[0], channels[2], ddepth);
-
-    cv::copyMakeBorder(channels[0], channels[0], 0, 1, 0, 1, cv::BORDER_DEFAULT);
+    
+    // cut off first row and col from integral images
+    cv::Rect roi(1, 1, channels[0].rows, channels[0].cols);
+    channels[1] = cv::Mat(channels[1], roi);
+    channels[2] = cv::Mat(channels[2], roi);
 
     cv::merge(channels, prepared);
     return prepared;
