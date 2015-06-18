@@ -75,11 +75,6 @@ private:
      * The number of feature tests to try at each split
      */
     unsigned int m_num_feature_tests;
-    
-    /**
-     * Defines wether the trees should be printed after training
-     */
-    bool m_print_trees;
 
     /**
     * Defines to which output stream the tree should be printed after training

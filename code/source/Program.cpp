@@ -80,7 +80,7 @@ int Program::run(int argc, char** argv) {
 
     RandomForest<CellLabel, cv::Mat> forest(rf_params, factory);
 
-    if (m_print_trees) {
+    if (m_tree_output_stream) {
         *m_tree_output_stream << "Tree structure:" << std::endl;
         forest.print_dot_format(*m_tree_output_stream);
     }
@@ -369,7 +369,7 @@ float Program::xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std::
         auto elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
         std::cout << "Training done! Took " << elapsed_seconds << " seconds." << std::endl;
 
-        if (m_print_trees) {
+        if (m_tree_output_stream) {
             std::cout << "Tree structure:" << std::endl;
             forest.print_dot_format(std::cout);
         }
