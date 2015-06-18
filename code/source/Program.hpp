@@ -31,6 +31,8 @@ public:
     
     using PathTuple = std::tuple<boost::filesystem::path, boost::filesystem::path>;
 
+    Program();
+
     /** Destructor */
     virtual ~Program();
 
