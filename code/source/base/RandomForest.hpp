@@ -86,6 +86,7 @@ public:
     return predict_prob(data, ensemble_fct)->prob(label);
   }
 
+
   //----------------------------------------------------------------------------
 
   void printDotFormat(std::ostream& stream) const

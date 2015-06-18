@@ -41,6 +41,11 @@
     return m_label < label.m_label;
   }
 
+  bool CellLabel::operator==(const CellLabel& label) const
+  {
+	  return m_label == label.m_label;
+  }
+
   CellLabel::CellLabel(const cellLabel_t label) : m_label(label)
   {
   }
