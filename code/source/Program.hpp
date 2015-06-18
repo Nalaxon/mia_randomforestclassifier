@@ -31,6 +31,9 @@ public:
     
     using PathTuple = std::tuple<boost::filesystem::path, boost::filesystem::path>;
 
+    /** Destructor */
+    virtual ~Program();
+
 private:
 
     /**
@@ -77,6 +80,11 @@ private:
      * Defines wether the trees should be printed after training
      */
     bool m_print_trees;
+
+    /**
+    * Defines to which output stream the tree should be printed after training
+    */
+    std::ostream *m_tree_output_stream;
 
     /**
      * Creates the binary classification image (background=255, foreground=0).

@@ -19,9 +19,8 @@ std::tuple<cv::Mat, bool> SampleExtractor::extractRandomSample()
 {
     int rnd_col = m_dist_col(m_rng);
     int rnd_row = m_dist_row(m_rng);
-    cv::Mat patch(m_sample_image, cv::Rect(rnd_col, rnd_row, m_sample_size, m_sample_size));
+    cv::Mat patch(m_sample_image, cv::Rect(rnd_col - m_sample_size / 2, rnd_row - m_sample_size / 2, m_sample_size, m_sample_size));
 
     bool is_foreground = m_ground_truth.at<uchar>(rnd_row, rnd_col) == 0;
-
     return std::make_tuple(patch, is_foreground);
 }
