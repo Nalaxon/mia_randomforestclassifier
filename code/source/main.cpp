@@ -1,13 +1,6 @@
 #include <iostream>
-#include <functional>
-#include "source/base/RandomForest.hpp"
 
 #include "Program.hpp"
-#include "base/RFParameter.hpp"
-#include "base/RandomForest.hpp"
-#include "base/Histogram.hpp"
-#include "cells/CenterPixelNodeFactory.hpp"
-
 
 /**
  * Returns the message of an unknown exception in a catch context.
