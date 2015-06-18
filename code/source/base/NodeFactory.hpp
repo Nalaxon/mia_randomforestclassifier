@@ -16,19 +16,19 @@ template<typename LABEL_TYPE, typename DATA_TYPE>
 class NodeFactory
 {
   // this is necessary to get access to createRandomNode()...
-  friend UniversalNodeFactory<LABEL_TYPE, DATA_TYPE>;
-  
+  friend UniversalNodeFactory < LABEL_TYPE, DATA_TYPE > ;
+
 public:
 
-  using NodeType = Node<LABEL_TYPE, DATA_TYPE>;
+  using NodeType = Node < LABEL_TYPE, DATA_TYPE > ;
 
-  using NodePtr = NodePtr_<LABEL_TYPE, DATA_TYPE>;
+  using NodePtr = NodePtr_ < LABEL_TYPE, DATA_TYPE > ;
 
-  using SampleVector = SampleVector_<LABEL_TYPE, DATA_TYPE>;
+  using SampleVector = SampleVector_ < LABEL_TYPE, DATA_TYPE > ;
 
-  using HistogramType = Histogram<LABEL_TYPE, DATA_TYPE>;
+  using HistogramType = Histogram < LABEL_TYPE, DATA_TYPE > ;
 
-  using HistogramPtr = HistogramPtr_<LABEL_TYPE, DATA_TYPE>;
+  using HistogramPtr = HistogramPtr_ < LABEL_TYPE, DATA_TYPE > ;
 
   //----------------------------------------------------------------------------
   // Constructor
@@ -37,12 +37,12 @@ public:
   {
     static_assert(std::is_base_of<Label<LABEL_TYPE>, LABEL_TYPE>::value, "Type parameter LABEL_TYPE must derive from Label.");
   }
-  
+
   NodeFactory(const NodeFactory& other)
-  : m_rng()
+    : m_rng()
   {
   }
-  
+
   NodeFactory& operator=(const NodeFactory& other)
   {
     std::swap(*this, other);
@@ -69,9 +69,9 @@ public:
       HistogramType hist_left(samples_left);
       HistogramType hist_right(samples_right);
 
-	  std::vector<HistogramType*> hist;
-	  hist.push_back(&hist_left);
-	  hist.push_back(&hist_right);
+      std::vector<HistogramType*> hist;
+      hist.push_back(&hist_left);
+      hist.push_back(&hist_right);
 
       float infoGain = hist_samples->informationGain(hist);
       if (infoGain > max_info_gain)
@@ -89,11 +89,11 @@ protected:
 
   //----------------------------------------------------------------------------
   virtual NodePtr createRandomNode() = 0;
-  
+
   // a random number generator
   boost::random::random_device m_rng;
 
-} ;
+};
 
 
 #endif

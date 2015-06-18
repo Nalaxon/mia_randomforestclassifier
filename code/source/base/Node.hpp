@@ -140,7 +140,7 @@ public:
     // print histogram data
     for (const auto& hist_entry : m_histogram->getData())
     {
-      label << hist_entry.first.resolve_label_name() << ": " << static_cast<float>(hist_entry.second) / m_histogram->numElementsTotal() << std::endl;
+      label << hist_entry.first.resolve_label_name() << ": " << static_cast<float>(hist_entry.second) / m_histogram->numElementsTotal() << " (" << hist_entry.second  << ")" << std::endl;
     }
     
     stream << this_node_id << R"([label=")" << label.str() << R"("];)" << std::endl;

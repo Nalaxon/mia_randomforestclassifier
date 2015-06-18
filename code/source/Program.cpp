@@ -38,6 +38,12 @@ sum_ensemble(const std::vector<Histogram<CellLabel, cv::Mat>>&histograms) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+Program::~Program()
+{
+  if (m_tree_output_stream != nullptr && m_tree_output_stream != &std::cout)
+    delete m_tree_output_stream;
+}
+
 int Program::run(int argc, char** argv) {
     if (!parse_command_line(argc, argv)) {
         return EXIT_FAILURE;
@@ -93,8 +99,8 @@ int Program::run(int argc, char** argv) {
 
 
     if (m_print_trees) {
-      std::cout << "Tree structure:" << std::endl;
-      forest.printDotFormat(std::cout);
+      *m_tree_output_stream << "Tree structure:" << std::endl;
+      forest.printDotFormat(*m_tree_output_stream);
     }
 
     // test the forest
@@ -140,16 +146,16 @@ bool Program::parse_command_line(int argc, char** argv) {
             ("num_trees", po::value<unsigned int>()->default_value(10),
             "the number of trees to train")
 
-            ("max_depth", po::value<unsigned int>()->default_value(10),
+            ("max_depth", po::value<unsigned int>()->default_value(7),
             "the maximal depth of each tree")
 
-            ("min_samples_per_node", po::value<unsigned int>()->default_value(3),
+            ("min_samples_per_node", po::value<unsigned int>()->default_value(10),
             "the minimum number of samples per node at which a node will be splitted again.")
 
-            ("num_feature_tests", po::value<unsigned int>()->default_value(100),
+            ("num_feature_tests", po::value<unsigned int>()->default_value(150),
             "the number of feature tests to try at each split at each split.")
 
-            ("print_trees", po::bool_switch()->default_value(false),
+            ("print_trees", po::value<std::string>(),
             "enable printing of the trees after training in dot format to the standard output.");
 
     // parse commandline input
@@ -192,7 +198,21 @@ bool Program::parse_command_line(int argc, char** argv) {
 
     m_num_feature_tests = given_options["num_feature_tests"].as<unsigned int>();
 
-    m_print_trees = given_options["print_trees"].as<bool>();
+
+    if (!given_options.count("print_trees"))
+    {
+      m_tree_output_stream = nullptr;
+    }
+    else
+    {
+      std::string file_path = given_options["print_trees"].as<std::string>();
+      if (file_path.empty())
+        m_tree_output_stream = &std::cout;
+      else
+        m_tree_output_stream = new std::ofstream(file_path.c_str(), std::ofstream::out);
+    }
+  
+    
 
     // handle further options here if needed
 
@@ -275,7 +295,9 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
     cv::convertScaleAbs(grad_y, abs_grad_y);
     /// Total Gradient (approximate)
     cv::addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad);
-    cv::integral(grad, channels[1], ddepth);
+    cv::Mat grad_f;
+    grad.convertTo(grad_f, CV_32F, 1.0f/255.0f);
+    cv::integral(grad_f, channels[1], ddepth);
 
     // create integral image
     channels[0].convertTo(channels[0], CV_32FC1, 1 / 255.);
