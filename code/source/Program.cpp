@@ -92,8 +92,7 @@ int Program::run(int argc, char** argv) {
     }
 
     if (m_use_xvalidation) {
-        unsigned int validations = 1;
-        xvalidation(forest, pure_samples, validations);
+        xvalidation(forest, pure_samples, m_num_xvalidation_sets);
 
         std::cout << "test image accuracy: " << std::endl;
         // test the forest on image
@@ -203,7 +202,10 @@ bool Program::parse_command_line(int argc, char** argv) {
             "enable printing of the trees after training in dot format to the standard output.")
 
             ("use_xvalidation", po::value<bool>()->default_value(false),
-            "Use cross validation.");
+            "Use cross validation.")
+    
+            ("num_xvalidations", po::value<unsigned int>()->default_value(10),
+            "the number of validation sets for xvalidation.");
 
     // parse commandline input
     po::variables_map given_options;
@@ -246,7 +248,8 @@ bool Program::parse_command_line(int argc, char** argv) {
     m_num_feature_tests = given_options["num_feature_tests"].as<unsigned int>();
 
     m_use_xvalidation = given_options["use_xvalidation"].as<bool>();
-
+    
+    m_num_xvalidation_sets = given_options["num_xvalidations"].as<unsigned int>();
 
     if (!given_options.count("print_trees")) {
         m_tree_output_stream = nullptr;
@@ -257,8 +260,6 @@ bool Program::parse_command_line(int argc, char** argv) {
         else
             m_tree_output_stream = new std::ofstream(file_path.c_str(), std::ofstream::out);
     }
-
-
 
     // handle further options here if needed
 
@@ -438,7 +439,9 @@ float Program::xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std::
         int sum_correct = 0;
         for (unsigned int i = 0; i < samples.size(); ++i) {
             if (forest.predict(samples[i].get_data(), sum_ensemble) == samples[i].get_label())
+            {
                 ++sum_correct;
+            }
         }
 
         accuracy += (float) sum_correct / (float) samples.size();

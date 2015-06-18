@@ -79,13 +79,18 @@ private:
     /**
     * Defines to which output stream the tree should be printed after training
     */
-    std::ostream *m_tree_output_stream;
+    std::ostream* m_tree_output_stream;
 
     /**
     * True if cross validation should be used, otherwise false
     */
     bool m_use_xvalidation;
-
+    
+    /**
+     * The number of cross validation sets.
+     */
+    unsigned int m_num_xvalidation_sets;
+    
     /**
      * Index of testing image which was not used for training
      */
