@@ -21,6 +21,7 @@
 #include <iomanip>
 #include <chrono>
 #include <fstream>
+#include <algorithm>
 
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -320,6 +321,9 @@ void Program::extract_training_samples(std::vector<Sample<CellLabel, cv::Mat>>&s
             }
         }
     }
+    
+    // shuffle samples to obtain a uniform distribution
+    std::random_shuffle(samples.begin(), samples.end());
 }
 //----------------------------------------------------------------------------------------------------------------------
 
