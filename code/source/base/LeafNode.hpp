@@ -4,6 +4,7 @@
 #include "Histogram.hpp"
 #include "types.hpp"
 #include "memory.hpp"
+#include "Node.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -12,6 +13,8 @@ template <typename LABEL_TYPE, typename DATA_TYPE>
 class LeafNode : public Node<LABEL_TYPE, DATA_TYPE>
 {
 public:
+  
+  using SuperType = Node<LABEL_TYPE, DATA_TYPE>;
 
   LeafNode()
   {
@@ -21,9 +24,9 @@ public:
 protected:
   
   //----------------------------------------------------------------------------
-  virtual Direction split(const DATA_TYPE& data) const
+  virtual typename SuperType::Direction split(const DATA_TYPE& data) const
   {
-    return Direction::NONE;
+    return SuperType::Direction::NONE;
   }
 
 public:

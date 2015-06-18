@@ -22,7 +22,10 @@ public:
   {
   }
 
-  std::vector<std::shared_ptr<SuperType>> getFactories() { return m_factories; }
+  const std::vector<std::shared_ptr<SuperType>>& get_factories() const
+  { 
+    return m_factories;
+  }
 
 protected:
   

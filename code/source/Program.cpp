@@ -15,6 +15,7 @@
 #include "cells/HaarWaveletNodeFactory.hpp"
 #include "cells/SURFFilterNodeFactory.hpp"
 #include "UniversalNodeFactory.hpp"
+#include "cells/TwoRegionNodeFactory.hpp"
 
 #include <iomanip>
 #include <chrono>
@@ -72,15 +73,16 @@ int Program::run(int argc, char** argv) {
     patch_params.max_value = 1.0;
 
     // construct the universalnodefactory
-	std::vector<std::shared_ptr<NodeFactory<CellLabel, cv::Mat>>> factory_list;
-	factory_list.push_back(std::make_shared<CenterPixelNodeFactory>(patch_params));
-	factory_list.push_back(std::make_shared<GradientNodeFactory>(patch_params));
-	factory_list.push_back(std::make_shared<TwoPixelNodeFactory>(patch_params));
-	factory_list.push_back(std::make_shared<HaarWaveletNodeFactory>(patch_params));
-	factory_list.push_back(std::make_shared<SURFFilterNodeFactory>(patch_params));
+    std::vector<std::shared_ptr<NodeFactory<CellLabel, cv::Mat>>> factory_list;
+    factory_list.push_back(std::make_shared<CenterPixelNodeFactory>(patch_params));
+    factory_list.push_back(std::make_shared<GradientNodeFactory>(patch_params));
+    factory_list.push_back(std::make_shared<TwoPixelNodeFactory>(patch_params));
+    factory_list.push_back(std::make_shared<HaarWaveletNodeFactory>(patch_params));
+    factory_list.push_back(std::make_shared<SURFFilterNodeFactory>(patch_params));
+    factory_list.push_back(std::make_shared<TwoRegionNodeFactory>(patch_params));
 
-  std::shared_ptr<UniversalNodeFactory<CellLabel, cv::Mat >>
-    factory(new UniversalNodeFactory<CellLabel, cv::Mat>(factory_list));
+    std::shared_ptr<UniversalNodeFactory<CellLabel, cv::Mat >>
+            factory(new UniversalNodeFactory<CellLabel, cv::Mat>(factory_list));
 
     RandomForest<CellLabel, cv::Mat> forest(rf_params, factory);
 

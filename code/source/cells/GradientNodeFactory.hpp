@@ -14,9 +14,8 @@ class GradientNodeFactory : public NodeFactory<CellLabel, cv::Mat>
 {
   public:
 
-    GradientNodeFactory(PatchParameter params)
-      : m_params(params), 
-      m_dist_threshold(0,(params.patch_width - 1)*(params.patch_height-1)*params.max_value)
+    GradientNodeFactory(PatchParameter params) 
+    : m_dist_threshold(0,(params.patch_width - 1)*(params.patch_height-1)*params.max_value)
     {
     }
 
@@ -24,7 +23,6 @@ class GradientNodeFactory : public NodeFactory<CellLabel, cv::Mat>
     virtual NodePtr createRandomNode();
 
   private:
-    PatchParameter m_params;
     boost::random::uniform_real_distribution<> m_dist_threshold;
 };
 #endif

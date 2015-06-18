@@ -53,13 +53,30 @@ namespace ImageTools
     return get_pixel<PixelType, num_channels, channel>(mat, center_row, center_col);
   }
   
+  template<typename PixelType, unsigned int num_channels, unsigned int channel>
+  static PixelType sum_from_integral(const cv::Mat& mat, cv::Rect region)
+  {
+    const auto& left_up = get_pixel<PixelType, num_channels, channel>(mat, region.y, region.x);
+    const auto& left_bottom = get_pixel<PixelType, num_channels, channel>(mat, region.y + region.height, region.x);
+    const auto& right_up = get_pixel<PixelType, num_channels, channel>(mat, region.y, region.x + region.width);
+    const auto& right_bottom = get_pixel<PixelType, num_channels, channel>(mat, region.y + region.height, region.x + region.width);
+    return right_bottom - right_up - left_bottom + left_up;
+  }
+  
+  template<typename PixelType, unsigned int num_channels, unsigned int channel>
+  static PixelType mean_from_integral(const cv::Mat& mat, cv::Rect region)
+  {
+    return sum_from_integral<PixelType, num_channels, channel>(mat, region) / region.area();
+  }
+  
   template<unsigned int N>
   static std::vector<cv::Mat> extract_channels(const cv::Mat& channelImg)
   {
     std::vector<cv::Mat> channels(N);
     cv::split(channelImg, channels);
     return channels;
-  }
+  } 
+  
 }
 
 #endif
