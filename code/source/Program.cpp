@@ -141,8 +141,8 @@ bool Program::parse_command_line(int argc, char** argv) {
             ("sample_size", po::value<unsigned int>()->default_value(30),
             "the size of the samples. (Each sample will be (sample_size x sample_size)")
 
-            ("enable_bagging", po::bool_switch()->default_value(true),
-            "enable bagging of the input samples")
+            ("enable_bagging", po::bool_switch()->default_value(false),
+            "enable bagging of the input samples (-> use only randomly drawn 50% of the samples for each tree)")
 
             ("num_trees", po::value<unsigned int>()->default_value(10),
             "the number of trees to train")
