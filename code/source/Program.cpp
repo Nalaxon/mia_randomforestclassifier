@@ -166,6 +166,11 @@ int Program::run(int argc, char** argv) {
         cv::Mat prob_image = classify_image(forest, test_image_prepared);
         cv::namedWindow("resultwindow", CV_WINDOW_AUTOSIZE);
         cv::imshow("resultwindow", prob_image);
+        
+        cv::Mat classify_image;
+        cv::threshold(prob_image, classify_image, 0.5f, 1.0f, cv::THRESH_BINARY);
+        cv::namedWindow("binClassify", CV_WINDOW_AUTOSIZE);
+        cv::imshow("binClassify", classify_image);
     }
     cv::waitKey(0);
 
