@@ -17,6 +17,7 @@
 #include "UniversalNodeFactory.hpp"
 #include "cells/TwoRegionNodeFactory.hpp"
 #include "cells/SumNodeFactory.hpp"
+#include "cells/TwoPixelGradientNodeFactory.hpp"
 
 #include <iomanip>
 #include <chrono>
@@ -89,6 +90,7 @@ int Program::run(int argc, char** argv) {
     factory_list.push_back(std::make_shared<SURFFilterNodeFactory>(patch_params));
     factory_list.push_back(std::make_shared<TwoRegionNodeFactory>(patch_params));
     factory_list.push_back(std::make_shared<SumNodeFactory>(patch_params));
+	factory_list.push_back(std::make_shared<TwoPixelGradientNodeFactory>(patch_params));
 
     std::shared_ptr<UniversalNodeFactory<CellLabel, cv::Mat >>
             factory(new UniversalNodeFactory<CellLabel, cv::Mat>(factory_list));
@@ -119,7 +121,7 @@ int Program::run(int argc, char** argv) {
 
         cv::Mat test_image_prepared = prepare_image(test_image);
         cv::namedWindow("inputwindow", CV_WINDOW_AUTOSIZE);
-        cv::imshow("inputwindow", test_image);
+        cv::imshow("inputwindow", test_image); 
         cv::Mat prop_image = classify_image(forest, test_image_prepared);
 
         cv::Mat classify_image;
@@ -331,8 +333,8 @@ void Program::extract_training_samples(std::vector<Sample<CellLabel, cv::Mat>>&s
 
 cv::Mat Program::prepare_image(const cv::Mat& image) const {
     cv::Mat prepared;
-    prepared.create(image.rows, image.cols, CV_32FC3);
-    auto channels = ImageTools::extract_channels<3>(prepared);
+    prepared.create(image.rows, image.cols, CV_32FC4);
+    auto channels = ImageTools::extract_channels<4>(prepared);
 
     if (image.channels() != 1) {
         cv::cvtColor(image, channels[0], CV_BGR2GRAY);
@@ -370,6 +372,9 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
     cv::Rect roi(1, 1, channels[0].rows, channels[0].cols);
     channels[1] = cv::Mat(channels[1], roi);
     channels[2] = cv::Mat(channels[2], roi);
+
+	abs_grad_x.convertTo(abs_grad_x, CV_32F, 1.0f / 255.0f);
+	channels[3] = grad_f.clone();
 
     cv::merge(channels, prepared);
 
