@@ -1,0 +1,69 @@
+\section{Examples}
+\label{sec:examples}
+
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet~\cite{example}.
+
+\subsection{Table}
+\label{subsec:table}
+
+\begin{table}[htb!]
+\centering
+\begin{tabular}{|l|l|l|} \hline
+\multicolumn{3}{|c|}{Schedulers} \\ \hline
+\multirow{3}{*}{Immediate} & RR & Round Robin \\
+& EF & Earliest First \\
+& LL & Lightest Loaded \\ \hline
+\multirow{4}{*}{Batch} & MM & Min-Min \\ 
+& MX & Max-Min \\
+& DL & Dynamic Level \\ 
+& RC & Relative Cost \\ \hline
+\multirow{4}{*}{Evolutionary} & PN & This paper \\
+& ZO & Genetic Algorithm\\
+& TA & Tabu search\\
+& SA & Simlulated Annealing \\ \hline
+\end{tabular} \caption{Beispiel Tabelle}
+\end{table}\label{tab:table}
+
+\subsection{Figure}
+\label{subsec:figure}
+
+\subsubsection{Single Figure}
+\label{subsubsec:single_figure}
+
+\begin{figure}[H]
+  \caption{Example picture}
+  \centering
+    \includegraphics[width=0.5\textwidth]{example}
+\end{figure}
+
+\subsubsection{Two Figures Side-by-Side}
+\label{subsubsec:two_Figures}
+
+\begin{figure}[h]
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{left_image}
+\caption{First Figure}
+\end{subfigure} \hspace{0.04\textwidth}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{right_image}
+\caption{Second Figure}
+\end{subfigure}
+\caption{Caption of both Figures}
+\end{figure}
+
+%\begin{figure}[H]
+%\begin{minipage}[b]{0.45\linewidth}
+%\centering
+%\includegraphics[width=\textwidth]{left_image}
+%\caption{First Figure}
+%\label{fig:figure1}
+%\end{minipage}
+%\hspace{0.5cm}
+%\begin{minipage}[b]{0.45\linewidth}
+%\centering
+%\includegraphics[width=\textwidth]{right_image}
+%\caption{Second Figure}
+%\label{fig:figure2}
+%\end{minipage}
+%\caption{Caption of both Figures}
+%\end{figure}
