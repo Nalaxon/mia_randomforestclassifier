@@ -373,8 +373,8 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
     channels[1] = cv::Mat(channels[1], roi);
     channels[2] = cv::Mat(channels[2], roi);
 
-	abs_grad_x.convertTo(abs_grad_x, CV_32F, 1.0f / 255.0f);
-	channels[3] = grad_f.clone();
+	  abs_grad_x.convertTo(abs_grad_x, CV_32F, 1.0f / 255.0f);
+	  channels[3] = grad_f.clone();
 
     cv::merge(channels, prepared);
 
