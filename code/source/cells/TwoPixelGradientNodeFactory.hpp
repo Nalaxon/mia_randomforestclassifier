@@ -14,8 +14,8 @@ class TwoPixelGradientNodeFactory : public NodeFactory<CellLabel, cv::Mat>
 {
 public:
 
-	TwoPixelGradientNodeFactory(PatchParameter params)
-	:m_dist_rows(0, params.patch_height - 1),
+  TwoPixelGradientNodeFactory(PatchParameter params)
+  :m_dist_rows(0, params.patch_height - 1),
   m_dist_cols(0, params.patch_width - 1),
   m_dist_threshold(0., 1.)
   {
