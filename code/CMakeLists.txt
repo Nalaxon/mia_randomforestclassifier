@@ -7,13 +7,23 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
 if (CMAKE_COMPILER_IS_GNUCXX)
-message("Adding GCC compiler flags")
-add_definitions(
-    -std=c++11
-    -march=native
-    -Wall
-    -pedantic)
+    message("Adding GCC compiler flags")
+
+    add_definitions(
+        -std=c++11
+        -Wall
+        -pedantic
+        -O3
+    )
+
+    SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pg")
+    SET(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -pg")
+    SET(CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} -pg")
+
+    SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native -mtune=native")
+
 endif(CMAKE_COMPILER_IS_GNUCXX)
+
 if (WIN32)
   # for msvc 8 deprecated warning removal
   add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
