@@ -12,24 +12,24 @@ SURFFilterNode::Direction SURFFilterNode::split(const cv::Mat& data) const
   int snd_col_idx = 2*data.cols / 3;
 
   double sum = ImageTools::get_pixel<float, 3, 2>(data, max_row_idx, max_col_idx)
-    - ImageTools::get_pixel<float, 3, 2>(data, 0, max_col_idx)
-    - ImageTools::get_pixel<float, 3, 2>(data, max_row_idx, 0)
-    + ImageTools::get_pixel<float, 3, 2>(data, 0, 0);;
+    - ImageTools::get_pixel<float, 4, 2>(data, 0, max_col_idx)
+    - ImageTools::get_pixel<float, 4, 2>(data, max_row_idx, 0)
+    + ImageTools::get_pixel<float, 4, 2>(data, 0, 0);;
 
   double middle_part = 0;
   if (m_is_vertical)
   {
     middle_part = ImageTools::get_pixel<float, 3, 2>(data, snd_row_idx, max_col_idx)
-      - ImageTools::get_pixel<float, 3, 2>(data, fst_row_idx, max_col_idx)
-      - ImageTools::get_pixel<float, 3, 2>(data, snd_row_idx, 0)
-      + ImageTools::get_pixel<float, 3, 2>(data, fst_row_idx, 0);
+      - ImageTools::get_pixel<float, 4, 2>(data, fst_row_idx, max_col_idx)
+      - ImageTools::get_pixel<float, 4, 2>(data, snd_row_idx, 0)
+      + ImageTools::get_pixel<float, 4, 2>(data, fst_row_idx, 0);
   } 
   else
   {
     middle_part = ImageTools::get_pixel<float, 3, 2>(data, max_row_idx, snd_col_idx)
-      - ImageTools::get_pixel<float, 3, 2>(data, 0, snd_col_idx)
-      - ImageTools::get_pixel<float, 3, 2>(data, max_row_idx, fst_col_idx)
-      + ImageTools::get_pixel<float, 3, 2>(data, 0, fst_col_idx);
+      - ImageTools::get_pixel<float, 4, 2>(data, 0, snd_col_idx)
+      - ImageTools::get_pixel<float, 4, 2>(data, max_row_idx, fst_col_idx)
+      + ImageTools::get_pixel<float, 4, 2>(data, 0, fst_col_idx);
   }
 
   double diff = (sum - 2 * middle_part);

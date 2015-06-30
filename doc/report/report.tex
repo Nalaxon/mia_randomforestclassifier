@@ -1,0 +1,39 @@
+\documentclass[fontsize=12pt, titlepage, bibliography=totoc, listof=totoc]{scrartcl}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[autostyle]{csquotes}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage{lmodern}
+\usepackage{float}
+\usepackage{cite}
+\usepackage{subcaption}
+
+\graphicspath{ {./figures/} }
+
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Title
+\author{Christian Ertler, Georg Krispel, Bernhard Rapp}
+\title{Cell Boundary Detection using Random Forests}
+\subject{Medical Image Analysis, Design Practical}
+
+\maketitle
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\input{examples}
+\input{objective}
+\input{implementation}
+\input{results}
+\input{conclusion}
+\newpage
+
+\bibliography{bibliography}{}
+\bibliographystyle{plain}
+\end{document}

@@ -9,11 +9,11 @@ HaarWaveletNode::Direction HaarWaveletNode::split(const cv::Mat& data) const
   int mean_row_idx = data.rows / 2;
   int mean_col_idx = data.cols / 2;
 
-  double base = ImageTools::get_pixel<float, 3, 2>(data, 0, 0);
-  double top_left = ImageTools::get_pixel<float, 3, 2>(data, 0, max_col_idx);
-  double bottom_right = ImageTools::get_pixel<float, 3, 2>(data, max_row_idx, 0);
+  double base = ImageTools::get_pixel<float, 4, 2>(data, 0, 0);
+  double top_left = ImageTools::get_pixel<float, 4, 2>(data, 0, max_col_idx);
+  double bottom_right = ImageTools::get_pixel<float, 4, 2>(data, max_row_idx, 0);
 
-  double sum = ImageTools::get_pixel<float, 3, 2>(data, max_row_idx, max_col_idx)
+  double sum = ImageTools::get_pixel<float, 4, 2>(data, max_row_idx, max_col_idx)
     - top_left
     - bottom_right
     + base;
@@ -21,16 +21,16 @@ HaarWaveletNode::Direction HaarWaveletNode::split(const cv::Mat& data) const
   double diff = 0;
   if (m_is_vertical)
   {
-    diff = ImageTools::get_pixel<float, 3, 2>(data, mean_row_idx, max_col_idx)
+    diff = ImageTools::get_pixel<float, 4, 2>(data, mean_row_idx, max_col_idx)
       - top_left
-      - ImageTools::get_pixel<float, 3, 2>(data, mean_row_idx, 0)
+      - ImageTools::get_pixel<float, 4, 2>(data, mean_row_idx, 0)
       + base;
   } 
   else
   {
-    diff = ImageTools::get_pixel<float, 3, 2>(data, max_row_idx, mean_col_idx)
+    diff = ImageTools::get_pixel<float, 4, 2>(data, max_row_idx, mean_col_idx)
       - bottom_right
-      - ImageTools::get_pixel<float, 3, 2>(data, 0, mean_col_idx)
+      - ImageTools::get_pixel<float, 4, 2>(data, 0, mean_col_idx)
       + base;
   }
 

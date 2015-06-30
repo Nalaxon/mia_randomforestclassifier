@@ -1,0 +1,7 @@
+\section{Objective}
+\label{sec:objective}
+
+The goal in this work is the detection of cell boundaries from electron microscopy images. Given are 30 labeled training images which should used to train a random forest.
+To validate the performance of the implementation cross-validation should be done.
+After training an image it should be processed by a sliding window which is move over the image and pushed through the trees.
+Furthermore OpenCV for image processing and OpenMP for parallization should be used. CMake was used to be compatible with different platform architectures.
