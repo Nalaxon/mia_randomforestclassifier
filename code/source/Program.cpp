@@ -23,6 +23,7 @@
 #include <chrono>
 #include <fstream>
 #include <algorithm>
+#include <vector>
 
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -127,18 +128,22 @@ int Program::run(int argc, char** argv) {
         cv::Mat classify_image;
         cv::threshold(prop_image, classify_image, 0.5f, 1.0f, cv::THRESH_BINARY);
 
-        int zeros = (classify_image.cols - 1)*(classify_image.rows - 1) - cv::countNonZero(classify_image - truth_image);
-
+        
+        cv::Mat absdiff_image;
+        cv::absdiff(classify_image, truth_image, absdiff_image);
+        float num_false_pixels = cv::countNonZero(absdiff_image);
+        float num_pixels = absdiff_image.rows * absdiff_image.cols;
+        float accuracy = 1. - (num_false_pixels / num_pixels);
+        std::cout << "accuracy of image is " << accuracy << std::endl;
+        
         cv::namedWindow("diff", CV_WINDOW_AUTOSIZE);
-        cv::imshow("diff", classify_image - truth_image);
+        cv::imshow("diff", absdiff_image);
 
         cv::namedWindow("groundTruth", CV_WINDOW_AUTOSIZE);
         cv::imshow("groundTruth", truth_image);
 
         cv::namedWindow("binClassify", CV_WINDOW_AUTOSIZE);
         cv::imshow("binClassify", classify_image);
-
-        std::cout << "accuracy of image is " << (float) zeros / (float) ((classify_image.cols - 1)*(classify_image.rows - 1)) << std::endl;
 
         cv::namedWindow("propwindow", CV_WINDOW_AUTOSIZE);
         cv::imshow("propwindow", prop_image);
