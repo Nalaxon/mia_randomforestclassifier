@@ -104,7 +104,7 @@ int Program::run(int argc, char** argv) {
     }
 
     if (m_use_xvalidation) {
-		float acc = xvalidation(forest, pure_samples, m_num_xvalidation_sets);
+        double accuracy = xvalidation(forest, pure_samples, m_num_xvalidation_sets);
 
         // test the forest on image
         boost::filesystem::path test_volume_path, truth_file_path;
@@ -130,57 +130,77 @@ int Program::run(int argc, char** argv) {
         
         cv::Mat absdiff_image;
         cv::absdiff(classify_image, truth_image, absdiff_image);
-        float num_false_pixels = cv::countNonZero(absdiff_image);
-        float num_pixels = absdiff_image.rows * absdiff_image.cols;
-        float accuracy = 1. - (num_false_pixels / num_pixels);
-        std::cout << "accuracy of image is " << accuracy << std::endl;
+        double num_false_pixels = static_cast<double>(cv::countNonZero(absdiff_image));
+        double num_pixels = static_cast<double>(absdiff_image.rows * absdiff_image.cols);
+        double image_accuracy = 1. - (num_false_pixels / num_pixels);
+        std::cout << "accuracy of image is " << image_accuracy << std::endl;
         
-        cv::namedWindow("diff", CV_WINDOW_AUTOSIZE);
-        cv::imshow("diff", absdiff_image);
+        //cv::namedWindow("diff", CV_WINDOW_AUTOSIZE);
+        //cv::imshow("diff", absdiff_image);
 
-        cv::namedWindow("groundTruth", CV_WINDOW_AUTOSIZE);
-        cv::imshow("groundTruth", truth_image);
+        //cv::namedWindow("groundTruth", CV_WINDOW_AUTOSIZE);
+        //cv::imshow("groundTruth", truth_image);
 
-        cv::namedWindow("binClassify", CV_WINDOW_AUTOSIZE);
-        cv::imshow("binClassify", classify_image);
+        //cv::namedWindow("binClassify", CV_WINDOW_AUTOSIZE);
+        //cv::imshow("binClassify", classify_image);
 
-        cv::namedWindow("propwindow", CV_WINDOW_AUTOSIZE);
-        cv::imshow("propwindow", prop_image);
+        //cv::namedWindow("propwindow", CV_WINDOW_AUTOSIZE);
+        //cv::imshow("propwindow", prop_image);
 		
-		classify_image = classify_image < 0.5;
-		test_image.setTo(cv::Scalar(0, 255, 0), classify_image);
+        classify_image = classify_image < 0.5;
+        test_image.setTo(cv::Scalar(0, 255, 0), classify_image);
 
-		prop_image.convertTo(prop_image, CV_8UC1, 255.);
-		absdiff_image.convertTo(absdiff_image, CV_8UC1, 255.);
+        prop_image.convertTo(prop_image, CV_8UC1, 255.);
+        absdiff_image.convertTo(absdiff_image, CV_8UC1, 255.);
 
-		//cv::namedWindow("resultingWindow", CV_WINDOW_AUTOSIZE);
-		//cv::imshow("resultingWindow", test_image);
-		namespace chrono = std::chrono;
-		
-		std::ostringstream output_base;
-		output_base << std::floor(acc * 1000)
-			<< "-" << chrono::system_clock::to_time_t(chrono::system_clock::now())
-			<< "-" << std::setfill('0') << std::setw(4) << m_test_image_index;
-		
-		std::string prop, overlay, diff, log;
-		prop = output_base.str() + "-prop.png";
-		cv::imwrite((m_log_path / prop).string(), prop_image);
-		overlay = output_base.str() + "-overlay.png";
-		cv::imwrite((m_log_path / overlay).string(), test_image);
-		diff = output_base.str() + "-diff.png";
-		cv::imwrite((m_log_path / diff).string(), absdiff_image);
-		log = output_base.str() + "-log.txt";
-		
-		std::ofstream logfile((m_log_path / log).string());
-		if (logfile.is_open())
-		{
-			logfile << "x-accuracy:,accuracy:,num_trees:,max_depth:,num_feature_tests:,num_samples:,test_image_index:" << std::endl
-				<< std::setw(5) << acc << ","
-				<< std::setw(5) << accuracy << ","
-				<< m_num_trees << "," << m_max_depth << "," << m_num_feature_tests << ","
-				<< m_num_samples_per_image << "," << std::setfill('0') << std::setw(4) << m_test_image_index;
-			logfile.close();
-		}
+        //cv::namedWindow("resultingWindow", CV_WINDOW_AUTOSIZE);
+        //cv::imshow("resultingWindow", test_image);
+        namespace chrono = std::chrono;
+        
+        std::ostringstream output_base;
+        output_base.precision(3);
+        output_base 
+                << accuracy
+                << "-"
+                << chrono::system_clock::to_time_t(chrono::system_clock::now())
+                << "-"
+                << std::setfill('0') << std::setw(4) << m_test_image_index;
+
+        std::string prop, overlay, diff, log;
+        prop = output_base.str() + "-prop.tif";
+        cv::imwrite((m_log_path / prop).string(), prop_image);
+        overlay = output_base.str() + "-overlay.tif";
+        cv::imwrite((m_log_path / overlay).string(), test_image);
+        diff = output_base.str() + "-diff.tif";
+        cv::imwrite((m_log_path / diff).string(), absdiff_image);
+        log = output_base.str() + "-log.txt";
+
+        boost::filesystem::path logfile_path = m_log_path / log;
+        std::ofstream logfile(logfile_path.string());
+        if (logfile.is_open())
+        {
+            logfile.precision(3);
+            logfile << "x-accuracy:,accuracy:,num_trees:,max_depth:,num_feature_tests:,num_samples:,test_image_index:"
+                    << std::endl
+                    << accuracy
+                    << ","
+                    << image_accuracy
+                    << ","
+                    << m_num_trees
+                    << ","
+                    << m_max_depth
+                    << ","
+                    << m_num_feature_tests
+                    << ","
+                    << m_num_samples_per_image
+                    << ","
+                    << std::setfill('0') << std::setw(4) << m_test_image_index;
+            logfile.close();
+        }
+        else
+        {
+            std::cerr << "Can't open file " << logfile_path << std::endl;
+        }
 
     } else {
         //train forest
@@ -469,11 +489,11 @@ Program::PathTuple Program::resolve_data_path(unsigned int id) const {
     return std::make_tuple(m_dataset_path / volume_file_name.str(), m_dataset_path / truth_file_name.str());
 }
 
-float Program::xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std::vector<Sample<CellLabel, cv::Mat>>& pure_samples, unsigned int validations) {
+double Program::xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std::vector<Sample<CellLabel, cv::Mat>>& pure_samples, unsigned int validations) {
 
     std::vector<Sample<CellLabel, cv::Mat>> ground_truth, samples;
     auto offset = pure_samples.size() / validations;
-    float accuracy = 0.0f;
+    double accuracy = 0.0;
     for (unsigned int i = 0; i < validations; ++i) {
         ground_truth.clear();
         samples.clear();
@@ -513,7 +533,8 @@ float Program::xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std::
         accuracy += (float) sum_correct / (float) samples.size();
         std::cout << sum_correct << " correct classification of " << samples.size() << std::endl;
     }
-    std::cout << "accuracy: " << accuracy / validations << std::endl;
+    accuracy /= validations;
+    std::cout << "accuracy: " << accuracy << std::endl;
 
     return accuracy;
 
