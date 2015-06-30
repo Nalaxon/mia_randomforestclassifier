@@ -104,9 +104,8 @@ int Program::run(int argc, char** argv) {
     }
 
     if (m_use_xvalidation) {
-        xvalidation(forest, pure_samples, m_num_xvalidation_sets);
+		float acc = xvalidation(forest, pure_samples, m_num_xvalidation_sets);
 
-        std::cout << "test image accuracy: " << std::endl;
         // test the forest on image
         boost::filesystem::path test_volume_path, truth_file_path;
         std::tie(test_volume_path, truth_file_path) = resolve_data_path(m_test_image_index);
@@ -121,8 +120,8 @@ int Program::run(int argc, char** argv) {
         truth_image.convertTo(truth_image, CV_32FC1, 1 / 255.);
 
         cv::Mat test_image_prepared = prepare_image(test_image);
-        cv::namedWindow("inputwindow", CV_WINDOW_AUTOSIZE);
-        cv::imshow("inputwindow", test_image); 
+        //cv::namedWindow("inputwindow", CV_WINDOW_AUTOSIZE);
+        //cv::imshow("inputwindow", test_image); 
         cv::Mat prop_image = classify_image(forest, test_image_prepared);
 
         cv::Mat classify_image;
@@ -147,6 +146,41 @@ int Program::run(int argc, char** argv) {
 
         cv::namedWindow("propwindow", CV_WINDOW_AUTOSIZE);
         cv::imshow("propwindow", prop_image);
+		
+		classify_image = classify_image < 0.5;
+		test_image.setTo(cv::Scalar(0, 255, 0), classify_image);
+
+		prop_image.convertTo(prop_image, CV_8UC1, 255.);
+		absdiff_image.convertTo(absdiff_image, CV_8UC1, 255.);
+
+		//cv::namedWindow("resultingWindow", CV_WINDOW_AUTOSIZE);
+		//cv::imshow("resultingWindow", test_image);
+		namespace chrono = std::chrono;
+		
+		std::ostringstream output_base;
+		output_base << std::floor(acc * 1000)
+			<< "-" << chrono::system_clock::to_time_t(chrono::system_clock::now())
+			<< "-" << std::setfill('0') << std::setw(4) << m_test_image_index;
+		
+		std::string prop, overlay, diff, log;
+		prop = output_base.str() + "-prop.png";
+		cv::imwrite((m_log_path / prop).string(), prop_image);
+		overlay = output_base.str() + "-overlay.png";
+		cv::imwrite((m_log_path / overlay).string(), test_image);
+		diff = output_base.str() + "-diff.png";
+		cv::imwrite((m_log_path / diff).string(), absdiff_image);
+		log = output_base.str() + "-log.txt";
+		
+		std::ofstream logfile((m_log_path / log).string());
+		if (logfile.is_open())
+		{
+			logfile << "x-accuracy:,accuracy:,num_trees:,max_depth:,num_feature_tests:,num_samples:,test_image_index:" << std::endl
+				<< std::setw(5) << acc << ","
+				<< std::setw(5) << accuracy << ","
+				<< m_num_trees << "," << m_max_depth << "," << m_num_feature_tests << ","
+				<< m_num_samples_per_image << "," << std::setfill('0') << std::setw(4) << m_test_image_index;
+			logfile.close();
+		}
 
     } else {
         //train forest
@@ -226,7 +260,10 @@ bool Program::parse_command_line(int argc, char** argv) {
             "Use cross validation.")
     
             ("num_xvalidations", po::value<unsigned int>()->default_value(10),
-            "the number of validation sets for xvalidation.");
+            "the number of validation sets for xvalidation.")
+
+			("log", po::value<std::string>()->default_value("."),
+			"define output folder to log performance and images, must not empty");
 
     // parse commandline input
     po::variables_map given_options;
@@ -272,6 +309,9 @@ bool Program::parse_command_line(int argc, char** argv) {
     
     m_num_xvalidation_sets = given_options["num_xvalidations"].as<unsigned int>();
 
+	fs::path log_path(given_options["log"].as<std::string>());
+	m_log_path = log_path.string();
+
     if (!given_options.count("print_trees")) {
         m_tree_output_stream = nullptr;
     } else {
@@ -294,8 +334,11 @@ void Program::extract_training_samples(std::vector<Sample<CellLabel, cv::Mat>>&s
 #pragma omp parallel for
     for (int i_file = 1; i_file <= 30; ++i_file) {
 
-        if (m_use_xvalidation && (i_file == m_test_image_index))
-            continue;
+		if (m_use_xvalidation && (i_file == m_test_image_index)) {
+			std::cout << "test image index: " << i_file << std::endl;
+			continue;
+		}
+            
 
         namespace fs = boost::filesystem;
         fs::path volume_file, truth_file;

@@ -98,6 +98,11 @@ private:
      */
     int m_test_image_index;
 
+	/**
+	* Path to directory for logging data. nothing will be stored if ""
+	*/
+	boost::filesystem::path m_log_path;
+
     /**
      * Creates the binary classification image (background=255, foreground=0).
      *
