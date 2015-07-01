@@ -5,6 +5,7 @@ from subprocess import *
 program_path = "./bin/miaKU"
 data_path = "../data/MIA_KU_2015_DataSet/"
 log_path = "../output/"
+num_samples_per_image = 10000
 params_num_trees = [10, 20, 30, 40, 50]
 params_num_tests = [100, 150]
 params_max_depth = [10, 11, 12, 13, 14, 15]
@@ -17,7 +18,7 @@ if __name__ == "__main__":
 		for num_tests in params_num_tests:
 			for max_depth in params_max_depth:
 				try:
-					subproc = Popen([program_path, "--dataset", data_path, "--log", log_path, "--use_xvalidation", "--enable_bagging", "--num_trees", str(num_trees), "--max_depth", str(max_depth), "--num_feature_tests", str(num_tests)],
+					subproc = Popen([program_path, "--dataset", data_path, "--log", log_path, "--use_xvalidation", "--enable_bagging", "--num_samples", str(num_samples_per_image), "--num_trees", str(num_trees), "--max_depth", str(max_depth), "--num_feature_tests", str(num_tests)],
 						stdout=PIPE)
 					subproc.communicate()
 				except:
