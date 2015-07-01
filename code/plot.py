@@ -58,15 +58,29 @@ def parse_result_data(result_dir, logfile_regex, logfile_data_regex):
 
 	return xacc_array, iacc_array, np.array(axis_num_tests), np.array(axis_num_trees), np.array(axis_max_depth)
 
-def plot_acc_heatmap(acc, num_test_idx, axis_num_tests, axis_num_trees, axis_max_depth):
-	plt.pcolormesh(axis_max_depth, axis_num_trees, acc[num_test_idx], cmap=plt.cm.afmhot, edgecolors='k', vmin=acc[num_test_idx].min(), vmax=acc[num_test_idx].max())
-	plt.title("Cross validation accuracies with %d random feature tests per node." % axis_num_tests[num_test_idx])
-	plt.axis([axis_max_depth.min(), axis_max_depth.max(), axis_num_trees.min(), axis_num_trees.max()])
-	plt.xticks(axis_max_depth)
-	plt.yticks(axis_num_trees)
+def plot_acc_heatmap(acc, num_test_idx, axis_num_tests, axis_num_trees, axis_max_depth, title_str):
+	_, ax = plt.subplots()
+	plt.pcolormesh(acc[num_test_idx], cmap=plt.cm.afmhot, edgecolors='k')
+	plt.title(title_str % axis_num_tests[num_test_idx])
+
+	ax.set_xticks(np.arange(acc[num_test_idx].shape[1])+0.5, minor=False)
+	ax.set_yticks(np.arange(acc[num_test_idx].shape[0])+0.5, minor=False)
+	ax.set_xticklabels(axis_max_depth, minor=False)
+	#we need to reverse the num_trees axis. Don't know why for sure... 
+	ax.set_yticklabels(axis_num_trees[::-1], minor=False)
+	ax.invert_yaxis()
+
 	plt.xlabel("Max tree depth")
 	plt.ylabel("Number of trees")
 	plt.colorbar(ticks=np.arange(acc[num_test_idx].max(), acc[num_test_idx].min(), -0.003))
+
+def plot_xacc_heatmap(acc, num_test_idx, axis_num_tests, axis_num_trees, axis_max_depth):
+	title_str = "Cross validation accuracies with %d random feature tests per node."
+	return plot_acc_heatmap(acc, num_test_idx, axis_num_tests, axis_num_trees, axis_max_depth, title_str)
+
+def plot_iacc_heatmap(acc, num_test_idx, axis_num_tests, axis_num_trees, axis_max_depth):
+	title_str = "Test image based accuracies with %d random feature tests per node."
+	return plot_acc_heatmap(acc, num_test_idx, axis_num_tests, axis_num_trees, axis_max_depth, title_str)
 
 
 #################################################################################################################
@@ -76,13 +90,10 @@ logfile_data_regex = '([0-9]*\.[0-9]+|[0-9]+),([0-9]*\.[0-9]+|[0-9]+),(\d*),(\d*
 
 if __name__ == "__main__":
 	xacc, iacc, axis_num_tests, axis_num_trees, axis_max_depth = parse_result_data(result_dir, logfile_regex, logfile_data_regex)
-	print xacc[1]
-
 	figure_idx = 0
 	for i in range(0, len(axis_num_tests)):
-		figure_idx += 1
-		plt.figure(figure_idx)
-		plot_acc_heatmap(xacc, i, axis_num_tests, axis_num_trees, axis_max_depth)
+		plot_xacc_heatmap(xacc, i, axis_num_tests, axis_num_trees, axis_max_depth)
+		plot_iacc_heatmap(iacc, i, axis_num_tests, axis_num_trees, axis_max_depth)
 
 	plt.draw()
 	plt.show()
