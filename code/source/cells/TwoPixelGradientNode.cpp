@@ -6,7 +6,7 @@ TwoPixelGradientNode::Direction TwoPixelGradientNode::split(const cv::Mat& data)
 {
 	
 	int sum = 0;
-	for (int i = 0; i < m_x_1.size(); ++i)
+	for (unsigned int i = 0; i < m_x_1.size(); ++i)
 	{
 		const auto& pixel1 = ImageTools::get_pixel<float, 4, 3>(data, m_y_1[i], m_x_1[i]);
 		const auto& pixel2 = ImageTools::get_pixel<float, 4, 3>(data, m_y_2[i], m_x_2[i]);
@@ -14,7 +14,7 @@ TwoPixelGradientNode::Direction TwoPixelGradientNode::split(const cv::Mat& data)
 			++sum;
 	}
     
-    if (((float)sum/(float)m_x_1.size()) < m_threshold) {
+    if ((static_cast<float>(sum)/ m_x_1.size()) < m_threshold) {
         return Node::Direction::LEFT;
     } else {
         return Node::Direction::RIGHT;

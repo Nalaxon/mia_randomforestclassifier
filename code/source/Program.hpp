@@ -98,6 +98,11 @@ private:
      */
     int m_test_image_index;
 
+	/**
+	* Path to directory for logging data. nothing will be stored if ""
+	*/
+	boost::filesystem::path m_log_path;
+
     /**
      * Creates the binary classification image (background=255, foreground=0).
      *
@@ -130,7 +135,7 @@ private:
     
     PathTuple resolve_data_path(unsigned int id) const;
 
-    float xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std::vector < Sample<CellLabel, cv::Mat>> &pure_samples, const unsigned int validations);
+    double xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std::vector < Sample<CellLabel, cv::Mat>> &pure_samples, const unsigned int validations);
 };
 
 

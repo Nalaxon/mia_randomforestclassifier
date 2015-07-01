@@ -1,2 +1,128 @@
 \section{Results}
 \label{sec:results}
+
+In this section, the result of our experiments with the forest will be evaluated. There are many parameters
+of the forest which can be evaluated:
+
+\FloatBarrier
+\begin{enumerate}
+	\item The number of training samples
+	\item The patch size of the training samples
+	\item The number of trees in the forest
+	\item The maximal depth of each tree
+	\item The minimum number of samples at which a node will be splitted again
+	\item The number of random features to select at each node split
+	\item Is bagging enabled?
+\end{enumerate}
+\FloatBarrier
+
+To speed up the evaluation phase we decided to fixate most of the parameters and test different combinations
+of the third, forth and sixth parameter. The setup looks as follows:
+
+\FloatBarrier
+\begin{description}
+	\item[number of training samples:] 10000 per training images
+	\item[patch size:] $30 \times 30$ pixels
+	\item[number of trees:] 10, 20, 30, 40, 50
+	\item[maximal depth:] 10, 11, 12, 13, 14, 15
+	\item[minimum number of samples per node:] 10
+	\item[number of random features:] 100, 150
+	\item[bagging:] enabled
+\end{description}
+\FloatBarrier
+
+The combination of the parameters gives us 60 different tests. The accuracy results of these tests can be seen
+in figure \ref{fig:result_heatmap}. The first row shows the results of the cross validation. The results
+of directly comparing the groundtruth image to the output of the forest are located in the second row. 
+
+The plots show that the cross validation accuracy gets better by increasing any of the three varying parameters.
+However, we expect the classifier to overfit for even larger depths and higher number of feature tests. The best
+accuracy of $\approx 86.5\%$ was found for 50 trees, a depth of 15 and 150 feature tests per node. The image based
+accuracy in the second row does not entirely reflect this result. This accuracy amounts to $\approx 79.6\%$ whereas
+the best value is at $\approx 79.9\%$.
+
+
+\begin{figure}
+	\centering
+	\begin{subfigure}{0.4\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{plots/heatmap_xacc_100.png}
+		\caption{Cross validation accuracies. (100 features per node)}
+		\label{subfig:result_heatmap_xacc_100}
+	\end{subfigure}
+	\begin{subfigure}{0.4\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{plots/heatmap_xacc_150.png}
+		\caption{Cross validation accuracies. (150 features per node)}
+		\label{subfig:result_heatmap_xacc_150}
+	\end{subfigure}
+
+	\begin{subfigure}{0.4\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{plots/heatmap_iacc_100.png}
+		\caption{Accuracies based on groundtruth images. (100 features per node)}
+		\label{subfig:result_heatmap_iacc_100}
+	\end{subfigure}
+	\begin{subfigure}{0.4\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{plots/heatmap_iacc_150.png}
+		\caption{Accuracies based on groundtruth images. (150 features per node)}
+		\label{subfig:result_heatmap_iacc_150}
+	\end{subfigure}
+	\caption{Accuracy results.}
+	\label{fig:result_heatmap}
+\end{figure}
+
+Figure \ref{fig:result_images_best_xacc} shows the output images corresponding to
+the forest with the best cross validation accuracy ($\approx 86.5\%$) and figure
+\ref{fig:result_images_best_iacc} those corresponding to the forest with the best
+accuracy on the test image ($\approx 79.9\%$). From a human point of view the latter
+looks better.
+
+\begin{figure}
+	\centering
+	\begin{subfigure}[t]{0.3\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{{{images/0.865-1435707507-0021-prop}}}
+		\caption{Forest probabilities}
+	\end{subfigure}
+	\begin{subfigure}[t]{0.3\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{{{images/0.865-1435707507-0021-overlay}}}
+		\caption{Predictions}
+	\end{subfigure}
+	\begin{subfigure}[t]{0.3\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{{{images/0.865-1435707507-0021-diff}}}
+		\caption{Absolute difference to the ground truth}
+	\end{subfigure}
+	\caption{Forest outputs with 50 trees, depth 15 and 150 feature tests.}
+	\label{fig:result_images_best_xacc}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\begin{subfigure}[t]{0.3\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{{{images/0.843-1435685565-0013-prop}}}
+		\caption{Forest probabilities}
+	\end{subfigure}
+	\begin{subfigure}[t]{0.3\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{{{images/0.843-1435685565-0013-overlay}}}
+		\caption{Predictions}
+	\end{subfigure}
+	\begin{subfigure}[t]{0.3\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{{{images/0.843-1435685565-0013-diff}}}
+		\caption{Absolute difference to the ground truth}
+	\end{subfigure}
+	\caption{Forest outputs with 10 trees, depth 12 and 150 feature tests.}
+	\label{fig:result_images_best_iacc}
+\end{figure}
+
+The simple distinction between border and cell pixels works quite well though the forest
+tends to classify near-border pixels as borders as well. Most of the differences to the
+ground truth are due to those misclassifications. As we can see in the output probabilities,
+the forest is also able to distinguish between border and nucleus pixels. However, it tends
+to classify the borders of the nucleuses as cell borders which is not optimal. 

@@ -23,6 +23,7 @@
 #include <chrono>
 #include <fstream>
 #include <algorithm>
+#include <vector>
 
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -103,9 +104,8 @@ int Program::run(int argc, char** argv) {
     }
 
     if (m_use_xvalidation) {
-        xvalidation(forest, pure_samples, m_num_xvalidation_sets);
+        double accuracy = xvalidation(forest, pure_samples, m_num_xvalidation_sets);
 
-        std::cout << "test image accuracy: " << std::endl;
         // test the forest on image
         boost::filesystem::path test_volume_path, truth_file_path;
         std::tie(test_volume_path, truth_file_path) = resolve_data_path(m_test_image_index);
@@ -120,28 +120,87 @@ int Program::run(int argc, char** argv) {
         truth_image.convertTo(truth_image, CV_32FC1, 1 / 255.);
 
         cv::Mat test_image_prepared = prepare_image(test_image);
-        cv::namedWindow("inputwindow", CV_WINDOW_AUTOSIZE);
-        cv::imshow("inputwindow", test_image); 
+        //cv::namedWindow("inputwindow", CV_WINDOW_AUTOSIZE);
+        //cv::imshow("inputwindow", test_image); 
         cv::Mat prop_image = classify_image(forest, test_image_prepared);
 
         cv::Mat classify_image;
         cv::threshold(prop_image, classify_image, 0.5f, 1.0f, cv::THRESH_BINARY);
 
-        int zeros = (classify_image.cols - 1)*(classify_image.rows - 1) - cv::countNonZero(classify_image - truth_image);
+        
+        cv::Mat absdiff_image;
+        cv::absdiff(classify_image, truth_image, absdiff_image);
+        double num_false_pixels = static_cast<double>(cv::countNonZero(absdiff_image));
+        double num_pixels = static_cast<double>(absdiff_image.rows * absdiff_image.cols);
+        double image_accuracy = 1. - (num_false_pixels / num_pixels);
+        std::cout << "accuracy of image is " << image_accuracy << std::endl;
+        
+        //cv::namedWindow("diff", CV_WINDOW_AUTOSIZE);
+        //cv::imshow("diff", absdiff_image);
 
-        cv::namedWindow("diff", CV_WINDOW_AUTOSIZE);
-        cv::imshow("diff", classify_image - truth_image);
+        //cv::namedWindow("groundTruth", CV_WINDOW_AUTOSIZE);
+        //cv::imshow("groundTruth", truth_image);
 
-        cv::namedWindow("groundTruth", CV_WINDOW_AUTOSIZE);
-        cv::imshow("groundTruth", truth_image);
+        //cv::namedWindow("binClassify", CV_WINDOW_AUTOSIZE);
+        //cv::imshow("binClassify", classify_image);
 
-        cv::namedWindow("binClassify", CV_WINDOW_AUTOSIZE);
-        cv::imshow("binClassify", classify_image);
+        //cv::namedWindow("propwindow", CV_WINDOW_AUTOSIZE);
+        //cv::imshow("propwindow", prop_image);
+		
+        classify_image = classify_image < 0.5;
+        test_image.setTo(cv::Scalar(0, 255, 0), classify_image);
 
-        std::cout << "accuracy of image is " << (float) zeros / (float) ((classify_image.cols - 1)*(classify_image.rows - 1)) << std::endl;
+        prop_image.convertTo(prop_image, CV_8UC1, 255.);
+        absdiff_image.convertTo(absdiff_image, CV_8UC1, 255.);
 
-        cv::namedWindow("propwindow", CV_WINDOW_AUTOSIZE);
-        cv::imshow("propwindow", prop_image);
+        //cv::namedWindow("resultingWindow", CV_WINDOW_AUTOSIZE);
+        //cv::imshow("resultingWindow", test_image);
+        namespace chrono = std::chrono;
+        
+        std::ostringstream output_base;
+        output_base.precision(3);
+        output_base 
+                << accuracy
+                << "-"
+                << chrono::system_clock::to_time_t(chrono::system_clock::now())
+                << "-"
+                << std::setfill('0') << std::setw(4) << m_test_image_index;
+
+        std::string prop, overlay, diff, log;
+        prop = output_base.str() + "-prop.tif";
+        cv::imwrite((m_log_path / prop).string(), prop_image);
+        overlay = output_base.str() + "-overlay.tif";
+        cv::imwrite((m_log_path / overlay).string(), test_image);
+        diff = output_base.str() + "-diff.tif";
+        cv::imwrite((m_log_path / diff).string(), absdiff_image);
+        log = output_base.str() + "-log.txt";
+
+        boost::filesystem::path logfile_path = m_log_path / log;
+        std::ofstream logfile(logfile_path.string());
+        if (logfile.is_open())
+        {
+            logfile.precision(3);
+            logfile << "x-accuracy:,accuracy:,num_trees:,max_depth:,num_feature_tests:,num_samples:,test_image_index:"
+                    << std::endl
+                    << accuracy
+                    << ","
+                    << image_accuracy
+                    << ","
+                    << m_num_trees
+                    << ","
+                    << m_max_depth
+                    << ","
+                    << m_num_feature_tests
+                    << ","
+                    << m_num_samples_per_image
+                    << ","
+                    << std::setfill('0') << std::setw(4) << m_test_image_index;
+            logfile.close();
+        }
+        else
+        {
+            std::cerr << "Can't open file " << logfile_path << std::endl;
+        }
 
     } else {
         //train forest
@@ -168,6 +227,11 @@ int Program::run(int argc, char** argv) {
         cv::Mat prob_image = classify_image(forest, test_image_prepared);
         cv::namedWindow("resultwindow", CV_WINDOW_AUTOSIZE);
         cv::imshow("resultwindow", prob_image);
+        
+        cv::Mat classify_image;
+        cv::threshold(prob_image, classify_image, 0.5f, 1.0f, cv::THRESH_BINARY);
+        cv::namedWindow("binClassify", CV_WINDOW_AUTOSIZE);
+        cv::imshow("binClassify", classify_image);
     }
     cv::waitKey(0);
 
@@ -216,7 +280,10 @@ bool Program::parse_command_line(int argc, char** argv) {
             "Use cross validation.")
     
             ("num_xvalidations", po::value<unsigned int>()->default_value(10),
-            "the number of validation sets for xvalidation.");
+            "the number of validation sets for xvalidation.")
+
+			("log", po::value<std::string>()->default_value("."),
+			"define output folder to log performance and images, must not empty");
 
     // parse commandline input
     po::variables_map given_options;
@@ -262,6 +329,9 @@ bool Program::parse_command_line(int argc, char** argv) {
     
     m_num_xvalidation_sets = given_options["num_xvalidations"].as<unsigned int>();
 
+	fs::path log_path(given_options["log"].as<std::string>());
+	m_log_path = log_path.string();
+
     if (!given_options.count("print_trees")) {
         m_tree_output_stream = nullptr;
     } else {
@@ -284,8 +354,11 @@ void Program::extract_training_samples(std::vector<Sample<CellLabel, cv::Mat>>&s
 #pragma omp parallel for
     for (int i_file = 1; i_file <= 30; ++i_file) {
 
-        if (m_use_xvalidation && (i_file == m_test_image_index))
-            continue;
+		if (m_use_xvalidation && (i_file == m_test_image_index)) {
+			std::cout << "test image index: " << i_file << std::endl;
+			continue;
+		}
+            
 
         namespace fs = boost::filesystem;
         fs::path volume_file, truth_file;
@@ -416,11 +489,11 @@ Program::PathTuple Program::resolve_data_path(unsigned int id) const {
     return std::make_tuple(m_dataset_path / volume_file_name.str(), m_dataset_path / truth_file_name.str());
 }
 
-float Program::xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std::vector<Sample<CellLabel, cv::Mat>>& pure_samples, unsigned int validations) {
+double Program::xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std::vector<Sample<CellLabel, cv::Mat>>& pure_samples, unsigned int validations) {
 
     std::vector<Sample<CellLabel, cv::Mat>> ground_truth, samples;
     auto offset = pure_samples.size() / validations;
-    float accuracy = 0.0f;
+    double accuracy = 0.0;
     for (unsigned int i = 0; i < validations; ++i) {
         ground_truth.clear();
         samples.clear();
@@ -460,7 +533,8 @@ float Program::xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std::
         accuracy += (float) sum_correct / (float) samples.size();
         std::cout << sum_correct << " correct classification of " << samples.size() << std::endl;
     }
-    std::cout << "accuracy: " << accuracy / validations << std::endl;
+    accuracy /= validations;
+    std::cout << "accuracy: " << accuracy << std::endl;
 
     return accuracy;
 
