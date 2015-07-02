@@ -1,7 +1,7 @@
 \section{Objective}
 \label{sec:objective}
 
-The goal in this work is the detection of cell boundaries from electron microscopy images. Given are 30 labeled training images which should used to train a random forest.
+The goal in this work is the detection of cell boundaries from electron microscopy images \footnote{\label{foot:1} \url{http://brainiac2.mit.edu/isbi_challenge/}}. Given are 30 labeled training images which should used to train a random forest.
 To validate the performance of the implementation cross-validation should be done.
 After training an image it should be processed by a sliding window which is move over the image and pushed through the trees.
-Furthermore OpenCV for image processing and OpenMP for parallelization should be used. CMake was used ensure a platform independent setup.
+Furthermore OpenCV \footnote{\label{foot:2} \url{http://opencv.org/}} for image processing and OpenMP \footnote{\label{foot:3} \url{http://openmp.org/wp/}} for parallelization should be used. CMake \footnote{\label{foot:4} \url{http://www.cmake.org/}} was used ensure a platform independent setup.
