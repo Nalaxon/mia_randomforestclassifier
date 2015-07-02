@@ -16,7 +16,7 @@ of the forest which can be evaluated:
 \end{enumerate}
 \FloatBarrier
 
-To speed up the evaluation phase we decided to fixate most of the parameters and test different combinations
+To speed up the evaluation phase, we decided to fixate most of the parameters and test different combinations
 of the third, forth and sixth parameter. The setup looks as follows:
 
 \FloatBarrier
@@ -37,11 +37,11 @@ of directly comparing the groundtruth image to the output of the forest are loca
 
 The plots show that the cross validation accuracy gets better by increasing any of the three varying parameters.
 However, we expect the classifier to overfit for even larger depths and higher number of feature tests. The best
-accuracy of $\approx 86.5\%$ was found for 50 trees, a depth of 15 and 150 feature tests per node. The image based
+accuracy of $\approx 86.5\%$ can be found for 50 trees, a depth of 15 and 150 feature tests per node. The image based
 accuracy in the second row does not entirely reflect this result. This accuracy amounts to $\approx 79.6\%$ whereas
 the best value is at $\approx 79.9\%$.
 
-It is also interesting to see, that the number of trees has a negligible impact on the cross validation accuracy.
+It is also interesting to see that the number of trees has a negligible impact on the cross validation accuracy.
 For the image based accuracy on the other hand, the impact is higher.
 
 
@@ -79,9 +79,9 @@ For the image based accuracy on the other hand, the impact is higher.
 \end{figure}
 
 Figure~\ref{fig:result_images_best_xacc} shows the output images corresponding to
-the forest with the best cross validation accuracy ($\approx 86.5\%$) and Figure 
-\ref{fig:result_images_best_iacc} those corresponding to the forest with the best
-accuracy on the test image ($\approx 79.9\%$). From a human point of view the latter
+the forest with the best cross validation accuracy ($\approx 86.5\%$) and 
+Figure~\ref{fig:result_images_best_iacc} those corresponding to the forest with the best
+accuracy on the test image ($\approx 79.9\%$). From a human point of view, the latter
 looks better.
 
 \begin{figure}
@@ -147,8 +147,8 @@ the forest is also able to distinguish between border and nucleus pixels. Howeve
 to classify the borders of the nucleuses as cell borders which is not optimal. 
 
 To give an outlook of what could be done with the output of the forest, a simplistic segmentation
-based on morphological operations and the findContours
+based on morphological operations and the \texttt{findContours}
 \footnote{\url{http://docs.opencv.org/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html?highlight=findcontours\#findcontours}}
 simplementation of OpenCV was implemented.
-The results of the segmentations are shown in figures \ref{subfig:result_images_best_xacc_segm}
-and \ref{subfig:result_images_best_iacc_segm}. 
+The results of the segmentations are shown in Figure~\ref{subfig:result_images_best_xacc_segm}
+and Figure~\ref{subfig:result_images_best_iacc_segm}. 
