@@ -1,6 +1,20 @@
 \section{Implementation}
 \label{sec:implementation}
 
+
+We used C++ class templates to create a application independent random forest implementation. Thus, it would be possible apply it with arbitrary label and data types. Based on that, we developed the code to solve our particular problem, namely the detection of cell boundaries of a ventral nerve cord of the early Drosophila larva. Given this case, we differentiate between the labels \emph{Border} and \emph{Cell} and use the typical OpenCV class for image storage (\texttt{cv::Mat}) as data type.\\
+The majority of our implementation can be divided into the label and data type independent \emph{Base} part and the problem specific \emph{Cell} part. Additionally, you will find some helpful pieces of code for basic file and image operations. We used several boost libraries\footnote{\texttt{system filesystem random regex program\_options}} to ensure code quality.\\
+In the following we are going to describe the two major parts in detail.
+
+\subsection{Base}
+\label{subsec:base}
+We developed a simple forest. It consist of a set of trees. Each tree holds a root node and each node holds a right and a left child. 
+
+
+\subsection{Cell}
+\label{subsec:base}
+
+
 \subsection{Tests}
 As already described the NodeFactorys- and Node-derivertives make it possible to implement different data dependent tests easily. Therefore only a NodeFactory and a Node has to be implemented, where each node performs a test in the weak learner model.
 For performance reasons each patch is available as intensity-, gradient, integral intensity-, and integral gradient-image. The different representations are calculated in the beginning and stored in the different channels of an cv::Mat (RGBA).
