@@ -16,23 +16,12 @@ template<typename LABEL_TYPE, typename DATA_TYPE>
 class RandomForest
 {
 public:
-  using Params = RFParameter<LABEL_TYPE, DATA_TYPE>;
 
-  using NodeFactoryPtr = NodeFactoryPtr_<LABEL_TYPE, DATA_TYPE>;
 
-  using SampleVector = SampleVector_<LABEL_TYPE, DATA_TYPE>;
-
-  using RandomTreeVector = RandomTreeVector_<LABEL_TYPE, DATA_TYPE>;
-
-  using HistogramPtr = HistogramPtr_<LABEL_TYPE, DATA_TYPE>;
-
-  using HistogramVector = HistogramVector_<LABEL_TYPE, DATA_TYPE>;
-
-  using EnsembleFct = EnsembleFct_<LABEL_TYPE, DATA_TYPE>;
 
   //----------------------------------------------------------------------------
 
-  RandomForest(Params params, NodeFactoryPtr nodeFactory)
+  RandomForest(RFParameter<LABEL_TYPE, DATA_TYPE> params, std::shared_ptr<NodeFactory<LABEL_TYPE, DATA_TYPE>> nodeFactory)
   : m_params(params),
   m_nClasses(0),
   m_nodeFactory(nodeFactory)
@@ -46,16 +35,16 @@ public:
 
   //----------------------------------------------------------------------------
 
-  void train(const SampleVector& samples)
+  void train(const std::vector<Sample<LABEL_TYPE, DATA_TYPE>>& samples)
   {
 #pragma omp parallel for
     for (int i = 0; i < static_cast<int> (m_params.m_num_trees); ++i)
     {
-      const SampleVector* samples_to_use = &samples;
-      std::unique_ptr<SampleVector> shuffled_samples;
+      const std::vector<Sample<LABEL_TYPE, DATA_TYPE>>* samples_to_use = &samples;
+      std::unique_ptr<std::vector<Sample<LABEL_TYPE, DATA_TYPE>>> shuffled_samples;
       if (m_params.m_bagging)
       {
-        shuffled_samples = std::make_unique<SampleVector>(samples);
+        shuffled_samples = std::unique_ptr<std::vector<Sample<LABEL_TYPE, DATA_TYPE>>>(new std::vector<Sample<LABEL_TYPE, DATA_TYPE>>(samples));
         std::random_shuffle(shuffled_samples->begin(), shuffled_samples->end());
         // take only 50% of the shuffled samples
         shuffled_samples->erase(shuffled_samples->begin() + (shuffled_samples->size() / 2), shuffled_samples->end());
@@ -67,7 +56,7 @@ public:
 
   //----------------------------------------------------------------------------
 
-  LABEL_TYPE predict(const DATA_TYPE& data, EnsembleFct ensemble_fct) const
+  LABEL_TYPE predict(const DATA_TYPE& data, std::function<std::unique_ptr<Histogram<LABEL_TYPE, DATA_TYPE>>(const std::vector<Histogram<LABEL_TYPE, DATA_TYPE>>&)> ensemble_fct) const
   {
     return predict_prob(data, ensemble_fct)->max();
   }
@@ -75,9 +64,9 @@ public:
 
   //----------------------------------------------------------------------------
 
-  HistogramPtr predict_prob(const DATA_TYPE& data, EnsembleFct ensemble_fct) const
+  std::unique_ptr<Histogram<LABEL_TYPE, DATA_TYPE>> predict_prob(const DATA_TYPE& data, std::function<std::unique_ptr<Histogram<LABEL_TYPE, DATA_TYPE>>(const std::vector<Histogram<LABEL_TYPE, DATA_TYPE>>&)> ensemble_fct) const
   {
-    HistogramVector histograms;
+    std::vector<Histogram<LABEL_TYPE, DATA_TYPE>> histograms;
 #pragma omp parallel for
     for (int i = 0; i < static_cast<int> (m_params.m_num_trees); ++i)
     {
@@ -93,7 +82,7 @@ public:
 
   //----------------------------------------------------------------------------
 
-  float predict_prob(const DATA_TYPE& data, const LABEL_TYPE& label, EnsembleFct ensemble_fct) const
+  float predict_prob(const DATA_TYPE& data, const LABEL_TYPE& label, std::function<std::unique_ptr<Histogram<LABEL_TYPE, DATA_TYPE>>(const std::vector<Histogram<LABEL_TYPE, DATA_TYPE>>&)> ensemble_fct) const
   {
     return predict_prob(data, ensemble_fct)->prob(label);
   }
@@ -111,16 +100,16 @@ public:
 
 private:
   // the forest parameters
-  Params m_params;
+  RFParameter<LABEL_TYPE, DATA_TYPE> m_params;
 
   // the number of classes
   unsigned int m_nClasses;
 
   // the trees
-  RandomTreeVector m_trees;
+  std::vector<RandomTree<LABEL_TYPE, DATA_TYPE>> m_trees;
 
   // the node factory
-  NodeFactoryPtr m_nodeFactory;
+  std::shared_ptr<NodeFactory<LABEL_TYPE, DATA_TYPE>> m_nodeFactory;
 } ;
 
 #endif

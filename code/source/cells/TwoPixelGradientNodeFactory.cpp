@@ -1,7 +1,7 @@
 #include "TwoPixelGradientNodeFactory.hpp"
 #include "TwoPixelGradientNode.hpp"
 
-TwoPixelGradientNodeFactory::NodePtr TwoPixelGradientNodeFactory::createRandomNode()
+std::unique_ptr<Node<CellLabel, cv::Mat>> TwoPixelGradientNodeFactory::createRandomNode()
 {
 	std::vector<unsigned int> x1, x2, y1, y2;
 
@@ -13,6 +13,6 @@ TwoPixelGradientNodeFactory::NodePtr TwoPixelGradientNodeFactory::createRandomNo
 		y2.push_back(m_dist_rows(m_rng));
 	}
     
-    float threshold = m_dist_threshold(m_rng);
-	return std::make_unique<TwoPixelGradientNode>(x1, y1, x2, y2, threshold);
+  float threshold = m_dist_threshold(m_rng);
+  return std::unique_ptr<TwoPixelGradientNode>(new TwoPixelGradientNode(x1, y1, x2, y2, threshold));
 }

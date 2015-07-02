@@ -13,14 +13,6 @@ class Node
 {
 public:
 
-  using SampleVector = SampleVector_<LABEL_TYPE, DATA_TYPE>;
-
-  using HistogramType = Histogram<LABEL_TYPE, DATA_TYPE>;
-
-  using NodePtr = NodePtr_<LABEL_TYPE, DATA_TYPE>;
-
-  using HistogramPtr = HistogramPtr_<LABEL_TYPE, DATA_TYPE>;
-
   Node()
   {
     static_assert(std::is_base_of<Label<LABEL_TYPE>, LABEL_TYPE>::value, "Type parameter LABEL_TYPE must derive from Label.");
@@ -57,28 +49,28 @@ public:
 
   //----------------------------------------------------------------------------
 
-  void setLeft(NodePtr left)
+  void setLeft(std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>> left)
   {
     m_leftChild = std::move(left);
   }
 
   //----------------------------------------------------------------------------
 
-  void setRight(NodePtr right)
+  void setRight(std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>> right)
   {
     m_rightChild = std::move(right);
   }
 
   //----------------------------------------------------------------------------
 
-  void setHistogram(HistogramPtr histogram)
+  void setHistogram(std::unique_ptr<Histogram<LABEL_TYPE, DATA_TYPE>> histogram)
   {
     m_histogram = std::move(histogram);
   }
 
   //----------------------------------------------------------------------------
 
-  const HistogramType& predict(const DATA_TYPE& data) const
+  const Histogram<LABEL_TYPE, DATA_TYPE>& predict(const DATA_TYPE& data) const
   {
     if (!m_leftChild || !m_rightChild)
     {
@@ -102,9 +94,9 @@ public:
 
   //----------------------------------------------------------------------------
 
-  void split(const SampleVector& samples,
-             SampleVector& samples_left,
-             SampleVector& samples_right) const
+  void split(const std::vector<Sample<LABEL_TYPE, DATA_TYPE>>& samples,
+             std::vector<Sample<LABEL_TYPE, DATA_TYPE>>& samples_left,
+             std::vector<Sample<LABEL_TYPE, DATA_TYPE>>& samples_right) const
   {
     for (const auto& sample : samples)
     {
@@ -143,20 +135,20 @@ public:
       label << hist_entry.first.resolve_label_name() << ": " << static_cast<float>(hist_entry.second) / m_histogram->numElementsTotal() << " (" << hist_entry.second  << ")" << std::endl;
     }
     
-    stream << this_node_id << R"([label=")" << label.str() << R"("];)" << std::endl;
+    stream << this_node_id << "([label=\")" << label.str() << "(\"];)" << std::endl;
   }
  
 
 private:
 
   // a pointer to the histogram in this node
-  HistogramPtr m_histogram;
+  std::unique_ptr<Histogram<LABEL_TYPE, DATA_TYPE>> m_histogram;
 
   // a pointer to the left child
-  NodePtr m_leftChild;
+  std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>> m_leftChild;
 
   // a pointer to the right child
-  NodePtr m_rightChild;
+  std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>> m_rightChild;
 
 protected:
 

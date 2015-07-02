@@ -33,7 +33,7 @@
 
 std::unique_ptr<Histogram<CellLabel, cv::Mat>>
 sum_ensemble(const std::vector<Histogram<CellLabel, cv::Mat>>&histograms) {
-    auto sum = std::make_unique<Histogram<CellLabel, cv::Mat >> ();
+  auto sum = std::unique_ptr<Histogram<CellLabel, cv::Mat >>(new Histogram<CellLabel, cv::Mat >());
     for (const auto& hist : histograms) {
         *sum += hist;
     }
@@ -481,7 +481,7 @@ cv::Mat Program::classify_image(const RandomForest<CellLabel, cv::Mat>& forest, 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Program::PathTuple Program::resolve_data_path(unsigned int id) const {
+std::tuple<boost::filesystem::path, boost::filesystem::path> Program::resolve_data_path(unsigned int id) const {
     std::ostringstream volume_file_name, truth_file_name;
     volume_file_name << "train-volume" << std::setfill('0') << std::setw(4) << id << ".tif";
     truth_file_name << "train-labels" << std::setfill('0') << std::setw(4) << id << ".tif";

@@ -28,8 +28,6 @@ public:
      * @param argv from main
      */
     int run(int argc, char** argv);
-    
-    using PathTuple = std::tuple<boost::filesystem::path, boost::filesystem::path>;
 
     Program();
 
@@ -133,7 +131,7 @@ private:
      */
     cv::Mat prepare_image(const cv::Mat& image) const;
     
-    PathTuple resolve_data_path(unsigned int id) const;
+    std::tuple<boost::filesystem::path, boost::filesystem::path> resolve_data_path(unsigned int id) const;
 
     double xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std::vector < Sample<CellLabel, cv::Mat>> &pure_samples, const unsigned int validations);
 };

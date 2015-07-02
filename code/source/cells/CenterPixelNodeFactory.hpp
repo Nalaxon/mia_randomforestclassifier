@@ -20,7 +20,7 @@ public:
   }
 
 protected:
-  virtual NodePtr createRandomNode();
+  virtual std::unique_ptr<Node<CellLabel, cv::Mat>> createRandomNode();
 
 private:
   boost::random::uniform_int_distribution<> m_dist_rows, m_dist_cols;

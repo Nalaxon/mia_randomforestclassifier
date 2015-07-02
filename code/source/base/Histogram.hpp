@@ -5,7 +5,7 @@
 #include <map>
 #include <cmath>
 #include <algorithm>
-#include <initializer_list>
+
 
 #include "Label.hpp"
 #include "Sample.hpp"
@@ -15,7 +15,6 @@ template <typename LABEL_TYPE, typename DATA_TYPE>
 class Histogram
 {
 public:
-  using SampleVector = SampleVector_<LABEL_TYPE, DATA_TYPE>;
 
   Histogram()
   : m_numTotal(0),
@@ -29,7 +28,7 @@ public:
   // Constructor
   //----------------------------------------------------------------------------
 
-  Histogram(const SampleVector &samples)
+  Histogram(const std::vector<Sample<LABEL_TYPE, DATA_TYPE>> &samples)
   : m_numTotal(0)
   {
     unsigned int max_count = 0;
@@ -149,7 +148,7 @@ public:
     for (const auto& entry : m_hist_map)
     {
       float prob = ((float)entry.second) / m_numTotal;
-      entropy -= prob * log2(prob);
+      entropy -= prob * (log(prob) / log(2.0));
     }
     return entropy;
   }  

@@ -13,8 +13,6 @@ template <typename LABEL_TYPE, typename DATA_TYPE>
 class LeafNode : public Node<LABEL_TYPE, DATA_TYPE>
 {
 public:
-  
-  using SuperType = Node<LABEL_TYPE, DATA_TYPE>;
 
   LeafNode()
   {
@@ -24,9 +22,9 @@ public:
 protected:
   
   //----------------------------------------------------------------------------
-  virtual typename SuperType::Direction split(const DATA_TYPE& data) const
+  virtual typename Node<LABEL_TYPE, DATA_TYPE>::Direction split(const DATA_TYPE& data) const
   {
-    return SuperType::Direction::NONE;
+    return Node<LABEL_TYPE, DATA_TYPE>::Direction::NONE;
   }
 
 public:

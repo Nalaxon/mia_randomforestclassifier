@@ -2,7 +2,7 @@
 #include "GradientNode.hpp"
 
 
-GradientNodeFactory::NodePtr GradientNodeFactory::createRandomNode() {
+std::unique_ptr<Node<CellLabel, cv::Mat>> GradientNodeFactory::createRandomNode() {
   double threshold = m_dist_threshold(m_rng);
-  return std::make_unique<GradientNode>(threshold);
+  return std::unique_ptr<GradientNode>(new GradientNode(threshold));
 }

@@ -1,7 +1,8 @@
 #include "SumNodeFactory.hpp"
 #include "SumNode.hpp"
 
-SumNodeFactory::NodePtr SumNodeFactory::createRandomNode() {
+std::unique_ptr<Node<CellLabel, cv::Mat>> SumNodeFactory::createRandomNode() {
   double threshold = m_dist_threshold(m_rng);
-  return std::make_unique<SumNode>(threshold);
+  return std::unique_ptr<SumNode>(new SumNode( threshold));
+
 }

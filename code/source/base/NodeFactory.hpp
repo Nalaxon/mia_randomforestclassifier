@@ -20,16 +20,6 @@ class NodeFactory
 
 public:
 
-  using NodeType = Node < LABEL_TYPE, DATA_TYPE > ;
-
-  using NodePtr = NodePtr_ < LABEL_TYPE, DATA_TYPE > ;
-
-  using SampleVector = SampleVector_ < LABEL_TYPE, DATA_TYPE > ;
-
-  using HistogramType = Histogram < LABEL_TYPE, DATA_TYPE > ;
-
-  using HistogramPtr = HistogramPtr_ < LABEL_TYPE, DATA_TYPE > ;
-
   //----------------------------------------------------------------------------
   // Constructor
   //----------------------------------------------------------------------------
@@ -50,26 +40,26 @@ public:
   }
 
   //----------------------------------------------------------------------------
-  NodePtr create(const SampleVector& samples, unsigned int num_tests)
+  std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>> create(const std::vector<Sample<LABEL_TYPE, DATA_TYPE>>& samples, unsigned int num_tests)
   {
-    auto hist_samples = std::make_unique<HistogramType>(samples);
+    std::unique_ptr<Histogram<LABEL_TYPE, DATA_TYPE>> hist_samples(new Histogram<LABEL_TYPE, DATA_TYPE>(samples));
 
     std::vector<Sample<LABEL_TYPE, DATA_TYPE>> samples_left;
     std::vector<Sample<LABEL_TYPE, DATA_TYPE>> samples_right;
 
     float max_info_gain = -0.1f;
-    NodePtr max_node;
+    std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>> max_node;
     for (unsigned int i = 0; i < num_tests; ++i)
     {
-      NodePtr node(createRandomNode());
+      std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>> node(createRandomNode());
       samples_left.clear();
       samples_right.clear();
       node->split(samples, samples_left, samples_right);
 
-      HistogramType hist_left(samples_left);
-      HistogramType hist_right(samples_right);
+      Histogram<LABEL_TYPE, DATA_TYPE> hist_left(samples_left);
+      Histogram<LABEL_TYPE, DATA_TYPE> hist_right(samples_right);
 
-      std::vector<HistogramType*> hist;
+      std::vector<Histogram<LABEL_TYPE, DATA_TYPE>*> hist;
       hist.push_back(&hist_left);
       hist.push_back(&hist_right);
 
@@ -88,7 +78,7 @@ public:
 protected:
 
   //----------------------------------------------------------------------------
-  virtual NodePtr createRandomNode() = 0;
+  virtual std::unique_ptr<Node<LABEL_TYPE, DATA_TYPE>> createRandomNode() = 0;
 
   // a random number generator
   boost::random::random_device m_rng;

@@ -9,8 +9,9 @@ m_dist_threshold()
   m_dist_threshold = boost::random::uniform_real_distribution<>(-span, span);
 }
 
-HaarWaveletNodeFactory::NodePtr HaarWaveletNodeFactory::createRandomNode() {
+std::unique_ptr<Node<CellLabel, cv::Mat>> HaarWaveletNodeFactory::createRandomNode() {
   double threshold = m_dist_threshold(m_rng);
   bool is_vertical = m_dist_threshold(m_rng) > 0;
-  return std::make_unique<HaarWaveletNode>(is_vertical, threshold);
+
+  return std::unique_ptr<HaarWaveletNode>(new HaarWaveletNode(is_vertical, threshold));
 }

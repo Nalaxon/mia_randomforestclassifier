@@ -18,7 +18,7 @@ public:
   
 protected:
   
-  virtual NodePtr createRandomNode();
+  virtual std::unique_ptr<Node<CellLabel, cv::Mat>> createRandomNode();
 
 private:
   
