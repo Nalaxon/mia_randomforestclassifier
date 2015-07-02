@@ -14,22 +14,22 @@ While testing the tree passes the sample to its root node. After traversing the 
 
 \subsection{Cell}
 \label{subsec:base}
-For each type of node we created the respective class and class factory, which creates the node with random parameters. Since the tree only takes one factory, we created one which is able to manage the remaining ones. While creating a node it randomly picks one of the factories and passes through the resulting node.
+For each type of node we created (derive) the respective class and class factory, which creates the node with random parameters. Since the tree only takes one factory, we created one which is able to manage the remaining ones. While creating a node it randomly picks one of the factories and passes through the resulting node.\\
+In the following the different tests respectively node types which are used in our implementation are described.
 
 
 \subsubsection{Tests}
-As already described the NodeFactorys- and Node-derivertives make it possible to implement different data dependent tests easily. Therefore only a NodeFactory and a Node has to be implemented, where each node performs a test in the weak learner model.
-For performance reasons each patch is available as intensity-, gradient, integral intensity-, and integral gradient-image. The different representations are calculated in the beginning and stored in the different channels of an cv::Mat (RGBA).
+For performance reasons each patch is available as intensity-, gradient, integral intensity-, and integral gradient-image. The different representations are calculated at the beginning and stored in the different channels of an \texttt{cv::Mat} (RGBA).
 
-Note that all thresholds are chosen randomly, as well as the origin and the width and hight, if not stated differently.
+Note that all thresholds are chosen randomly, as well as the origin, the width and height of particular regions, if not stated differently.
 
 \FloatBarrier
 \begin{description}
 \item[CenterPixel:]
-This test compares a the intensity of the center pixel with an arbitrary pixel within the patch.
+This test compares the intensity of the center pixel with an arbitrary pixel within the patch.
 
 \item[TwoPixel:]
-Here two arbitrary pixel intensities within the patch are subtracted and compared to n threshold.
+Here two arbitrary pixel intensities within the patch are subtracted and compared to a threshold.
 
 \item[GradientNode:]
 The sum of pixel intensities of the whole gradient patch is compared to a threshold. For performance reasons an integral image is used. 
