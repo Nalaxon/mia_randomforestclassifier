@@ -1,2 +1,6 @@
 \section{Conclusion}
 \label{sec:conclusion}
+
+First it can be stated, that already simple tests (such as CenterPixel) to reasonable results. But to improve the result significantly much more and complicated tests are necessary.
+By comparing \ref{subfig:result_heatmap_xacc_100} with \ref{subfig:result_heatmap_xacc_150} it seems that the number of trees is not take any notable effect on accuracy. But by taking into account \ref{subfig:result_heatmap_iacc_100} and \ref{subfig:result_heatmap_iacc_150} it shows that the number of trees has an effect. Never the less it also shows that tree depth is the majority to boost performance in accuracy sense. In terms of time performance, tree depth is also a majority because the needed time for training increases exponential by depth. This results also from the fact that the training of trees can easily parallelized where the single node can't. Also as crucial parameter is the number of feature tests per node. Which increase training time linear. But while the training phase time depend highly on the parameters the consumed time during testing is not changing significantly.
+
