@@ -2,15 +2,15 @@
 \label{sec:implementation}
 
 
-We used C++ class templates to create a application independent random forest implementation. Thus, it would be possible apply it with arbitrary label and data types. Based on that, we developed the code to solve our particular problem, namely the detection of cell boundaries of a ventral nerve cord of the early Drosophila larva. Given this case, we differentiate between the labels \emph{Border} and \emph{Cell} and use the typical OpenCV class for image storage (\texttt{cv::Mat}) as data type.\\
+We used C++ class templates to create a generic application independent random forest implementation. Thus, it would be possible to apply it with arbitrary label and data types. Based on that, we developed the code to solve our particular problem, namely the detection of cell boundaries of a ventral nerve cord of the early Drosophila larva. Given this case, we differentiate between the labels \emph{Border} and \emph{Cell} and use the typical OpenCV class for image storage (\texttt{cv::Mat}) as data type.\\
 The majority of our implementation can be divided into the label and data type independent \emph{Base} part and the problem specific \emph{Cell} part. Additionally, you will find some helpful pieces of code for basic file and image operations. We used several boost libraries\footnote{\texttt{system filesystem random regex program\_options}} to ensure code quality.\\
-In the following we are going to describe the two major parts in detail.
+In this section we are going to describe the two major parts in detail.
 
 \subsection{Base}
 \label{subsec:base}
-We developed a simple forest. It consist of a set of trees. Each tree holds a root node and each node holds a right child, a left child and a histogram representing the distribution during training. A node is able to split up a set of samples into two respectively to redirect a single test sample to its respective child. \\
+We developed a simple forest. It consists of a set of trees. Each tree holds a root node and each node holds a right child, a left child and a histogram representing the distribution during training. A node is able to split a set of samples into two subsets or to redirect a single test sample to its respective child respectively. \\
 We introduced a node factory class in order to take the node creation away from the tree. The tree itself does not know which type of nodes are used. During training, it just recursively calls the node factory with the particular set of samples. The node creation as well as the randomization takes place within the factory. \\
-While testing the tree passes the sample to its root node. After traversing the tree recursively the histogram of the leaf node is returned. 
+While testing the tree the sample passes to its root node. After traversing the tree recursively, the histogram of the leaf node is returned. 
 
 \subsection{Cell}
 \label{subsec:base}
@@ -35,22 +35,22 @@ Here two arbitrary pixel intensities within the patch are subtracted and compare
 The sum of pixel intensities of the whole gradient patch is compared to a threshold. For performance reasons an integral image is used. 
 
 \item[TwoPixelGradient:]
-Here 5 arbitrary gradient pixels are compared with 5 other ones and average is again thresholded.
+Here 5 arbitrary gradient pixels are compared with 5 other ones and the average is again thresholded.
 
 \item[TwoRegions:]
 The difference of means of two randomly chosen regions are thresholded. Again the integral image is used.
 
 \item[TwoRegionsGradient:]
-Two regions are randomly chosen and the mean of the pixelwise subtraction is thresholded. Note that here the gradient magnetude is used not the integral image.
+Two regions are randomly chosen and the mean of the pixelwise subtraction is thresholded. Note that here the gradient magnitude is used and not the integral image.
 
 \item[Sum:]
 The sum of pixel intensities over the whole image patch is compared to a threshold. For performance reasons an integral image is used.
 
 \item[HaarWavelet:]
-First the patches sum is calculated. After that the sum of a region is calculated. This region is either vertical or horizontal oriented (chosen randomly). In vertical case the region is placed in the lower half of the patch, while horizontal is placed in the right half of the patch. Aim of the regions are to subtract on half of the other. Finally the double of the difference can again subtracted of the patch sum.
+First the patches sum is calculated. After that, the sum of a region is calculated. This region is either vertical or horizontal oriented (chosen randomly). In vertical case the region is placed in the lower half of the patch, while horizontal is placed in the right half of the patch. Aim of the regions are to subtract one half from the other. Finally the double of the difference can again be subtracted from the patch sum.
 
 \item[SURFFilter:]
-This filter uses a kind of SURF feature. The integral image is used for performance reasons. First the sum of the patch intensity is calculated. After that, either a vertical or horizontal (randomly chosen) centered regions is determined. The difference of the patch sum minus the double of the centered region is finally thresholded. In this case the regions is not random, but a third of the patch size.
+This filter uses a kind of SURF feature. The integral image is used for performance reasons. First the sum of the patch intensity is calculated. After that, either a vertical or horizontal (randomly chosen) centered region is determined. The difference of the patch sum minus the double of the centered region is finally thresholded. In this case the region is not random, but a third of the patch size.
 \end{description}
 
 
