@@ -8,13 +8,14 @@ TwoRegionsGradientNode::TwoRegionsGradientNode(const cv::Rect& region1, const cv
 
 TwoRegionsGradientNode::Direction TwoRegionsGradientNode::split(const cv::Mat& mat) const
 {
-	std::vector<cv::Mat> mat1, mat2;
-	std::cout << "here we go" << std::endl;
+	std::vector<cv::Mat> mat1(4), mat2(4);
+	
 	cv::split(mat(m_region1), mat1);
 	cv::split(mat(m_region2), mat2);
-	std::cout << "after we go" << std::endl;
-	cv::Scalar mean = cv::mean(mat1[3] - mat2[3]);
-	if (mean.val[0] < m_threshold)
+	float mean1 = ImageTools::mean_from_integral<float, 4, 2>(mat, m_region1);
+	float mean2 = ImageTools::mean_from_integral<float, 4, 2>(mat, m_region2);
+	
+	if ((mean1 - mean2) < m_threshold)
     {
         return Direction::LEFT;
     }
