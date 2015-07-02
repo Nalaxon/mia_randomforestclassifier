@@ -79,7 +79,8 @@ For the image based accuracy on the other hand, the impact is higher.
 \end{figure}
 
 Figure~\ref{fig:result_images_best_xacc} shows the output images corresponding to
-the forest with the best cross validation accuracy ($\approx 86.5\%$) and Figure~\ref{fig:result_images_best_iacc} those corresponding to the forest with the best
+the forest with the best cross validation accuracy ($\approx 86.5\%$) and Figure 
+\ref{fig:result_images_best_iacc} those corresponding to the forest with the best
 accuracy on the test image ($\approx 79.9\%$). From a human point of view the latter
 looks better.
 
@@ -99,6 +100,13 @@ looks better.
 		\centering
 		\includegraphics[width=\textwidth]{{{images/0.865-1435707507-0021-diff}}}
 		\caption{Absolute difference to the ground truth}
+	\end{subfigure}
+
+	\begin{subfigure}{0.3\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{{{images/0.865-1435707507-0021-segm}}}
+		\caption{Segmentation}
+		\label{subfig:result_images_best_xacc_segm}
 	\end{subfigure}
 	\caption{Forest outputs with 50 trees, depth 15 and 150 feature tests.}
 	\label{fig:result_images_best_xacc}
@@ -121,23 +129,15 @@ looks better.
 		\includegraphics[width=\textwidth]{{{images/0.843-1435685565-0013-diff}}}
 		\caption{Absolute difference to the ground truth}
 	\end{subfigure}
+
+	\begin{subfigure}{0.3\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{{{images/0.843-1435685565-0013-segm}}}
+		\caption{Segmentation}
+		\label{subfig:result_images_best_iacc_segm}
+	\end{subfigure}
 	\caption{Forest outputs with 10 trees, depth 12 and 150 feature tests.}
 	\label{fig:result_images_best_iacc}
-\end{figure}
-
-\begin{figure}
-  \centering
-  \begin{subfigure}[t]{0.3\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{{{images/0.865-1435707507-0021-segm}}}
-  \end{subfigure}
-  \hspace{0.5cm}
-  \begin{subfigure}[t]{0.3\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{{{images/0.843-1435685565-0013-segm}}}
-  \end{subfigure}
-  \caption{Example segmentations using the output from above. Simple morphological operations are used to slightly improve the result.}
-  \label{fig:example_segmentation}
 \end{figure}
 
 The simple distinction between border and cell pixels works quite well though the forest
@@ -145,3 +145,10 @@ tends to classify near-border pixels as borders as well. Most of the differences
 ground truth are due to those misclassifications. As we can see in the output probabilities,
 the forest is also able to distinguish between border and nucleus pixels. However, it tends
 to classify the borders of the nucleuses as cell borders which is not optimal. 
+
+To give an outlook of what could be done with the output of the forest, a simplistic segmentation
+based on morphological operations and the findContours
+\footnote{\url{http://docs.opencv.org/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html?highlight=findcontours\#findcontours}}
+simplementation of OpenCV was implemented.
+The results of the segmentations are shown in figures \ref{subfig:result_images_best_xacc_segm}
+and \ref{subfig:result_images_best_iacc_segm}. 
