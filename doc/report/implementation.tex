@@ -7,33 +7,35 @@ For performance reasons each patch is available as intensity-, gradient, integra
 
 Note that all thresholds are chosen randomly, as well as the origin and the width and hight, if not stated differently.
 
-CenterPixel:
+\FloatBarrier
+\begin{description}
+\item[CenterPixel:]
 This test compares a the intensity of the center pixel with an arbitrary pixel within the patch.
 
-TwoPixel
+\item[TwoPixel:]
 Here two arbitrary pixel intensities within the patch are subtracted and compared to n threshold.
 
-GradientNode
+\item[GradientNode:]
 The sum of pixel intensities of the whole gradient patch is compared to a threshold. For performance reasons an integral image is used. 
 
-TwoPixelGradient
+\item[TwoPixelGradient:]
 Here 5 arbitrary gradient pixels are compared with 5 other ones and average is again thresholded.
 
-TwoRegions
+\item[TwoRegions:]
 The difference of means of two randomly chosen regions are thresholded. Again the integral image is used.
 
-TwoRegionsGradient
+\item[TwoRegionsGradient:]
 Two regions are randomly chosen and the mean of the pixelwise subtraction is thresholded. Note that here the gradient magnetude is used not the integral image.
 
-Sum
+\item[Sum:]
 The sum of pixel intensities over the whole image patch is compared to a threshold. For performance reasons an integral image is used.
 
-HaarWavelet
+\item[HaarWavelet:]
 First the patches sum is calculated. After that the sum of a region is calculated. This region is either vertical or horizontal oriented (chosen randomly). In vertical case the region is placed in the lower half of the patch, while horizontal is placed in the right half of the patch. Aim of the regions are to subtract on half of the other. Finally the double of the difference can again subtracted of the patch sum.
 
-SURFFilter
+\item[SURFFilter:]
 This filter uses a kind of SURF feature. The integral image is used for performance reasons. First the sum of the patch intensity is calculated. After that, either a vertical or horizontal (randomly chosen) centered regions is determined. The difference of the patch sum minus the double of the centered region is finally thresholded. In this case the regions is not random, but a third of the patch size.
-
+\end{description}
 
 
 
