@@ -8,14 +8,16 @@ In the following we are going to describe the two major parts in detail.
 
 \subsection{Base}
 \label{subsec:base}
-We developed a simple forest. It consist of a set of trees. Each tree holds a root node and each node holds a right and a left child. 
-
+We developed a simple forest. It consist of a set of trees. Each tree holds a root node and each node holds a right child, a left child and a histogram representing the distribution during training. A node is able to split up a set of samples into two respectively to redirect a single test sample to its respective child. \\
+We introduced a node factory class in order to take the node creation away from the tree. The tree itself does not know which type of nodes are used. During training, it just recursively calls the node factory with the particular set of samples. The node creation as well as the randomization takes place within the factory. \\
+While testing the tree passes the sample to its root node. After traversing the tree recursively the histogram of the leaf node is returned. 
 
 \subsection{Cell}
 \label{subsec:base}
+For each type of node we created the respective class and class factory, which creates the node with random parameters. Since the tree only takes one factory, we created one which is able to manage the remaining ones. While creating a node it randomly picks one of the factories and passes through the resulting node.
 
 
-\subsection{Tests}
+\subsubsection{Tests}
 As already described the NodeFactorys- and Node-derivertives make it possible to implement different data dependent tests easily. Therefore only a NodeFactory and a Node has to be implemented, where each node performs a test in the weak learner model.
 For performance reasons each patch is available as intensity-, gradient, integral intensity-, and integral gradient-image. The different representations are calculated in the beginning and stored in the different channels of an cv::Mat (RGBA).
 
