@@ -121,6 +121,13 @@ int Program::run(int argc, char** argv) {
 		}
 
 		cv::Mat truth_image;
+		if (test_image.size < tmp.size)
+			cv::pyrDown(tmp, truth_image, cv::Size(test_image.cols, test_image.rows));
+		else if (test_image.size > tmp.size)
+			cv::pyrUp(tmp, truth_image, cv::Size(test_image.cols, test_image.rows));
+		else
+			truth_image = tmp;
+
 		cv::pyrDown(tmp, truth_image, cv::Size(test_image.cols, test_image.rows));
 
         // convert ground truth to grayscalce if needed
@@ -375,8 +382,21 @@ void Program::extract_training_samples(std::vector<Sample<CellLabel, cv::Mat>>&s
         fs::path volume_file, truth_file;
         std::tie(volume_file, truth_file) = resolve_data_path(i_file);
 
-        cv::Mat volume = cv::imread(volume_file.string(), CV_LOAD_IMAGE_COLOR);
-        cv::Mat truth = cv::imread(truth_file.string(), CV_LOAD_IMAGE_GRAYSCALE);
+		cv::Mat volume = cv::imread(volume_file.string(), CV_LOAD_IMAGE_COLOR);
+		cv::Mat tmp = cv::imread(truth_file.string(), CV_LOAD_IMAGE_GRAYSCALE);
+		
+		//make same size for gt and volume
+		cv::Mat truth;
+		if (volume.size < tmp.size)
+			cv::pyrDown(tmp, truth, cv::Size(volume.cols, volume.rows));
+		else if (volume.size > tmp.size)
+			cv::pyrUp(tmp, truth, cv::Size(volume.cols, volume.rows));
+		else
+			truth = tmp;
+
+		if ((volume.type() != CV_32FC1) && (volume.channels() == 1)) {
+			volume.convertTo(volume, CV_32FC1);
+		}
 
         // prepare sample image for better classification
         cv::Mat data_image = prepare_image(volume);
