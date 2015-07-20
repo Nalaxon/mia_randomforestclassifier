@@ -443,6 +443,9 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
     if (image.channels() != 1) {
         cv::cvtColor(image, channels[0], CV_BGR2GRAY);
     }
+	else {
+		channels[0] = image.clone();
+	}
 
     cv::equalizeHist(channels[0], channels[0]);
 
