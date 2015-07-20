@@ -61,7 +61,7 @@ int Program::run(int argc, char** argv) {
 
     if (m_use_xvalidation) {
         boost::random::random_device rng;
-        boost::random::uniform_int_distribution<> dist_test_image(1, 30);
+		boost::random::uniform_int_distribution<> dist_test_image(1, MAX_IMAGES);
         m_test_image_index = dist_test_image(rng);
     }
 
@@ -444,12 +444,12 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
     cv::integral(channels[0], channels[2], ddepth);
 
     // cut off first row and col from integral images
-    cv::Rect roi(1, 1, channels[0].rows, channels[0].cols);
+	cv::Rect roi(1, 1, channels[0].cols, channels[0].rows);
     channels[1] = cv::Mat(channels[1], roi);
     channels[2] = cv::Mat(channels[2], roi);
 
-	  abs_grad_x.convertTo(abs_grad_x, CV_32F, 1.0f / 255.0f);
-	  channels[3] = grad_f.clone();
+    abs_grad_x.convertTo(abs_grad_x, CV_32F, 1.0f / 255.0f);
+    channels[3] = grad_f.clone();
 
     cv::merge(channels, prepared);
 
