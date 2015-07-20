@@ -111,14 +111,23 @@ int Program::run(int argc, char** argv) {
         // test the forest on image
         boost::filesystem::path test_volume_path, truth_file_path;
         std::tie(test_volume_path, truth_file_path) = resolve_data_path(m_test_image_index);
-        cv::Mat test_image = cv::imread(test_volume_path.string(), CV_LOAD_IMAGE_COLOR);
-        std::cout << "test: cols: " << test_image.cols << " rows: " << test_image.rows << " type: " << test_image.type() << std::endl;
-        cv::Mat truth_image = cv::imread(truth_file_path.string(), CV_LOAD_IMAGE_GRAYSCALE);
+		//std::cout << "get image: " << test_volume_path.string() << std::endl;
+		cv::Mat test_image = cv::imread(test_volume_path.string(), CV_LOAD_IMAGE_COLOR);
+       // std::cout << "test: cols: " << test_image.cols << " rows: " << test_image.rows << " type: " << test_image.type() << std::endl;
+        cv::Mat tmp = cv::imread(truth_file_path.string(), CV_LOAD_IMAGE_GRAYSCALE);
+		
+		if ((test_image.type() != CV_32FC1) && (test_image.channels() == 1)) {
+			test_image.convertTo(test_image, CV_32FC1);
+		}
+
+		cv::Mat truth_image;
+		cv::pyrDown(tmp, truth_image, cv::Size(test_image.cols, test_image.rows));
 
         // convert ground truth to grayscalce if needed
         if (truth_image.channels() != 1) {
             cv::cvtColor(truth_image, truth_image, CV_BGR2GRAY);
         }
+
         truth_image.convertTo(truth_image, CV_32FC1, 1 / 255.);
 
         cv::Mat test_image_prepared = prepare_image(test_image);
@@ -354,7 +363,7 @@ bool Program::parse_command_line(int argc, char** argv) {
 
 void Program::extract_training_samples(std::vector<Sample<CellLabel, cv::Mat>>&samples) const {
 #pragma omp parallel for
-    for (int i_file = 1; i_file <= 30; ++i_file) {
+	for (int i_file = 1; i_file <= MAX_IMAGES; ++i_file) {
 
 		if (m_use_xvalidation && (i_file == m_test_image_index)) {
 			std::cout << "test image index: " << i_file << std::endl;
