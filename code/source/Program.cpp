@@ -121,9 +121,9 @@ int Program::run(int argc, char** argv) {
 		}
 
 		cv::Mat truth_image;
-		if (test_image.size < tmp.size)
+		if ((test_image.cols < tmp.cols) || (test_image.rows < tmp.rows))
 			cv::pyrDown(tmp, truth_image, cv::Size(test_image.cols, test_image.rows));
-		else if (test_image.size > tmp.size)
+		else if ((test_image.cols > tmp.cols) || (test_image.rows > tmp.rows))
 			cv::pyrUp(tmp, truth_image, cv::Size(test_image.cols, test_image.rows));
 		else
 			truth_image = tmp;
@@ -387,9 +387,9 @@ void Program::extract_training_samples(std::vector<Sample<CellLabel, cv::Mat>>&s
 		
 		//make same size for gt and volume
 		cv::Mat truth;
-		if (volume.size < tmp.size)
+		if ((volume.cols < tmp.cols) || (volume.rows < tmp.rows))
 			cv::pyrDown(tmp, truth, cv::Size(volume.cols, volume.rows));
-		else if (volume.size > tmp.size)
+		else if ((volume.cols > tmp.cols) || (volume.rows > tmp.rows))
 			cv::pyrUp(tmp, truth, cv::Size(volume.cols, volume.rows));
 		else
 			truth = tmp;
