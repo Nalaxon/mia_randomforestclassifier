@@ -128,8 +128,6 @@ int Program::run(int argc, char** argv) {
 		else
 			truth_image = tmp;
 
-		cv::pyrDown(tmp, truth_image, cv::Size(test_image.cols, test_image.rows));
-
         // convert ground truth to grayscalce if needed
         if (truth_image.channels() != 1) {
             cv::cvtColor(truth_image, truth_image, CV_BGR2GRAY);
