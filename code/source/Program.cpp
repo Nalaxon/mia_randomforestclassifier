@@ -61,7 +61,7 @@ int Program::run(int argc, char** argv) {
 
     if (m_use_xvalidation) {
         boost::random::random_device rng;
-        boost::random::uniform_int_distribution<> dist_test_image(1, 30);
+		boost::random::uniform_int_distribution<> dist_test_image(1, MAX_IMAGES);
         m_test_image_index = dist_test_image(rng);
     }
 
@@ -92,8 +92,8 @@ int Program::run(int argc, char** argv) {
     factory_list.push_back(std::make_shared<SURFFilterNodeFactory>(patch_params));
     factory_list.push_back(std::make_shared<TwoRegionNodeFactory>(patch_params));
     factory_list.push_back(std::make_shared<SumNodeFactory>(patch_params));
-    factory_list.push_back(std::make_shared<TwoPixelGradientNodeFactory>(patch_params));
-    //factory_list.push_back(std::make_shared<TwoRegionsGradientNodeFactory>(patch_params));
+	factory_list.push_back(std::make_shared<TwoPixelGradientNodeFactory>(patch_params));
+	factory_list.push_back(std::make_shared<TwoRegionsGradientNodeFactory>(patch_params));
 
     std::shared_ptr<UniversalNodeFactory<CellLabel, cv::Mat >>
             factory(new UniversalNodeFactory<CellLabel, cv::Mat>(factory_list));
@@ -111,14 +111,28 @@ int Program::run(int argc, char** argv) {
         // test the forest on image
         boost::filesystem::path test_volume_path, truth_file_path;
         std::tie(test_volume_path, truth_file_path) = resolve_data_path(m_test_image_index);
-        cv::Mat test_image = cv::imread(test_volume_path.string(), CV_LOAD_IMAGE_COLOR);
-        std::cout << "test: cols: " << test_image.cols << " rows: " << test_image.rows << " type: " << test_image.type() << std::endl;
-        cv::Mat truth_image = cv::imread(truth_file_path.string(), CV_LOAD_IMAGE_GRAYSCALE);
+		//std::cout << "get image: " << test_volume_path.string() << std::endl;
+		cv::Mat test_image = cv::imread(test_volume_path.string(), CV_LOAD_IMAGE_COLOR);
+       // std::cout << "test: cols: " << test_image.cols << " rows: " << test_image.rows << " type: " << test_image.type() << std::endl;
+        cv::Mat tmp = cv::imread(truth_file_path.string(), CV_LOAD_IMAGE_GRAYSCALE);
+		
+		if ((test_image.type() != CV_32FC1) && (test_image.channels() == 1)) {
+			test_image.convertTo(test_image, CV_32FC1);
+		}
+
+		cv::Mat truth_image;
+		if ((test_image.cols < tmp.cols) || (test_image.rows < tmp.rows))
+			cv::pyrDown(tmp, truth_image, cv::Size(test_image.cols, test_image.rows));
+		else if ((test_image.cols > tmp.cols) || (test_image.rows > tmp.rows))
+			cv::pyrUp(tmp, truth_image, cv::Size(test_image.cols, test_image.rows));
+		else
+			truth_image = tmp;
 
         // convert ground truth to grayscalce if needed
         if (truth_image.channels() != 1) {
             cv::cvtColor(truth_image, truth_image, CV_BGR2GRAY);
         }
+
         truth_image.convertTo(truth_image, CV_32FC1, 1 / 255.);
 
         cv::Mat test_image_prepared = prepare_image(test_image);
@@ -354,7 +368,7 @@ bool Program::parse_command_line(int argc, char** argv) {
 
 void Program::extract_training_samples(std::vector<Sample<CellLabel, cv::Mat>>&samples) const {
 #pragma omp parallel for
-    for (int i_file = 1; i_file <= 30; ++i_file) {
+	for (int i_file = 1; i_file <= MAX_IMAGES; ++i_file) {
 
 		if (m_use_xvalidation && (i_file == m_test_image_index)) {
 			std::cout << "test image index: " << i_file << std::endl;
@@ -366,8 +380,21 @@ void Program::extract_training_samples(std::vector<Sample<CellLabel, cv::Mat>>&s
         fs::path volume_file, truth_file;
         std::tie(volume_file, truth_file) = resolve_data_path(i_file);
 
-        cv::Mat volume = cv::imread(volume_file.string(), CV_LOAD_IMAGE_COLOR);
-        cv::Mat truth = cv::imread(truth_file.string(), CV_LOAD_IMAGE_GRAYSCALE);
+		cv::Mat volume = cv::imread(volume_file.string(), CV_LOAD_IMAGE_COLOR);
+		cv::Mat tmp = cv::imread(truth_file.string(), CV_LOAD_IMAGE_GRAYSCALE);
+		
+		//make same size for gt and volume
+		cv::Mat truth;
+		if ((volume.cols < tmp.cols) || (volume.rows < tmp.rows))
+			cv::pyrDown(tmp, truth, cv::Size(volume.cols, volume.rows));
+		else if ((volume.cols > tmp.cols) || (volume.rows > tmp.rows))
+			cv::pyrUp(tmp, truth, cv::Size(volume.cols, volume.rows));
+		else
+			truth = tmp;
+
+		if ((volume.type() != CV_32FC1) && (volume.channels() == 1)) {
+			volume.convertTo(volume, CV_32FC1);
+		}
 
         // prepare sample image for better classification
         cv::Mat data_image = prepare_image(volume);
@@ -414,6 +441,9 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
     if (image.channels() != 1) {
         cv::cvtColor(image, channels[0], CV_BGR2GRAY);
     }
+	else {
+		channels[0] = image.clone();
+	}
 
     cv::equalizeHist(channels[0], channels[0]);
 
@@ -444,12 +474,12 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
     cv::integral(channels[0], channels[2], ddepth);
 
     // cut off first row and col from integral images
-    cv::Rect roi(1, 1, channels[0].rows, channels[0].cols);
+	cv::Rect roi(1, 1, channels[0].cols, channels[0].rows);
     channels[1] = cv::Mat(channels[1], roi);
     channels[2] = cv::Mat(channels[2], roi);
 
-	  abs_grad_x.convertTo(abs_grad_x, CV_32F, 1.0f / 255.0f);
-	  channels[3] = grad_f.clone();
+    abs_grad_x.convertTo(abs_grad_x, CV_32F, 1.0f / 255.0f);
+    channels[3] = grad_f.clone();
 
     cv::merge(channels, prepared);
 

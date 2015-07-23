@@ -136,6 +136,8 @@ private:
     PathTuple resolve_data_path(unsigned int id) const;
 
     double xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std::vector < Sample<CellLabel, cv::Mat>> &pure_samples, const unsigned int validations);
+
+	int MAX_IMAGES = 60;
 };
 
 
