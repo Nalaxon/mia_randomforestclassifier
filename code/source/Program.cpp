@@ -104,13 +104,13 @@ int Program::run(int argc, char** argv) {
 
     RandomForest<CellLabel, cv::Mat> forest(rf_params, factory);
 
-    if (m_tree_output_stream) {
-        *m_tree_output_stream << "Tree structure:" << std::endl;
-        forest.print_dot_format(*m_tree_output_stream);
-    }
-
     if (m_use_xvalidation) {
         double accuracy = xvalidation(forest, pure_samples, m_num_xvalidation_sets);
+
+		if (m_tree_output_stream) {
+			*m_tree_output_stream << "Tree structure:" << std::endl;
+//			forest.print_dot_format(*m_tree_output_stream);
+		}
 
         // test the forest on image
         boost::filesystem::path test_volume_path, truth_file_path;
@@ -164,8 +164,8 @@ int Program::run(int argc, char** argv) {
         //cv::namedWindow("binClassify", CV_WINDOW_AUTOSIZE);
         //cv::imshow("binClassify", classify_image);
 
-        //cv::namedWindow("propwindow", CV_WINDOW_AUTOSIZE);
-        //cv::imshow("propwindow", prop_image);
+        cv::namedWindow("propwindow", CV_WINDOW_AUTOSIZE);
+        cv::imshow("propwindow", prop_image);
 		
         classify_image = classify_image < 0.5;
         test_image.setTo(cv::Scalar(0, 255, 0), classify_image);
@@ -371,7 +371,9 @@ bool Program::parse_command_line(int argc, char** argv) {
 //----------------------------------------------------------------------------------------------------------------------
 
 void Program::extract_training_samples(std::vector<Sample<CellLabel, cv::Mat>>&samples) const {
+#if NDEBUG
 #pragma omp parallel for
+#endif
 	for (int i_file = 1; i_file <= MAX_IMAGES; ++i_file) {
 
 		if (m_use_xvalidation && (i_file == m_test_image_index)) {
@@ -422,7 +424,9 @@ void Program::extract_training_samples(std::vector<Sample<CellLabel, cv::Mat>>&s
             if (effected_sample_counter < samples_per_class) {
                 ++effected_sample_counter;
                 Sample<CellLabel, cv::Mat> sample(foreground ? CellLabel::Border() : CellLabel::Cell(), sample_image);
+#if NDEBUG
 #pragma omp critical
+#endif
                 {
                     samples.push_back(sample);
                 }
@@ -554,7 +558,7 @@ double Program::xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std:
 
         if (m_tree_output_stream) {
             std::cout << "Tree structure:" << std::endl;
-            forest.print_dot_format(std::cout);
+			forest.print_dot_format(*m_tree_output_stream);
         }
 
         // test the forest
