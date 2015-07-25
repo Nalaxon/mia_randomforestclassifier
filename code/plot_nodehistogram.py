@@ -16,7 +16,10 @@ if __name__ == "__main__":
 		'SURFFilterNode': 0,
 		'TwoRegionsNode': 0,
 		'SumNode': 0,
-		'TwoPixelGradientNode': 0
+		'TwoPixelGradientNode': 0,
+                'TwoRegionsGradientNode': 0,
+                'CannyEdgeNode':0,
+                'Haar4WaveletNode':0
 	}
 
 	with open(dot_file) as f:
@@ -37,7 +40,7 @@ if __name__ == "__main__":
 			counts.append(count)
 		counts = np.array(counts, dtype=np.float) / count_total
 		ax.barh(pos, counts, align='center', color='m')
-		pylab.yticks(pos, names)
+		plt.yticks(pos, names)
 		plt.title('Distribution of chosen weak learners')
 		plt.xlabel('%')
 		plt.draw()
