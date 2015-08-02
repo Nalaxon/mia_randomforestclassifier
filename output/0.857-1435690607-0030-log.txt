@@ -1,2 +1,0 @@
-x-accuracy:,accuracy:,num_trees:,max_depth:,num_feature_tests:,num_samples:,test_image_index:
-0.857,0.765,20,14,150,10000,0030
