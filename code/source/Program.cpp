@@ -22,6 +22,7 @@
 #include "cells/CannyEdgeNodeFactory.hpp"
 #include "cells/Haar4WaveletNodeFactory.hpp"
 #include "cells/HoGNodeFactory.hpp"
+#include "cells/CannyEdgeMoment00NodeFactory.hpp"
 
 #include <iomanip>
 #include <chrono>
@@ -34,6 +35,8 @@
 
 #include <boost/program_options.hpp>
 #include <boost/random.hpp>
+
+
 
 std::unique_ptr<Histogram<CellLabel, cv::Mat>>
 sum_ensemble(const std::vector<Histogram<CellLabel, cv::Mat>>&histograms) {
@@ -55,6 +58,11 @@ Program::~Program() {
     {
         delete m_tree_output_stream;
     }
+
+	if (m_log_stream != nullptr && m_log_stream != &std::cout)
+	{
+		delete m_log_stream;
+	}
 }
 
 int Program::run(int argc, char** argv) {
@@ -100,19 +108,25 @@ int Program::run(int argc, char** argv) {
 	factory_list.push_back(std::make_shared<CannyEdgeNodeFactory>(patch_params));
 	factory_list.push_back(std::make_shared<Haar4WaveletNodeFactory>(patch_params));
 	factory_list.push_back(std::make_shared<HoGNodeFactory>(patch_params));
+	factory_list.push_back(std::make_shared<CannyEdgeMoment00NodeFactory>(patch_params));
 
     std::shared_ptr<UniversalNodeFactory<CellLabel, cv::Mat >>
             factory(new UniversalNodeFactory<CellLabel, cv::Mat>(factory_list));
+
+	m_log_stream = new std::ofstream(std::string("../bin/log.txt").c_str(), std::ofstream::out);
+	factory->setLogStream(m_log_stream);
 
     RandomForest<CellLabel, cv::Mat> forest(rf_params, factory);
 
     if (m_use_xvalidation) {
         double accuracy = xvalidation(forest, pure_samples, m_num_xvalidation_sets);
 
-		if (m_tree_output_stream) {
-			*m_tree_output_stream << "Tree structure:" << std::endl;
+
+
+//		if (m_tree_output_stream) {
+//			*m_tree_output_stream << "Tree structure:" << std::endl;
 //			forest.print_dot_format(*m_tree_output_stream);
-		}
+//		}
 
         // test the forest on image
         boost::filesystem::path test_volume_path, truth_file_path;
@@ -238,22 +252,31 @@ int Program::run(int argc, char** argv) {
             forest.print_dot_format(std::cout);
         }
 
-        // test the forest
-        boost::filesystem::path test_volume_path;
-        std::tie(test_volume_path, std::ignore) = resolve_data_path(1);
-        cv::Mat test_image = cv::imread(test_volume_path.string(), CV_LOAD_IMAGE_COLOR);
-        cv::Mat test_image_prepared = prepare_image(test_image);
-        cv::namedWindow("inputwindow", CV_WINDOW_AUTOSIZE);
-        cv::imshow("inputwindow", test_image);
+		// test the forest
+		boost::filesystem::path test_volume_path;
+		std::tie(test_volume_path, std::ignore) = resolve_data_path(60);
+
+		/*cv::Mat test_image = cv::imread(test_volume_path.string(), CV_LOAD_IMAGE_COLOR);
+		cv::Mat test_image_prepared = prepare_image(test_image);
+		cv::namedWindow("inputwindow", CV_WINDOW_AUTOSIZE);
+		cv::imshow("inputwindow", test_image);
+		cv::waitKey(0);
         
         cv::Mat prob_image = classify_image(forest, test_image_prepared);
         cv::namedWindow("resultwindow", CV_WINDOW_AUTOSIZE);
         cv::imshow("resultwindow", prob_image);
+		cv::waitKey(0);*/
         
+		cv::Mat test_image = cv::imread(test_volume_path.string(), CV_LOAD_IMAGE_COLOR);
+		cv::Mat test_image_prepared = prepare_image(test_image);
+		cv::Mat prob_image = classify_image(forest, test_image_prepared);
         cv::Mat classify_image;
         cv::threshold(prob_image, classify_image, 0.5f, 1.0f, cv::THRESH_BINARY);
         cv::namedWindow("binClassify", CV_WINDOW_AUTOSIZE);
         cv::imshow("binClassify", classify_image);
+		cv::waitKey(0);
+
+		
     }
     cv::waitKey(0);
 
@@ -277,7 +300,7 @@ bool Program::parse_command_line(int argc, char** argv) {
             ("num_samples", po::value<unsigned int>()->default_value(30 * 30),
             "the number of samples that will be extracted from each training image")
 
-            ("sample_size", po::value<unsigned int>()->default_value(30),
+            ("sample_size", po::value<unsigned int>()->default_value(32),
             "the size of the samples. (Each sample will be (sample_size x sample_size)")
 
             ("enable_bagging", po::bool_switch()->default_value(false),
@@ -536,45 +559,48 @@ double Program::xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std:
     std::vector<Sample<CellLabel, cv::Mat>> ground_truth, samples;
     auto offset = pure_samples.size() / validations;
     double accuracy = 0.0;
-    for (unsigned int i = 0; i < validations; ++i) {
-        ground_truth.clear();
-        samples.clear();
+	
+	for (unsigned int i = 0; i < validations; ++i) {
+		ground_truth.clear();
+		samples.clear();
 
-        for (unsigned int j = i * offset; j < (i + 1) * offset; ++j)
-        {
-            samples.push_back(pure_samples[j]);
-        }
+		for (unsigned int j = i * offset; j < (i + 1) * offset; ++j)
+		{
+			samples.push_back(pure_samples[j]);
+		}
 
-        for (unsigned int e = (i + 1) * offset; e < pure_samples.size() - 1; ++e)
-        {
-            ground_truth.push_back(pure_samples[e]);
-        }
+		for (unsigned int e = (i + 1) * offset; e < pure_samples.size() - 1; ++e)
+		{
+			ground_truth.push_back(pure_samples[e]);
+		}
 
-        //train forest
-        std::cout << "Start training... " << i + 1 << std::endl;
-        auto start = std::chrono::system_clock::now();
-        forest.train(samples);
-        auto end = std::chrono::system_clock::now();
-        auto elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
-        std::cout << "Training done! Took " << elapsed_seconds << " seconds." << std::endl;
+		//train forest
+		std::cout << "Start training... " << i + 1 << std::endl;
+		auto start = std::chrono::system_clock::now();
+		forest.train(samples);
+		auto end = std::chrono::system_clock::now();
+		auto elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+		std::cout << "Training done! Took " << elapsed_seconds << " seconds." << std::endl;
 
-        if (m_tree_output_stream) {
-            std::cout << "Tree structure:" << std::endl;
+		if (m_tree_output_stream) {
+			//std::cout << "Tree structure:" << std::endl;
 			forest.print_dot_format(*m_tree_output_stream);
-        }
+		}
 
-        // test the forest
-        int sum_correct = 0;
-        for (unsigned int i = 0; i < samples.size(); ++i) {
-            if (forest.predict(samples[i].get_data(), sum_ensemble) == samples[i].get_label())
-            {
-                ++sum_correct;
-            }
-        }
+		// test the forest
+		int sum_correct = 0;
+		for (unsigned int i = 0; i < samples.size(); ++i) {
+			if (forest.predict(samples[i].get_data(), sum_ensemble) == samples[i].get_label())
+			{
+				++sum_correct;
+			}
+		}
 
-        accuracy += (float) sum_correct / (float) samples.size();
-        std::cout << sum_correct << " correct classification of " << samples.size() << std::endl;
-    }
+		accuracy += (float)sum_correct / (float)samples.size();
+		std::cout << sum_correct << " correct classification of " << samples.size() << std::endl;
+
+	}
+
     accuracy /= validations;
     std::cout << "accuracy: " << accuracy << std::endl;
 
