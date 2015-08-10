@@ -38,6 +38,9 @@ compile_commands.json
 *.a
 *.lib
 
+# Precompiled Python modules
+*.pyc
+
 # Executables
 *.exe
 *.out
