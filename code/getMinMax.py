@@ -4,45 +4,55 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pylab
 
-dot_file = "bin/trees.txt"
+dot_file = "bin/log.txt"
 
+
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        pass
+ 
+    try:
+        import unicodedata
+        unicodedata.numeric(s)
+        return True
+    except (TypeError, ValueError):
+        pass
+    
+    return False
 
 if __name__ == "__main__":
-	histogram = {
-		'CenterPixelNode': 0,
-		'GradientNode': 0,
-		'TwoPixelNode': 0,
-		'HaarWaveletNode': 0,
-		'SURFFilterNode': 0,
-		'TwoRegionsNode': 0,
-		'SumNode': 0,
-		'TwoPixelGradientNode': 0,
-                'TwoRegionsGradientNode': 0,
-                'CannyEdgeNode':0,
-                'Haar4WaveletNode':0,
-		'HoGNode':0
-	}
+#def user_max():
+    histogram = {
+        'CenterPixelNode': 10000000,
+        'GradientNode': 100000000,
+        'TwoPixelNode': 100000000,
+        'HaarWaveletNode': 100000000,
+        'SURFFilterNode': 100000000,
+        'TwoRegionsNode': 100000000,
+        'SumNode': 100000000,
+        'TwoPixelGradientNode': 100000000,
+        'TwoRegionsGradientNode': 100000000,
+        'CannyEdgeNode':100000000,
+        'Haar4WaveletNode':100000000,
+        'HoGNode':100000000,
+        'CannyEdgeMoment00Node':100000000
+    }
+    
+    names = []
+    counts = []
+    for name, count in histogram.iteritems():
+        names.append(name)
+        counts.append(count)
 
-	with open(dot_file) as f:
-		file_data = "".join([line for line in f])
-		count_total = 0
-		for key in histogram:
-			count = file_data.count(key)
-			count_total += count
-			histogram[key] = count
+    with open(dot_file) as f:
+        for line in f:
+            d = line.split(';')
+            if d[0] in histogram:
+                if is_number(d[1]):
+                    histogram[d[0]] = max(histogram[d[0]], d[1])
+        print histogram
 
-		fig, ax = plt.subplots()
-		plt.subplots_adjust(left=0.25, right=0.88)
-		pos = np.arange(len(histogram)) + 0.5
-		names = []
-		counts = []
-		for name, count in histogram.iteritems():
-			names.append(name)
-			counts.append(count)
-		counts = np.array(counts, dtype=np.float) / count_total
-		ax.barh(pos, counts, align='center', color='m')
-		plt.yticks(pos, names)
-		plt.title('Distribution of chosen weak learners')
-		plt.xlabel('%')
-		plt.draw()
-		plt.show()
+
