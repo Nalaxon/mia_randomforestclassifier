@@ -1,11 +1,6 @@
 #include "CannyEdgeNode.hpp"
 #include "Tools/ImageTools.hpp"
 
-CannyEdgeNode::CannyEdgeNode(double canny_threshold, double threshold)
-	:m_canny_threshold(canny_threshold), m_threshold(threshold)
-{    
-}
-
 CannyEdgeNode::Direction CannyEdgeNode::split(const cv::Mat& mat) const
 {
 	cv::Mat detected_edges = ImageTools::extract_channels<4>(mat)[0];
@@ -22,6 +17,8 @@ CannyEdgeNode::Direction CannyEdgeNode::split(const cv::Mat& mat) const
 	double length = 0.;
 	for (int i = 0; i < contours.size(); ++i)
 		length += arcLength(contours[i], true);
+
+	*m_log_stream << "CannyEdgeNode;" << length << ";" << std::endl;
 
 	if (length < m_threshold)
     {

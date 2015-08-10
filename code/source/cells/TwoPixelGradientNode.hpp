@@ -13,7 +13,8 @@ class TwoPixelGradientNode : public BaseNode
 public:
 
   TwoPixelGradientNode(std::vector<unsigned int> x1, std::vector<unsigned int> y1,
-                       std::vector<unsigned int> x2, std::vector<unsigned int> y2, float threshold)
+	  std::vector<unsigned int> x2, std::vector<unsigned int> y2,
+	  float threshold, std::ostream* log_stream = nullptr)
   : m_x_1(x1),
   m_y_1(y1),
   m_x_2(x2),

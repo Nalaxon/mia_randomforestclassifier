@@ -1,7 +1,7 @@
 #include "TwoPixelGradientNodeFactory.hpp"
 #include "TwoPixelGradientNode.hpp"
 
-TwoPixelGradientNodeFactory::NodePtr TwoPixelGradientNodeFactory::createRandomNode()
+TwoPixelGradientNodeFactory::NodePtr TwoPixelGradientNodeFactory::createRandomNode(std::ostream* log_stream)
 {
 	std::vector<unsigned int> x1, x2, y1, y2;
 
@@ -14,5 +14,5 @@ TwoPixelGradientNodeFactory::NodePtr TwoPixelGradientNodeFactory::createRandomNo
 	}
     
     float threshold = m_dist_threshold(m_rng);
-	return std::make_unique<TwoPixelGradientNode>(x1, y1, x2, y2, threshold);
+	return std::make_unique<TwoPixelGradientNode>(x1, y1, x2, y2, threshold, nullptr);
 }

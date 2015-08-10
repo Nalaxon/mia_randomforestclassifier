@@ -20,7 +20,7 @@ class GradientNodeFactory : public NodeFactory<CellLabel, cv::Mat>
     }
 
   protected:
-    virtual NodePtr createRandomNode();
+	  virtual NodePtr createRandomNode(std::ostream* log_stream);
 
   private:
     boost::random::uniform_real_distribution<> m_dist_threshold;

@@ -17,7 +17,7 @@ class SURFFilterNodeFactory : public NodeFactory<CellLabel, cv::Mat>
     SURFFilterNodeFactory(PatchParameter params);
      
   protected:
-    virtual NodePtr createRandomNode();
+	  virtual NodePtr createRandomNode(std::ostream* log_stream);
 
   private:
     PatchParameter m_params;

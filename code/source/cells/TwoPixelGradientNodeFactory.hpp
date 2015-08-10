@@ -22,7 +22,7 @@ public:
   }
 
 protected:
-  virtual NodePtr createRandomNode();
+	virtual NodePtr createRandomNode(std::ostream* log_stream);
 
 private:
   boost::random::uniform_int_distribution<> m_dist_rows, m_dist_cols;

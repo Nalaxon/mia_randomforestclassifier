@@ -11,14 +11,13 @@
 class Haar4WaveletNode : public BaseNode {
   // Attributes
 public:
-  Haar4WaveletNode(bool is_vertical, double threshold) : 
-    m_threshold(threshold), m_is_vertical(is_vertical)
-  {
-  }
+  Haar4WaveletNode(bool is_vertical, double threshold, std::ostream* log_stream) : 
+	  m_threshold(threshold), m_is_vertical(is_vertical), m_log_stream(log_stream) {}
 
 private:
   double m_threshold;
   bool m_is_vertical;
+  std::ostream* m_log_stream;
 
 protected:
   virtual Direction split(const cv::Mat& data) const;

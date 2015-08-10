@@ -1,11 +1,6 @@
 #include "SumNode.hpp"
 #include "tools/ImageTools.hpp"
 
-
-SumNode::SumNode(double threshhold) : m_threshold(threshhold)
-{
-}
-
 SumNode::Direction SumNode::split(const cv::Mat& data) const
 {
   int max_row_idx = data.rows - 1;

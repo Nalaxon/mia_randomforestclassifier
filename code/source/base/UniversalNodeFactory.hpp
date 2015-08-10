@@ -27,19 +27,30 @@ public:
     return m_factories;
   }
 
+  void setLogStream(std::ostream* stream)
+  {
+	  m_log_stream = stream;
+  }
+
+  std::ostream* getLogStream()
+  {
+	  return m_log_stream;
+  }
+
 protected:
   
   //----------------------------------------------------------------------------
-  virtual typename SuperType::NodePtr createRandomNode()
+	virtual typename SuperType::NodePtr createRandomNode(std::ostream* log_stream)
   {
     unsigned int factory_idx = m_dist(SuperType::m_rng);
-    return m_factories[factory_idx]->createRandomNode();
+    return m_factories[factory_idx]->createRandomNode(m_log_stream);
   }
 
 private:
   
   boost::random::uniform_int_distribution<> m_dist;
   std::vector<std::shared_ptr<SuperType>> m_factories;
+  std::ostream* m_log_stream;
 } ;
 
 

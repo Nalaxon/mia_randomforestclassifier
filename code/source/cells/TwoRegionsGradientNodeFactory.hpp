@@ -18,7 +18,7 @@ public:
   
 protected:
   
-  virtual NodePtr createRandomNode();
+	virtual NodePtr createRandomNode(std::ostream* log_stream);
 
 private:
   

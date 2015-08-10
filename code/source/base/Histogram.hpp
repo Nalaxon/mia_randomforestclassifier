@@ -149,9 +149,9 @@ public:
     for (const auto& entry : m_hist_map)
     {
       float prob = ((float)entry.second) / m_numTotal;
-      entropy -= prob * log2(prob);
+      entropy += prob * log2(prob);
     }
-    return entropy;
+    return -entropy;
   }  
   
   //----------------------------------------------------------------------------

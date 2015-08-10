@@ -11,7 +11,7 @@
 class GradientNode : public BaseNode {
   // Attributes
 public:
-  GradientNode(double threshold) : m_threshold(threshold)
+	GradientNode(double threshold, std::ostream* log_stream = nullptr) : m_threshold(threshold)
   {
   }
 

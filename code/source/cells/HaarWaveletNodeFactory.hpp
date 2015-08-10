@@ -16,7 +16,7 @@ class HaarWaveletNodeFactory : public NodeFactory<CellLabel, cv::Mat>
     HaarWaveletNodeFactory(PatchParameter params);
     
   protected:
-    virtual NodePtr createRandomNode();
+	  virtual NodePtr createRandomNode(std::ostream* log_stream);
 
   private:
     PatchParameter m_params;

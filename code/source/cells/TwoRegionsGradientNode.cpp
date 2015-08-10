@@ -1,11 +1,6 @@
 #include "TwoRegionsGradientNode.hpp"
 #include "tools/ImageTools.hpp"
 
-TwoRegionsGradientNode::TwoRegionsGradientNode(const cv::Rect& region1, const cv::Rect& region2, float threshold)
-:m_region1(region1), m_region2(region2), m_threshold(threshold)
-{    
-}
-
 TwoRegionsGradientNode::Direction TwoRegionsGradientNode::split(const cv::Mat& mat) const
 {
 	std::vector<cv::Mat> mat1(4), mat2(4);

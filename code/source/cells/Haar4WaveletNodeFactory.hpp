@@ -15,12 +15,13 @@ class Haar4WaveletNodeFactory : public NodeFactory<CellLabel, cv::Mat>
 {
   public:
 	  Haar4WaveletNodeFactory(PatchParameter params) :
-		  m_params(params), m_dist_threshold(params.max_value*255., 2.*255.*(params.patch_width)*(params.patch_height)*params.max_value)
+		  //m_params(params), m_dist_threshold(params.max_value*255., 2.*255.*(params.patch_width)*(params.patch_height)*params.max_value)
+		  m_params(params), m_dist_threshold(params.max_value*255., 10000.)
 	  {
 	  }
     
   protected:
-    virtual NodePtr createRandomNode();
+	  virtual NodePtr createRandomNode(std::ostream* log_stream);
 
   private:
     PatchParameter m_params;

@@ -4,6 +4,7 @@
 #include "Histogram.hpp"
 #include "types.hpp"
 #include "memory.hpp"
+#include <string>
 
 #include <iostream>
 #include <sstream>
@@ -25,6 +26,7 @@ public:
   {
     static_assert(std::is_base_of<Label<LABEL_TYPE>, LABEL_TYPE>::value, "Type parameter LABEL_TYPE must derive from Label.");
   }
+  
 
   //just try to define move constructor
   Node(Node&& other)
@@ -144,8 +146,7 @@ public:
     }
     
     stream << this_node_id << R"([label=")" << label.str() << R"("];)" << std::endl;
-  }
- 
+  } 
 
 private:
 
@@ -158,7 +159,10 @@ private:
   // a pointer to the right child
   NodePtr m_rightChild;
 
+  double m_value[2];
+
 protected:
+	std::string class_name;
 
   //----------------------------------------------------------------------------
   virtual Direction split(const DATA_TYPE& data) const = 0;

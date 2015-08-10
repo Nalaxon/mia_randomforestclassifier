@@ -10,8 +10,8 @@ m_dist_orientation(-1,1)
   m_dist_threshold = boost::random::uniform_real_distribution<>(-1.0 / 3.0 * max_value, 2.0 / 3.0 * max_value);
 }
 
-SURFFilterNodeFactory::NodePtr SURFFilterNodeFactory::createRandomNode() {
+SURFFilterNodeFactory::NodePtr SURFFilterNodeFactory::createRandomNode(std::ostream* log_stream) {
   double threshold = m_dist_threshold(m_rng);
   bool is_vertical = m_dist_orientation(m_rng) > 0;
-  return std::make_unique<SURFFilterNode>(is_vertical, threshold);
+  return std::make_unique<SURFFilterNode>(is_vertical, threshold, log_stream);
 }

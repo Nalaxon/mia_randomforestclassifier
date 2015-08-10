@@ -61,7 +61,7 @@ public:
     NodePtr max_node;
     for (unsigned int i = 0; i < num_tests; ++i)
     {
-      NodePtr node(createRandomNode());
+      NodePtr node(createRandomNode(nullptr));
       samples_left.clear();
       samples_right.clear();
       node->split(samples, samples_left, samples_right);
@@ -85,10 +85,12 @@ public:
     return max_node;
   }
 
+
+
 protected:
 
   //----------------------------------------------------------------------------
-  virtual NodePtr createRandomNode() = 0;
+  virtual NodePtr createRandomNode(std::ostream* log_stream) = 0;
 
   // a random number generator
   boost::random::random_device m_rng;

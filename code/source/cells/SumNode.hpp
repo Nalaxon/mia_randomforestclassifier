@@ -6,7 +6,8 @@
 class SumNode : public BaseNode
 {
 public:
-  SumNode(double threshhold);
+	SumNode(double threshhold, std::ostream* log_stream = nullptr)
+		:m_threshold(threshhold){}
 
 protected:
   virtual Direction split(const cv::Mat& data) const;
