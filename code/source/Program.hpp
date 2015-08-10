@@ -83,6 +83,11 @@ private:
     */
     std::ostream* m_tree_output_stream;
 
+	/**
+	* Defines to which output stream the nodes should be logged
+	**/
+	std::ostream* m_log_stream;
+
     /**
     * True if cross validation should be used, otherwise false
     */
@@ -137,7 +142,7 @@ private:
 
     double xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std::vector < Sample<CellLabel, cv::Mat>> &pure_samples, const unsigned int validations);
 
-	int MAX_IMAGES = 60;
+	int MAX_IMAGES = 30;
 };
 
 
