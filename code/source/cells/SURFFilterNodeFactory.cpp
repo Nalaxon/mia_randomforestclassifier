@@ -7,7 +7,8 @@ m_dist_threshold(),
 m_dist_orientation(-1,1)
 {
   double max_value = (params.patch_width - 1)*(params.patch_height - 1)*params.max_value;
-  m_dist_threshold = boost::random::uniform_real_distribution<>(-1.0 / 3.0 * max_value, 2.0 / 3.0 * max_value);
+  //m_dist_threshold = boost::random::uniform_real_distribution<>(-1.0 / 3.0 * max_value, 2.0 / 3.0 * max_value);
+  m_dist_threshold = boost::random::uniform_real_distribution<>(-1.0 / 3.0 * max_value, 100000.);
 }
 
 SURFFilterNodeFactory::NodePtr SURFFilterNodeFactory::createRandomNode(std::ostream* log_stream) {
