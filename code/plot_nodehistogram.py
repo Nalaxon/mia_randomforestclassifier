@@ -17,9 +17,12 @@ if __name__ == "__main__":
 		'TwoRegionsNode': 0,
 		'SumNode': 0,
 		'TwoPixelGradientNode': 0,
-                'TwoRegionsGradientNode': 0,
-                'CannyEdgeNode':0,
-                'Haar4WaveletNode':0
+        'TwoRegionsGradientNode': 0,
+        'CannyEdgeNode':0,
+        'Haar4WaveletNode':0,
+		'HoGNode':0,
+                'CannyEdgeMoment00Node':0,
+                'GaborNode':0
 	}
 
 	with open(dot_file) as f:
