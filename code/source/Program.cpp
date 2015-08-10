@@ -121,13 +121,6 @@ int Program::run(int argc, char** argv) {
     if (m_use_xvalidation) {
         double accuracy = xvalidation(forest, pure_samples, m_num_xvalidation_sets);
 
-
-
-//		if (m_tree_output_stream) {
-//			*m_tree_output_stream << "Tree structure:" << std::endl;
-//			forest.print_dot_format(*m_tree_output_stream);
-//		}
-
         // test the forest on image
         boost::filesystem::path test_volume_path, truth_file_path;
         std::tie(test_volume_path, truth_file_path) = resolve_data_path(m_test_image_index);
