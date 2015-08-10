@@ -23,6 +23,7 @@
 #include "cells/Haar4WaveletNodeFactory.hpp"
 #include "cells/HoGNodeFactory.hpp"
 #include "cells/CannyEdgeMoment00NodeFactory.hpp"
+#include "cells/GaborNodeFactory.hpp"
 
 #include <iomanip>
 #include <chrono>
@@ -109,6 +110,7 @@ int Program::run(int argc, char** argv) {
 	factory_list.push_back(std::make_shared<Haar4WaveletNodeFactory>(patch_params));
 	factory_list.push_back(std::make_shared<HoGNodeFactory>(patch_params));
 	factory_list.push_back(std::make_shared<CannyEdgeMoment00NodeFactory>(patch_params));
+	factory_list.push_back(std::make_shared<GaborNodeFactory>(patch_params));
 
     std::shared_ptr<UniversalNodeFactory<CellLabel, cv::Mat >>
             factory(new UniversalNodeFactory<CellLabel, cv::Mat>(factory_list));
