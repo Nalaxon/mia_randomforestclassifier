@@ -48,7 +48,9 @@ public:
 
   void train(const SampleVector& samples)
   {
+#if NDEBUG
 #pragma omp parallel for
+#endif
     for (int i = 0; i < static_cast<int> (m_params.m_num_trees); ++i)
     {
       const SampleVector* samples_to_use = &samples;
@@ -78,11 +80,15 @@ public:
   HistogramPtr predict_prob(const DATA_TYPE& data, EnsembleFct ensemble_fct) const
   {
     HistogramVector histograms;
+#if NDEBUG
 #pragma omp parallel for
+#endif
     for (int i = 0; i < static_cast<int> (m_params.m_num_trees); ++i)
     {
       const auto& treeResult = m_trees[i].predict(data);
+#if NDEBUG
 #pragma omp critical
+#endif
       {
         histograms.push_back(*treeResult);
       }
