@@ -105,6 +105,12 @@ private:
 
     NodePtr node = m_nodeFactory->create(samples, m_params.m_num_tests_per_split);
     node->split(samples, samples_left, samples_right);
+	if (samples_left.size() == 0 || samples_right.size() == 0)
+	{
+		NodePtr leaf = std::make_unique<LeafNode<LABEL_TYPE, DATA_TYPE>>();
+		leaf->setHistogram(std::move(hist_samples));
+		return leaf;
+	}
     node->setLeft(trainInternal(samples_left, depth + 1));
     node->setRight(trainInternal(samples_right, depth + 1));
 
