@@ -137,7 +137,7 @@ public:
     
     std::ostringstream label;
     // print class name
-    label << typeid(*this).name() << std::endl;
+    label << typeid(*this).name() << " : " << m_histogram->entropy() << std::endl;
     
     // print histogram data
     for (const auto& hist_entry : m_histogram->getData())
