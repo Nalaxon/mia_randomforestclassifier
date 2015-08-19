@@ -14,5 +14,5 @@ TwoPixelGradientNodeFactory::NodePtr TwoPixelGradientNodeFactory::createRandomNo
 	}
     
     float threshold = m_dist_threshold(m_rng);
-	return std::make_unique<TwoPixelGradientNode>(x1, y1, x2, y2, threshold, nullptr);
+	return std::make_unique<TwoPixelGradientNode>(x1, y1, x2, y2, threshold, log_stream);
 }

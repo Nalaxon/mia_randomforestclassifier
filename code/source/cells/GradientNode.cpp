@@ -10,6 +10,9 @@ GradientNode::Direction GradientNode::split(const cv::Mat& data) const
     - ImageTools::get_pixel<float, 4, 1>(data, 0, max_col_idx)
     - ImageTools::get_pixel<float, 4, 1>(data, max_row_idx, 0)
     + ImageTools::get_pixel<float, 4, 1>(data, 0, 0);
+
+  *m_log_stream << "GradientNode;" << sum << ";" << std::endl;
+
   if (sum > m_threshold) {
     return Node::Direction::LEFT;
   }

@@ -11,7 +11,8 @@ class CenterPixelNode : public BaseNode
 {
   
 public:
-	CenterPixelNode(int x, int y, float threshold, std::ostream* log_stream = nullptr) : m_x(x), m_y(y), m_threshold(threshold)
+	CenterPixelNode(int x, int y, float threshold, std::ostream* log_stream = nullptr)
+		: m_x(x), m_y(y), m_threshold(threshold), m_log_stream(log_stream)
   {
   }
   
@@ -19,6 +20,7 @@ private:
   int m_x;
   int m_y;
   float m_threshold;
+  std::ostream* m_log_stream;
 
 protected:
   

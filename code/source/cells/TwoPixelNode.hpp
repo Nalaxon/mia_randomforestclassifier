@@ -16,7 +16,8 @@ public:
   m_y_1(y1),
   m_x_2(x2),
   m_y_2(y2),
-  m_threshold(threshold)
+  m_threshold(threshold),
+  m_log_stream(log_stream)
   {
   }
 
@@ -30,6 +31,7 @@ private:
   unsigned int m_x_2;
   unsigned int m_y_2;
   float m_threshold;
+  std::ostream* m_log_stream;
 } ;
 
 

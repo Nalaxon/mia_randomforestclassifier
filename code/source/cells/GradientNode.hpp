@@ -11,12 +11,14 @@
 class GradientNode : public BaseNode {
   // Attributes
 public:
-	GradientNode(double threshold, std::ostream* log_stream = nullptr) : m_threshold(threshold)
+	GradientNode(double threshold, std::ostream* log_stream = nullptr)
+		: m_threshold(threshold), m_log_stream(log_stream)
   {
   }
 
 private:
   double m_threshold;
+  std::ostream* m_log_stream;
 
 protected:
   virtual Direction split(const cv::Mat& data) const;

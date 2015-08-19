@@ -10,7 +10,7 @@ TwoRegionNodeFactory::NodePtr TwoRegionNodeFactory::createRandomNode(std::ostrea
     adjust_region(region1);
     adjust_region(region2);
     float threshold = m_threshold_dist(m_rng);
-    return std::make_unique<TwoRegionsNode>(region1, region2, threshold, nullptr);
+	return std::make_unique<TwoRegionsNode>(region1, region2, threshold, log_stream);
 }
 
 void TwoRegionNodeFactory::adjust_region(cv::Rect& region)
