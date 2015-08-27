@@ -18,7 +18,8 @@ CannyEdgeNode::Direction CannyEdgeNode::split(const cv::Mat& mat) const
 	for (int i = 0; i < contours.size(); ++i)
 		length += arcLength(contours[i], true);
 
-	*m_log_stream << "CannyEdgeNode;" << length << ";" << std::endl;
+	if (m_log_stream != nullptr)
+		*m_log_stream << "CannyEdgeNode;" << length << ";" << std::endl;
 
 	if (length < m_threshold)
     {

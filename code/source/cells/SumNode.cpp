@@ -13,7 +13,8 @@ SumNode::Direction SumNode::split(const cv::Mat& data) const
 
   double sum = bottom_right - top_right - bottom_left + top_left;
 
-  *m_log_stream << "SumNode;" << sum << ";" << std::endl;
+  if (m_log_stream != nullptr)
+	  *m_log_stream << "SumNode;" << sum << ";" << std::endl;
 
   if (sum > m_threshold) {
     return Node::Direction::LEFT;

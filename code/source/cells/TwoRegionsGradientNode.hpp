@@ -12,6 +12,7 @@ public:
 		:m_region1(region1), m_region2(region2), m_threshold(threshold), m_log_stream(log_stream){}
   
   virtual Direction split(const cv::Mat& mat) const;
+  virtual std::string get_ClassName() { return (typeid(*this)).name(); };
   
 private:
   

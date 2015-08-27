@@ -43,8 +43,12 @@ protected:
 	virtual typename SuperType::NodePtr createRandomNode(std::ostream* log_stream)
   {
     unsigned int factory_idx = m_dist(SuperType::m_rng);
+	if (log_stream != nullptr)
+		*log_stream << m_factories[factory_idx]->get_ClassName();
     return m_factories[factory_idx]->createRandomNode(m_log_stream);
   }
+
+  virtual std::string get_ClassName() { return (typeid(*this)).name(); };
 
 private:
   

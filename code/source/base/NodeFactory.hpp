@@ -4,6 +4,8 @@
 #include "Node.hpp"
 #include "types.hpp"
 #include "memory.hpp"
+#include <fstream>
+
 
 #include <boost/random/random_device.hpp>
 
@@ -36,11 +38,19 @@ public:
   NodeFactory() : m_rng()
   {
     static_assert(std::is_base_of<Label<LABEL_TYPE>, LABEL_TYPE>::value, "Type parameter LABEL_TYPE must derive from Label.");
+
+	m_log_stream = new std::ofstream(std::string("../bin/NodeLog.txt").c_str(), std::ofstream::out);
   }
 
   NodeFactory(const NodeFactory& other)
     : m_rng()
   {
+  }
+
+  ~NodeFactory()
+  {
+	  if (m_log_stream != nullptr)
+		  delete m_log_stream;
   }
 
   NodeFactory& operator=(const NodeFactory& other)
@@ -61,7 +71,7 @@ public:
     NodePtr max_node;
     for (unsigned int i = 0; i < num_tests; ++i)
     {
-      NodePtr node(createRandomNode(nullptr));
+		NodePtr node(createRandomNode(m_log_stream));
       samples_left.clear();
       samples_right.clear();
       node->split(samples, samples_left, samples_right);
@@ -74,6 +84,7 @@ public:
       hist.push_back(&hist_right);
 
       float infoGain = hist_samples->informationGain(hist);
+	  *m_log_stream << ": IGain: " << infoGain << " / " << max_info_gain << std::endl;
       if (infoGain > max_info_gain)
       {
         max_info_gain = infoGain;
@@ -91,9 +102,12 @@ protected:
 
   //----------------------------------------------------------------------------
   virtual NodePtr createRandomNode(std::ostream* log_stream) = 0;
+  virtual std::string get_ClassName() = 0;
 
   // a random number generator
   boost::random::random_device m_rng;
+
+  std::ostream* m_log_stream;
 
 };
 

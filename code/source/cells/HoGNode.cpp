@@ -23,7 +23,8 @@ HoGNode::Direction HoGNode::split(const cv::Mat& mat) const
 	for (int i = 0; i < ders.size(); ++i)
 		distance += abs(ders.at(i));
 
-	*m_log_stream << "HoGNode;" << distance << ";" << std::endl;
+	if (m_log_stream != nullptr)
+		*m_log_stream << "HoGNode;" << distance << ";" << std::endl;
 
 	if (distance < m_threshold)
     {

@@ -14,7 +14,8 @@ TwoPixelGradientNode::Direction TwoPixelGradientNode::split(const cv::Mat& data)
 			++sum;
 	}
 
-	*m_log_stream << "TwoPixelGradientNode;" << (static_cast<float>(sum) / m_x_1.size()) << ";" << std::endl;
+	if (m_log_stream != nullptr)
+		*m_log_stream << "TwoPixelGradientNode;" << (static_cast<float>(sum) / m_x_1.size()) << ";" << std::endl;
     
     if ((static_cast<float>(sum)/ m_x_1.size()) < m_threshold) {
         return Node::Direction::LEFT;

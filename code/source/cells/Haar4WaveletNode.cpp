@@ -34,7 +34,8 @@ Haar4WaveletNode::Direction Haar4WaveletNode::split(const cv::Mat& data) const
 
   diff = (sum - 2*diff);
 
-  *m_log_stream << "Haar4WaveletNode;" << diff << ";" << std::endl;
+  if (m_log_stream != nullptr)
+	  *m_log_stream << "Haar4WaveletNode;" << diff << ";" << std::endl;
 
   if (diff > m_threshold) {
     return Node::Direction::LEFT;

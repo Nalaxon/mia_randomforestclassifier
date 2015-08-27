@@ -16,8 +16,8 @@ CannyEdgeMoment00Node::Direction CannyEdgeMoment00Node::split(const cv::Mat& mat
 	double area = 0.0;
 	for (int i = 0; i < contours.size(); i++)
 		area = moments(contours[i], false).m00;
-
-	*m_log_stream << "CannyEdgeMoment00Node;" << area << ";" << std::endl;
+	if (m_log_stream != nullptr)
+	  *m_log_stream << "CannyEdgeMoment00Node;" << area << ";" << std::endl;
 
 	if (area < m_threshold)
     {

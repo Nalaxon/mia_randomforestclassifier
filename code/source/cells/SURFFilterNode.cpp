@@ -34,7 +34,8 @@ SURFFilterNode::Direction SURFFilterNode::split(const cv::Mat& data) const
 
   double diff = (sum - 2 * middle_part);
 
-  *m_log_stream << "SURFFilterNode;" << diff << ";" << std::endl;
+  if (m_log_stream != nullptr)
+	  *m_log_stream << "SURFFilterNode;" << diff << ";" << std::endl;
 
   if (diff > m_threshold) {
     return Node::Direction::LEFT;

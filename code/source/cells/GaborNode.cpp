@@ -12,7 +12,8 @@ GaborNode::Direction GaborNode::split(const cv::Mat& mat) const
 	cv::Scalar mean;
 	mean = cv::mean(dest);
 
-	*m_log_stream << "GaborNode;" << mean << ";" << std::endl;
+	if (m_log_stream != nullptr)
+		*m_log_stream << "GaborNode;" << mean.val[0] << ";" << std::endl;
 
 	if (mean.val[0] < m_threshold)
     {
