@@ -482,7 +482,7 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
     int ddepth = CV_32F;
     int blur_kernel_size = 15;
     cv::Mat blurred;
-    cv::GaussianBlur(channels[0], blurred, cv::Size(blur_kernel_size, blur_kernel_size), 0.0);
+    cv::GaussianBlur(channels[0], blurred, cv::Size(blur_kernel_size, blur_kernel_size), 1., 1.);
     /// Gradient X
     cv::Mat grad;
     cv::Mat grad_x, grad_y;
