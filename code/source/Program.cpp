@@ -122,7 +122,8 @@ int Program::run(int argc, char** argv) {
 
     if (m_use_xvalidation) {
         double accuracy = xvalidation(forest, pure_samples, m_num_xvalidation_sets);
-
+		std::cout << "training finished" << std::endl << "starting testing..." << std::endl;
+			 
         // test the forest on image
         boost::filesystem::path test_volume_path, truth_file_path;
         std::tie(test_volume_path, truth_file_path) = resolve_data_path(m_test_image_index);
@@ -156,14 +157,14 @@ int Program::run(int argc, char** argv) {
         cv::Mat prop_image = classify_image(forest, test_image_prepared);
 
         cv::Mat classify_image;
-        cv::threshold(prop_image, classify_image, 0.5f, 1.0f, cv::THRESH_BINARY);
+        cv::threshold(prop_image, classify_image, 0.5f, 1.0f, cv::THRESH_BINARY_INV);
 
         
         cv::Mat absdiff_image;
         cv::absdiff(classify_image, truth_image, absdiff_image);
         double num_false_pixels = static_cast<double>(cv::countNonZero(absdiff_image));
         double num_pixels = static_cast<double>(absdiff_image.rows * absdiff_image.cols);
-        double image_accuracy = 1. - (num_false_pixels / num_pixels);
+        double image_accuracy = (num_false_pixels / num_pixels);
         std::cout << "accuracy of image is " << image_accuracy << std::endl;
         
         //cv::namedWindow("diff", CV_WINDOW_AUTOSIZE);
