@@ -178,9 +178,6 @@ int Program::run(int argc, char** argv) {
 
         cv::namedWindow("propwindow", CV_WINDOW_AUTOSIZE);
         cv::imshow("propwindow", prop_image);
-		
-        classify_image = classify_image < 0.5;
-        test_image.setTo(cv::Scalar(0, 255, 0), classify_image);
 
         prop_image.convertTo(prop_image, CV_8UC1, 255.);
         absdiff_image.convertTo(absdiff_image, CV_8UC1, 255.);
