@@ -143,6 +143,9 @@ private:
     double xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std::vector < Sample<CellLabel, cv::Mat>> &pure_samples, const unsigned int validations);
 
 	int MAX_IMAGES = 30;
+
+	cv::Mat segment_image(const cv::Mat& classify_image, const cv::Mat& prop_image, std::string options);
+	cv::Mat watershed_image(const cv::Mat& classify_image, const cv::Mat& prop_image);
 };
 
 

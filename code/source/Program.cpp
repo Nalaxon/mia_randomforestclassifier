@@ -204,6 +204,9 @@ int Program::run(int argc, char** argv) {
         cv::imwrite((m_log_path / diff).string(), absdiff_image);
         log = output_base.str() + "-log.txt";
 
+		//Watershed
+		cv::Mat watershed = segment_image(classify_image, prop_image, "watershed");
+		
         boost::filesystem::path logfile_path = m_log_path / log;
         std::ofstream logfile(logfile_path.string());
         if (logfile.is_open())
@@ -599,4 +602,79 @@ double Program::xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std:
 
     return accuracy;
 
+}
+
+cv::Mat Program::segment_image(const cv::Mat& classify_image, const cv::Mat& prop_image, std::string options)
+{
+	if (options == "watershed")
+		return watershed_image(classify_image, prop_image);
+}
+
+cv::Mat Program::watershed_image(const cv::Mat& classify_image, const cv::Mat& prop_image)
+{
+	//Watershed
+	cv::Mat markers = cv::Mat::zeros(classify_image.rows, classify_image.cols, CV_8U);
+
+	/*cv::threshold(prop_image, markers, 200, 1, CV_THRESH_BINARY);
+	//markers.convertTo(markers, CV_32SC1);
+	for (int x = 0; x < prop_image.cols; ++x)
+	{
+	for (int y = 0; y < prop_image.rows; ++y)
+	{
+	if (prop_image.at<char>(y, x) < 200 && prop_image.at<char>(y, x) > 100)
+	markers.at<int>(y, x) = -1;
+	}
+	}*/
+	cv::Mat classify_integral;
+	cv::integral(classify_image, classify_integral);
+	cv::Size marker_size(10, 10);
+	for (int x = 0; x < classify_integral.cols - marker_size.width - 1; x += marker_size.width)
+	{
+		for (int y = 0; y < classify_integral.rows - marker_size.height - 1; y += marker_size.height)
+		{
+			cv::Rect patchPosition(cv::Point(x, y), marker_size);
+			//cv::Mat patch(classify_integral, patchPosition);
+			if (ImageTools::mean_from_integral<double, 1, 0>(classify_integral, patchPosition) < 0.1)
+				//if (cv::countNonZero(patch) == 0)
+			{
+				cv::rectangle(markers, patchPosition, 128, CV_FILLED);
+			}
+		}
+	}
+
+	marker_size = cv::Size(5, 5);
+	for (int x = 0; x < classify_image.cols - marker_size.width - 1; x += marker_size.width)
+	{
+		for (int y = 0; y < classify_image.rows - marker_size.height - 1; y += marker_size.height)
+		{
+			cv::Rect patchPosition(cv::Point(x, y), marker_size);
+			//cv::Mat patch(classify_image, patchPosition);
+			if (ImageTools::mean_from_integral<double, 1, 0>(classify_integral, patchPosition) > 0.9)
+				//if (cv::countNonZero(patch) == marker_size.area())
+			{
+				cv::rectangle(markers, patchPosition, 255, CV_FILLED);
+			}
+		}
+	}
+
+	//cv::Mat markers_display;
+	//markers.convertTo(markers_display, CV_8UC1, 255.);
+	cv::namedWindow("markerwindow", CV_WINDOW_AUTOSIZE);
+	cv::imshow("markerwindow", markers);
+	cv::waitKey(0);
+
+	cv::Mat classification_rgb;
+	cv::cvtColor(prop_image, classification_rgb, CV_GRAY2BGR);
+	//prop_image.convertTo(classification_rgb, CV_8UC1, 255);
+	//cv::cvtColor(classification_rgb, classification_rgb, CV_GRAY2BGR);
+	cv::Mat markers_wshd;
+	markers.convertTo(markers_wshd, CV_32S);
+	cv::watershed(classification_rgb, markers_wshd);
+	cv::Mat watershed_display;
+	markers_wshd.convertTo(watershed_display, CV_8UC1, 255.);
+	cv::namedWindow("watershedwindow", CV_WINDOW_AUTOSIZE);
+	cv::imshow("watershedwindow", watershed_display);
+	cv::waitKey(0);
+
+	return markers_wshd;
 }
