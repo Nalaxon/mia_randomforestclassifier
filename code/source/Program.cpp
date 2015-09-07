@@ -484,7 +484,7 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
     cv::Mat blurred;
     cv::GaussianBlur(channels[0], blurred, cv::Size(blur_kernel_size, blur_kernel_size), 1., 1.);
     /// Gradient X
-    cv::Mat grad;
+	cv::Mat grad_abs;
     cv::Mat grad_x, grad_y;
     cv::Mat abs_grad_x, abs_grad_y;
     cv::Sobel(blurred, grad_x, ddepth, 1, 0, 3, scale, delta, cv::BORDER_DEFAULT);
@@ -493,10 +493,10 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
     cv::Sobel(blurred, grad_y, ddepth, 0, 1, 3, scale, delta, cv::BORDER_DEFAULT);
     cv::convertScaleAbs(grad_y, abs_grad_y);
     /// Total Gradient (approximate)
-    cv::addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad);
-    cv::Mat grad_f;
-    grad.convertTo(grad_f, CV_32F, 1.0f / 255.0f);
-    cv::integral(grad_f, channels[1], ddepth);
+	cv::addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad_abs);
+	cv::Mat grad_abs_f;
+	grad_abs.convertTo(grad_abs_f, CV_32F, 1.0f / 255.0f);
+    cv::integral(grad_abs_f, channels[1], ddepth);
 
     // create integral image
     channels[0].convertTo(channels[0], CV_32FC1, 1 / 255.);
@@ -507,8 +507,8 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
     channels[1] = cv::Mat(channels[1], roi);
     channels[2] = cv::Mat(channels[2], roi);
 
-    abs_grad_x.convertTo(abs_grad_x, CV_32F, 1.0f / 255.0f);
-    channels[3] = grad_f.clone();
+	//gaussian image
+    channels[3] = blurred.clone();
 
     cv::merge(channels, prepared);
 
