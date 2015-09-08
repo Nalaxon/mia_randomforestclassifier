@@ -481,7 +481,7 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
     int delta = 0;
     int ddepth = CV_32F;
     int blur_kernel_size = 15;
-    cv::Mat blurred;
+    cv::Mat blurred, blurred_f;
     cv::GaussianBlur(channels[0], blurred, cv::Size(blur_kernel_size, blur_kernel_size), 1., 1.);
     /// Gradient X
 	cv::Mat grad_abs;
@@ -508,7 +508,8 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
     channels[2] = cv::Mat(channels[2], roi);
 
 	//gaussian image
-    channels[3] = blurred.clone();
+	blurred.convertTo(blurred_f, CV_32F, 1.0f / 255.);
+    channels[3] = blurred_f.clone();
 
     cv::merge(channels, prepared);
 

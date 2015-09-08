@@ -13,7 +13,8 @@ TwoPixelGradientNode::Direction TwoPixelGradientNode::split(const cv::Mat& data)
 	cv::vector<cv::Mat> channels = ImageTools::extract_channels<4>(data);
 	cv::Mat grad_x, grad_y;
 	cv::Mat abs_grad_x, abs_grad_y, grad_abs;
-	cv::Sobel(channels[3], grad_x, ddepth, 1, 0, 3, scale, delta, cv::BORDER_DEFAULT);
+	channels[3].convertTo(blurred, CV_8U, 255.);
+	cv::Sobel(blurred, grad_x, ddepth, 1, 0, 3, scale, delta, cv::BORDER_DEFAULT);
 	cv::convertScaleAbs(grad_x, abs_grad_x);
 	/// Gradient Y
 	cv::Sobel(blurred, grad_y, ddepth, 0, 1, 3, scale, delta, cv::BORDER_DEFAULT);
