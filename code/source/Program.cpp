@@ -25,6 +25,7 @@
 #include "cells/CannyEdgeMoment00NodeFactory.hpp"
 #include "cells/GaborNodeFactory.hpp"
 #include "cells/MinNodeFactory.hpp"
+#include "cells\MaxNodeFactory.hpp"
 
 #include <iomanip>
 #include <chrono>
@@ -113,6 +114,7 @@ int Program::run(int argc, char** argv) {
 	factory_list.push_back(std::make_shared<CannyEdgeMoment00NodeFactory>(patch_params));
 	factory_list.push_back(std::make_shared<GaborNodeFactory>(patch_params));
 	factory_list.push_back(std::make_shared<MinNodeFactory>(patch_params));
+	factory_list.push_back(std::make_shared<MaxNodeFactory>(patch_params));
 
     std::shared_ptr<UniversalNodeFactory<CellLabel, cv::Mat >>
             factory(new UniversalNodeFactory<CellLabel, cv::Mat>(factory_list));
