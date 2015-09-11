@@ -28,6 +28,7 @@
 #include "cells\MaxNodeFactory.hpp"
 #include "cells\SDNodeFactory.hpp"
 #include "cells\VarianceNodeFactory.hpp"
+#include "cells\MedianNodeFactory.hpp"
 
 #include <iomanip>
 #include <chrono>
@@ -119,6 +120,7 @@ int Program::run(int argc, char** argv) {
 	factory_list.push_back(std::make_shared<MaxNodeFactory>(patch_params));
 	factory_list.push_back(std::make_shared<SDNodeFactory>(patch_params));
 	factory_list.push_back(std::make_shared<VarianceNodeFactory>(patch_params));
+	factory_list.push_back(std::make_shared<MedianNodeFactory>(patch_params));
 
     std::shared_ptr<UniversalNodeFactory<CellLabel, cv::Mat >>
             factory(new UniversalNodeFactory<CellLabel, cv::Mat>(factory_list));
