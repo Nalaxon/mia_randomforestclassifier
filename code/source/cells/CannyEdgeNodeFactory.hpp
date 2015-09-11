@@ -12,7 +12,7 @@ class CannyEdgeNodeFactory : public NodeFactory<CellLabel, cv::Mat>
 {
 public:
 	CannyEdgeNodeFactory(const PatchParameter& params)
-		: m_params(params), m_threshold_dist(50, 150), m_threshold_real_dist(400., 1000.)
+		: m_params(params), m_threshold_dist(50, 150), m_threshold_real_dist(200, 400.)
   {
   }
   
