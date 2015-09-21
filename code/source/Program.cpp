@@ -30,6 +30,8 @@
 #include "cells\VarianceNodeFactory.hpp"
 #include "cells\MedianNodeFactory.hpp"
 #include "cells\HessianNodeFactory.hpp"
+#include "cells\MembraneProjectionNodeFactory.hpp"
+#include "cells\BilateralNodeFactory.hpp"
 
 #include <iomanip>
 #include <chrono>
@@ -103,15 +105,16 @@ int Program::run(int argc, char** argv) {
 
     // construct the universalnodefactory
     std::vector<std::shared_ptr<NodeFactory<CellLabel, cv::Mat>>> factory_list;
-    factory_list.push_back(std::make_shared<CenterPixelNodeFactory>(patch_params));
+    
+	factory_list.push_back(std::make_shared<TwoRegionNodeFactory>(patch_params));
+	factory_list.push_back(std::make_shared<TwoRegionsGradientNodeFactory>(patch_params));
+	factory_list.push_back(std::make_shared<CenterPixelNodeFactory>(patch_params));
     factory_list.push_back(std::make_shared<GradientNodeFactory>(patch_params));
     factory_list.push_back(std::make_shared<TwoPixelNodeFactory>(patch_params));
     factory_list.push_back(std::make_shared<HaarWaveletNodeFactory>(patch_params));
     factory_list.push_back(std::make_shared<SURFFilterNodeFactory>(patch_params));
-    factory_list.push_back(std::make_shared<TwoRegionNodeFactory>(patch_params));
     factory_list.push_back(std::make_shared<SumNodeFactory>(patch_params));
 	factory_list.push_back(std::make_shared<TwoPixelGradientNodeFactory>(patch_params));
-	factory_list.push_back(std::make_shared<TwoRegionsGradientNodeFactory>(patch_params));
 	factory_list.push_back(std::make_shared<CannyEdgeNodeFactory>(patch_params));
 	factory_list.push_back(std::make_shared<Haar4WaveletNodeFactory>(patch_params));
 	factory_list.push_back(std::make_shared<HoGNodeFactory>(patch_params));
@@ -123,6 +126,8 @@ int Program::run(int argc, char** argv) {
 	factory_list.push_back(std::make_shared<VarianceNodeFactory>(patch_params));
 	factory_list.push_back(std::make_shared<MedianNodeFactory>(patch_params));
 	factory_list.push_back(std::make_shared<HessianNodeFactory>(patch_params));
+	factory_list.push_back(std::make_shared<MembraneProjectionNodeFactory>(patch_params));
+	factory_list.push_back(std::make_shared<BilateralNodeFactory>(patch_params));
 
     std::shared_ptr<UniversalNodeFactory<CellLabel, cv::Mat >>
             factory(new UniversalNodeFactory<CellLabel, cv::Mat>(factory_list));

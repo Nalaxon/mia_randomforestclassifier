@@ -12,7 +12,7 @@ class HoGNodeFactory : public NodeFactory<CellLabel, cv::Mat>
 {
 public:
 	HoGNodeFactory(const PatchParameter& params)
-  : m_params(params),m_threshold_dist(20, 23)
+  : m_params(params),m_threshold_dist(20., 22.)
   {
   }
   
