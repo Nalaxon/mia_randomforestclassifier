@@ -84,7 +84,7 @@ public:
       hist.push_back(&hist_right);
 
       float infoGain = hist_samples->informationGain(hist);
-	  *m_log_stream << ": IGain: " << infoGain << " / " << max_info_gain << std::endl;
+	  *m_log_stream << ": IGain: " << infoGain << " / " << max_info_gain << ";" << i << ": " << samples_left.size() << "," << samples_right.size() << std::endl;
       if (infoGain > max_info_gain)
       {
         max_info_gain = infoGain;

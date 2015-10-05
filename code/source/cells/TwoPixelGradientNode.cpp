@@ -24,19 +24,19 @@ TwoPixelGradientNode::Direction TwoPixelGradientNode::split(const cv::Mat& data)
 	cv::Mat grad_abs_f;
 	grad_abs.convertTo(grad_abs_f, CV_32F, 1.0f / 255.0f);
 
-	int sum = 0;
+	float sum = 0;
 	for (unsigned int i = 0; i < m_x_1.size(); ++i)
 	{
 		const auto& pixel1 = grad_abs_f.at<float>(m_y_1[i], m_x_1[i]);
-		const auto& pixel2 = grad_abs_f.at<float>(m_y_1[i], m_x_1[i]);
+		const auto& pixel2 = grad_abs_f.at<float>(m_y_2[i], m_x_2[i]);
 		if (pixel1 < pixel2)
 			++sum;
 	}
 
 	if (m_log_stream != nullptr)
-		*m_log_stream << "TwoPixelGradientNode;" << (static_cast<float>(sum) / m_x_1.size()) << ";" << std::endl;
+		*m_log_stream << "TwoPixelGradientNode;" << (sum / m_x_1.size()) << ";" << std::endl;
     
-    if ((static_cast<float>(sum)/ m_x_1.size()) < m_threshold) {
+    if ((sum/ m_x_1.size()) < m_threshold) {
         return Node::Direction::LEFT;
     } else {
         return Node::Direction::RIGHT;
