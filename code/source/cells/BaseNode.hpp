@@ -8,7 +8,7 @@
 
 #include <opencv/cv.h>
 
-class BaseNode : public Node<CellLabel, cv::Mat>
+class BaseNode : public Node<CellLabel, std::vector<cv::Mat>, cv::Rect>
 {
 
 } ;

@@ -8,7 +8,7 @@
 #include <boost/random.hpp>
 #include <opencv2/core/core.hpp>
 
-class BilateralNodeFactory : public NodeFactory<CellLabel, cv::Mat>
+class BilateralNodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>
 {
 public:
 	BilateralNodeFactory(const PatchParameter& params)

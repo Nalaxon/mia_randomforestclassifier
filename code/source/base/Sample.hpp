@@ -5,14 +5,14 @@
 
 #include <vector>
 
-template<typename LABEL_TYPE, typename DATA_TYPE>
+template<typename LABEL_TYPE, typename DATA_TYPE, typename ROI_TYPE>
 class Sample
 {
 public:
 
   //----------------------------------------------------------------------------
-  Sample(LABEL_TYPE m_label, DATA_TYPE m_data) :
-  m_label(m_label), m_data(m_data)
+	Sample(LABEL_TYPE m_label, DATA_TYPE m_data, ROI_TYPE m_roi) :
+	  m_label(m_label), m_data(m_data), m_roi(m_roi)
   {
   }
 
@@ -40,6 +40,18 @@ public:
     m_data = data;
   }
 
+  //----------------------------------------------------------------------------
+  const ROI_TYPE& get_roi() const
+  {
+	  return m_roi;
+  }
+
+  //----------------------------------------------------------------------------
+  void set_roi(const ROI_TYPE& roi)
+  {
+	  m_roi = roi;
+  }
+
 private:
   
   // the label
@@ -47,6 +59,9 @@ private:
   
   // the data
   DATA_TYPE m_data;
+
+  //the region of interest
+  ROI_TYPE m_roi;
 } ;
 
 #endif

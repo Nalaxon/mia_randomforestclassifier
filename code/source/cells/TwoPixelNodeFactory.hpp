@@ -10,7 +10,7 @@
 #include <boost/random.hpp>
 
 
-class TwoPixelNodeFactory : public NodeFactory<CellLabel, cv::Mat>
+class TwoPixelNodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>
 {
 public:
 

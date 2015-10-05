@@ -11,11 +11,11 @@
 #include "Sample.hpp"
 #include "types.hpp"
 
-template <typename LABEL_TYPE, typename DATA_TYPE>
+template <typename LABEL_TYPE, typename DATA_TYPE, typename ROI_TYPE>
 class Histogram
 {
 public:
-  using SampleVector = SampleVector_<LABEL_TYPE, DATA_TYPE>;
+  using SampleVector = SampleVector_<LABEL_TYPE, DATA_TYPE, ROI_TYPE>;
 
   Histogram()
   : m_numTotal(0),

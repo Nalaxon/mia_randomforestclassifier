@@ -8,7 +8,7 @@
 #include <boost/random.hpp>
 #include <opencv2/core/core.hpp>
 
-class TwoRegionsGradientNodeFactory : public NodeFactory<CellLabel, cv::Mat>
+class TwoRegionsGradientNodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>
 {
 public:
 	TwoRegionsGradientNodeFactory(const PatchParameter& params)

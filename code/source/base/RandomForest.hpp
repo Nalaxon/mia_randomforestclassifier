@@ -12,23 +12,23 @@
 #include <boost/random.hpp>
 #include <boost/random/random_device.hpp>
 
-template<typename LABEL_TYPE, typename DATA_TYPE>
+template<typename LABEL_TYPE, typename DATA_TYPE, typename ROI_TYPE>
 class RandomForest
 {
 public:
   using Params = RFParameter<LABEL_TYPE, DATA_TYPE>;
 
-  using NodeFactoryPtr = NodeFactoryPtr_<LABEL_TYPE, DATA_TYPE>;
+  using NodeFactoryPtr = NodeFactoryPtr_<LABEL_TYPE, DATA_TYPE, ROI_TYPE>;
 
-  using SampleVector = SampleVector_<LABEL_TYPE, DATA_TYPE>;
+  using SampleVector = SampleVector_<LABEL_TYPE, DATA_TYPE, ROI_TYPE>;
 
-  using RandomTreeVector = RandomTreeVector_<LABEL_TYPE, DATA_TYPE>;
+  using RandomTreeVector = RandomTreeVector_<LABEL_TYPE, DATA_TYPE, ROI_TYPE>;
 
-  using HistogramPtr = HistogramPtr_<LABEL_TYPE, DATA_TYPE>;
+  using HistogramPtr = HistogramPtr_<LABEL_TYPE, DATA_TYPE, ROI_TYPE>;
 
-  using HistogramVector = HistogramVector_<LABEL_TYPE, DATA_TYPE>;
+  using HistogramVector = HistogramVector_<LABEL_TYPE, DATA_TYPE, ROI_TYPE>;
 
-  using EnsembleFct = EnsembleFct_<LABEL_TYPE, DATA_TYPE>;
+  using EnsembleFct = EnsembleFct_<LABEL_TYPE, DATA_TYPE, ROI_TYPE >;
 
   //----------------------------------------------------------------------------
 
@@ -69,15 +69,15 @@ public:
 
   //----------------------------------------------------------------------------
 
-  LABEL_TYPE predict(const DATA_TYPE& data, EnsembleFct ensemble_fct) const
+  LABEL_TYPE predict(const DATA_TYPE& data, const ROI_TYPE& roi, EnsembleFct ensemble_fct) const
   {
-    return predict_prob(data, ensemble_fct)->max();
+    return predict_prob(data, roi, ensemble_fct)->max();
   }
 
 
   //----------------------------------------------------------------------------
 
-  HistogramPtr predict_prob(const DATA_TYPE& data, EnsembleFct ensemble_fct) const
+  HistogramPtr predict_prob(const DATA_TYPE& data, const ROI_TYPE& roi, EnsembleFct ensemble_fct) const
   {
     HistogramVector histograms;
 #if NDEBUG
@@ -85,7 +85,7 @@ public:
 #endif
     for (int i = 0; i < static_cast<int> (m_params.m_num_trees); ++i)
     {
-      const auto& treeResult = m_trees[i].predict(data);
+      const auto& treeResult = m_trees[i].predict(data, roi);
 #if NDEBUG
 #pragma omp critical
 #endif
@@ -99,9 +99,9 @@ public:
 
   //----------------------------------------------------------------------------
 
-  float predict_prob(const DATA_TYPE& data, const LABEL_TYPE& label, EnsembleFct ensemble_fct) const
+  float predict_prob(const DATA_TYPE& data, const ROI_TYPE& roi, const LABEL_TYPE& label, EnsembleFct ensemble_fct) const
   {
-    return predict_prob(data, ensemble_fct)->prob(label);
+    return predict_prob(data, roi, ensemble_fct)->prob(label);
   }
 
 

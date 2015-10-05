@@ -8,7 +8,7 @@
 #include <boost/random.hpp>
 #include <opencv2/core/core.hpp>
 
-class HoGNodeFactory : public NodeFactory<CellLabel, cv::Mat>
+class HoGNodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>
 {
 public:
 	HoGNodeFactory(const PatchParameter& params)

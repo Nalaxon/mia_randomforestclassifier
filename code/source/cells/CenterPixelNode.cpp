@@ -2,7 +2,7 @@
 
 #include "../tools/ImageTools.hpp"
 
-CenterPixelNode::Direction CenterPixelNode::split(const cv::Mat& data) const
+CenterPixelNode::Direction CenterPixelNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {
     const auto& center_pixel = ImageTools::get_center_pixel<float, 4, 0>(data);
     const auto& other_pixel = ImageTools::get_pixel<float, 4, 0>(data, m_y, m_x);

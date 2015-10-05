@@ -1,10 +1,10 @@
 #include "SumNode.hpp"
 #include "tools/ImageTools.hpp"
 
-SumNode::Direction SumNode::split(const cv::Mat& data) const
+SumNode::Direction SumNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {
-  int max_row_idx = data.rows - 1;
-  int max_col_idx = data.cols - 1;
+  int max_row_idx = data[0].rows - 1;
+  int max_col_idx = data[0].cols - 1;
 
   double top_left = ImageTools::get_pixel<float, 4, 2>(data, 0, 0);
   double top_right = ImageTools::get_pixel<float, 4, 2>(data, 0, max_col_idx);

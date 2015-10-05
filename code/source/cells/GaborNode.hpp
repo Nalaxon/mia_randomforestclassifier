@@ -13,7 +13,7 @@ public:
 		:m_threshold(threshold), m_sig(sig), m_th(th),
 		m_lm(lm), m_gm(gm), m_ps(ps), m_log_stream(log_stream) {}
   
-  virtual Direction split(const cv::Mat& mat) const;
+	virtual Direction split(const std::vector<cv::Mat>& mat, const cv::Rect& roi) const;
   
 private:
   

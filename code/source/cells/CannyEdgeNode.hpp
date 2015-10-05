@@ -12,7 +12,7 @@ public:
 		:m_canny_threshold(canny_threshold), m_threshold(threshold), m_log_stream(log_stream) {}
 
   
-  virtual Direction split(const cv::Mat& mat) const;
+	virtual Direction split(const std::vector<cv::Mat>& mat, const cv::Rect& roi) const;
   
 private:
   

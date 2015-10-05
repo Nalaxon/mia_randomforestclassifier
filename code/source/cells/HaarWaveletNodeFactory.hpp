@@ -10,7 +10,7 @@
 #include <boost/random.hpp>
 
 /// class GradientNodeFactory - 
-class HaarWaveletNodeFactory : public NodeFactory<CellLabel, cv::Mat>
+class HaarWaveletNodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>
 {
   public:
     HaarWaveletNodeFactory(PatchParameter params);

@@ -8,12 +8,12 @@
 #include <initializer_list>
 #include <boost/random.hpp>
 
-template<typename LABEL_TYPE, typename DATA_TYPE>
-class UniversalNodeFactory : public NodeFactory<LABEL_TYPE, DATA_TYPE>
+template<typename LABEL_TYPE, typename DATA_TYPE, typename ROI_TYPE>
+class UniversalNodeFactory : public NodeFactory<LABEL_TYPE, DATA_TYPE, ROI_TYPE >
 {
 public:  
   
-  using SuperType = NodeFactory<LABEL_TYPE, DATA_TYPE>;
+	using SuperType = NodeFactory<LABEL_TYPE, DATA_TYPE, ROI_TYPE>;
 
   //----------------------------------------------------------------------------
   UniversalNodeFactory(std::vector<std::shared_ptr<SuperType>> factory_list)

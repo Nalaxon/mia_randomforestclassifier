@@ -2,12 +2,12 @@
 
 #include "../tools/ImageTools.hpp"
 
-HaarWaveletNode::Direction HaarWaveletNode::split(const cv::Mat& data) const
+HaarWaveletNode::Direction HaarWaveletNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {
-  int max_row_idx = data.rows - 1;
-  int max_col_idx = data.cols - 1;
-  int mean_row_idx = data.rows / 2;
-  int mean_col_idx = data.cols / 2;
+  int max_row_idx = data[0].rows - 1;
+  int max_col_idx = data[0].cols - 1;
+  int mean_row_idx = data[0].rows / 2;
+  int mean_col_idx = data[0].cols / 2;
 
   double base = ImageTools::get_pixel<float, 4, 2>(data, 0, 0);
   double top_left = ImageTools::get_pixel<float, 4, 2>(data, 0, max_col_idx);

@@ -15,7 +15,7 @@ public:
 		m_stdv(th_stdv), m_median(th_median), m_max(th_max),
 		m_min(th_min), m_log_stream(log_stream) {}
   
-  virtual Direction split(const cv::Mat& mat) const;
+	virtual Direction split(const std::vector<cv::Mat>& mat, const cv::Rect& roi) const;
   
 private:
   

@@ -25,7 +25,7 @@ public:
      * @param ground_truth the image containing the ground_truth for the sample image
      * @param the size of the samples
      */
-    SampleExtractor(const cv::Mat& sample_image, const cv::Mat& ground_truth,
+    SampleExtractor(const std::vector<cv::Mat>& sample_images, const cv::Mat& ground_truth,
                     unsigned int sample_size);
 
     /**
@@ -33,7 +33,7 @@ public:
      *
      * @return a tuple containing the sample and a boolean indicating the class (foreground=true, background=false)
      */
-    std::tuple<cv::Mat, bool> extractRandomSample();
+	std::tuple<std::vector<cv::Mat>, bool> extractRandomSample(cv::Rect& roi);
 
 private:
 
@@ -60,7 +60,7 @@ private:
     /**
      * The sample image.
      */
-    cv::Mat m_sample_image;
+	std::vector<cv::Mat> m_sample_image;
 
     /**
      * The ground truth image.

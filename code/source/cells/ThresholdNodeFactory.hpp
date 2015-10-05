@@ -7,7 +7,7 @@
 #include <opencv2/opencv.hpp>
 
 /// class ThresholdNodeFactory - 
-class ThresholdNodeFactory : public NodeFactory<CellLabel, cv::Mat> {
+class ThresholdNodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect> {
 };
 
 

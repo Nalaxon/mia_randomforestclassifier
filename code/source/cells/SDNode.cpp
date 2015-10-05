@@ -1,7 +1,7 @@
 #include "SDNode.hpp"
 #include "Tools/ImageTools.hpp"
 
-SDNode::Direction SDNode::split(const cv::Mat& mat) const
+SDNode::Direction SDNode::split(const std::vector<cv::Mat>& mat, const cv::Rect& roi) const
 {
 	cv::Mat mean, stdev;
 

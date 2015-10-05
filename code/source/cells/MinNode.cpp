@@ -1,7 +1,7 @@
 #include "MinNode.hpp"
 #include "Tools/ImageTools.hpp"
 
-MinNode::Direction MinNode::split(const cv::Mat& mat) const
+MinNode::Direction MinNode::split(const std::vector<cv::Mat>& mat, const cv::Rect& roi) const
 {
 	std::vector<cv::Mat> channels = ImageTools::extract_channels<4>(mat);
 	double val;

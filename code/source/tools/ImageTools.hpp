@@ -40,21 +40,21 @@ namespace ImageTools
 //  }
   
   template<typename PixelType, unsigned int num_channels, unsigned int channel>
-  static const PixelType& get_pixel(const cv::Mat& mat, unsigned int row, unsigned int col)
+  static const PixelType& get_pixel(const std::vector<cv::Mat>& mat, unsigned int row, unsigned int col)
   {
-    return mat.at<cv::Vec<PixelType, num_channels>>(row, col)[channel];
+	  return mat[channel].at<PixelType>(row, col);
   }
   
   template<typename PixelType, unsigned int num_channels, unsigned int channel>
-  static const PixelType& get_center_pixel(const cv::Mat& mat)
+  static const PixelType& get_center_pixel(const std::vector<cv::Mat>& mat)
   {
-    int center_col = mat.cols / 2;
-    int center_row = mat.rows / 2;
+	  int center_col = mat[0].cols / 2;
+	  int center_row = mat[0].rows / 2;
     return get_pixel<PixelType, num_channels, channel>(mat, center_row, center_col);
   }
   
   template<typename PixelType, unsigned int num_channels, unsigned int channel>
-  static PixelType sum_from_integral(const cv::Mat& mat, cv::Rect region)
+  static PixelType sum_from_integral(const std::vector<cv::Mat>& mat, cv::Rect region)
   {
     const auto& left_up = get_pixel<PixelType, num_channels, channel>(mat, region.y, region.x);
     const auto& left_bottom = get_pixel<PixelType, num_channels, channel>(mat, region.y + region.height, region.x);
@@ -64,17 +64,15 @@ namespace ImageTools
   }
   
   template<typename PixelType, unsigned int num_channels, unsigned int channel>
-  static PixelType mean_from_integral(const cv::Mat& mat, cv::Rect region)
+  static PixelType mean_from_integral(const std::vector<cv::Mat>& mat, cv::Rect region)
   {
     return sum_from_integral<PixelType, num_channels, channel>(mat, region) / region.area();
   }
   
   template<unsigned int N>
-  static std::vector<cv::Mat> extract_channels(const cv::Mat& channelImg)
+  static std::vector<cv::Mat> extract_channels(const std::vector<cv::Mat>& channelImg)
   {
-    std::vector<cv::Mat> channels(N);
-    cv::split(channelImg, channels);
-    return channels;
+    return channelImg;
   }
 
   static void adjust_line(int &start, int &end, const int &constraint)

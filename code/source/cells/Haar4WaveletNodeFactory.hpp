@@ -11,7 +11,7 @@
 #include <opencv2/opencv.hpp>
 #include <boost/random.hpp>
 
-class Haar4WaveletNodeFactory : public NodeFactory<CellLabel, cv::Mat>
+class Haar4WaveletNodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>
 {
   public:
 	  Haar4WaveletNodeFactory(PatchParameter params) :

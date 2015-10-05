@@ -9,12 +9,12 @@
 #include <iostream>
 #include <sstream>
 
-template <typename LABEL_TYPE, typename DATA_TYPE>
-class LeafNode : public Node<LABEL_TYPE, DATA_TYPE>
+template <typename LABEL_TYPE, typename DATA_TYPE, typename ROI_TYPE>
+class LeafNode : public Node<LABEL_TYPE, DATA_TYPE, ROI_TYPE>
 {
 public:
   
-  using SuperType = Node<LABEL_TYPE, DATA_TYPE>;
+  using SuperType = Node<LABEL_TYPE, DATA_TYPE, ROI_TYPE>;
 
   LeafNode()
   {
@@ -24,7 +24,7 @@ public:
 protected:
   
   //----------------------------------------------------------------------------
-  virtual typename SuperType::Direction split(const DATA_TYPE& data) const
+  virtual typename SuperType::Direction split(const DATA_TYPE& data, const ROI_TYPE& roi) const
   {
     return SuperType::Direction::NONE;
   }

@@ -1,7 +1,7 @@
 #include "VarianceNode.hpp"
 #include "Tools/ImageTools.hpp"
 
-VarianceNode::Direction VarianceNode::split(const cv::Mat& mat) const
+VarianceNode::Direction VarianceNode::split(const std::vector<cv::Mat>& mat, const cv::Rect& roi) const
 {
 	std::vector<cv::Mat> channels = ImageTools::extract_channels<4>(mat);
 	cv::Mat psd;

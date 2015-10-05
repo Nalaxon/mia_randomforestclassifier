@@ -2,7 +2,7 @@
 
 #include "tools/ImageTools.hpp"
 
-TwoPixelNode::Direction TwoPixelNode::split(const cv::Mat& data) const
+TwoPixelNode::Direction TwoPixelNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {
     const auto& pixel1 = ImageTools::get_pixel<float, 4, 0>(data, m_y_1, m_x_1);
     const auto& pixel2 = ImageTools::get_pixel<float, 4, 0>(data, m_y_2, m_x_2);

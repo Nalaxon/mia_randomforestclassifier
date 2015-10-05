@@ -8,7 +8,7 @@
 #include <boost/random.hpp>
 #include <opencv2/core/core.hpp>
 
-class MaxNodeFactory : public NodeFactory<CellLabel, cv::Mat>
+class MaxNodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>
 {
 public:
 	MaxNodeFactory(const PatchParameter& params)

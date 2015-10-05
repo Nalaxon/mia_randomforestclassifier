@@ -10,7 +10,7 @@
 #include <boost/random.hpp>
 
 /// class GradientNodeFactory - 
-class GradientNodeFactory : public NodeFactory<CellLabel, cv::Mat> 
+class GradientNodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>
 {
   public:
 

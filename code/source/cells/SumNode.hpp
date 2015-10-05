@@ -10,7 +10,7 @@ public:
 		:m_threshold(threshhold), m_log_stream(log_stream){}
 
 protected:
-  virtual Direction split(const cv::Mat& data) const;
+	virtual Direction split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const;
 
 private:
   double m_threshold;

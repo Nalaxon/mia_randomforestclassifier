@@ -9,7 +9,7 @@
 #include <boost/random.hpp>
 
 /// class SumNodeFactory - 
-class SumNodeFactory : public NodeFactory<CellLabel, cv::Mat>
+class SumNodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>
 {
 public:
 

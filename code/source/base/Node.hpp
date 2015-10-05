@@ -9,18 +9,18 @@
 #include <iostream>
 #include <sstream>
 
-template <typename LABEL_TYPE, typename DATA_TYPE>
+template <typename LABEL_TYPE, typename DATA_TYPE, typename ROI_TYPE>
 class Node
 {
 public:
 
-  using SampleVector = SampleVector_<LABEL_TYPE, DATA_TYPE>;
+  using SampleVector = SampleVector_<LABEL_TYPE, DATA_TYPE, ROI_TYPE>;
 
-  using HistogramType = Histogram<LABEL_TYPE, DATA_TYPE>;
+  using HistogramType = Histogram<LABEL_TYPE, DATA_TYPE, ROI_TYPE>;
 
-  using NodePtr = NodePtr_<LABEL_TYPE, DATA_TYPE>;
+  using NodePtr = NodePtr_<LABEL_TYPE, DATA_TYPE, ROI_TYPE>;
 
-  using HistogramPtr = HistogramPtr_<LABEL_TYPE, DATA_TYPE>;
+  using HistogramPtr = HistogramPtr_<LABEL_TYPE, DATA_TYPE, ROI_TYPE>;
 
   Node()
   {
@@ -80,21 +80,21 @@ public:
 
   //----------------------------------------------------------------------------
 
-  const HistogramType& predict(const DATA_TYPE& data) const
+  const HistogramType& predict(const DATA_TYPE& data, const ROI_TYPE roi) const
   {
     if (!m_leftChild || !m_rightChild)
     {
       return *m_histogram;
     }
 
-    Direction direction = split(data);
+    Direction direction = split(data, roi);
     if (direction == Direction::LEFT)
     {
-      return m_leftChild->predict(data);
+      return m_leftChild->predict(data, roi);
     } 
     else if (direction == Direction::RIGHT)
     {
-      return m_rightChild->predict(data);
+      return m_rightChild->predict(data, roi);
     }
     else
     {
@@ -110,7 +110,7 @@ public:
   {
     for (const auto& sample : samples)
     {
-      Direction direction = split(sample.get_data());
+      Direction direction = split(sample.get_data(), sample.get_roi());
       if (direction == Direction::LEFT)
       {
         samples_left.push_back(sample);
@@ -165,7 +165,7 @@ protected:
 	std::string class_name;
 
   //----------------------------------------------------------------------------
-  virtual Direction split(const DATA_TYPE& data) const = 0;
+	virtual Direction split(const DATA_TYPE& data, const ROI_TYPE& roi) const = 0;
 
 } ;
 

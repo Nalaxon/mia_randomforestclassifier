@@ -1,7 +1,7 @@
 #include "BilateralNode.hpp"
 #include "Tools/ImageTools.hpp"
 
-BilateralNode::Direction BilateralNode::split(const cv::Mat& mat) const
+BilateralNode::Direction BilateralNode::split(const std::vector<cv::Mat>& mat, const cv::Rect& roi) const
 {
 	std::vector<cv::Mat> channels = ImageTools::extract_channels<4>(mat);
 	cv::Mat filtered;

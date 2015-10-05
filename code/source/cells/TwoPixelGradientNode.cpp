@@ -2,7 +2,7 @@
 
 #include "tools/ImageTools.hpp"
 
-TwoPixelGradientNode::Direction TwoPixelGradientNode::split(const cv::Mat& data) const
+TwoPixelGradientNode::Direction TwoPixelGradientNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {
 	// create gradient
 	int scale = 1;

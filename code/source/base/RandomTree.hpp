@@ -9,20 +9,20 @@
 
 #include <iostream>
 
-template<typename LABEL_TYPE, typename DATA_TYPE>
+template<typename LABEL_TYPE, typename DATA_TYPE, typename ROI_TYPE>
 class RandomTree
 {
 public:
 
-  using SampleVector = SampleVector_ < LABEL_TYPE, DATA_TYPE > ;
+	using SampleVector = SampleVector_ < LABEL_TYPE, DATA_TYPE, ROI_TYPE >;
 
-  using NodeFactoryPtr = NodeFactoryPtr_ < LABEL_TYPE, DATA_TYPE > ;
+  using NodeFactoryPtr = NodeFactoryPtr_ < LABEL_TYPE, DATA_TYPE, ROI_TYPE > ;
 
-  using HistogramType = Histogram < LABEL_TYPE, DATA_TYPE > ;
+  using HistogramType = Histogram < LABEL_TYPE, DATA_TYPE, ROI_TYPE >;
 
-  using HistogramPtr = HistogramPtr_ < LABEL_TYPE, DATA_TYPE > ;
+  using HistogramPtr = HistogramPtr_ < LABEL_TYPE, DATA_TYPE, ROI_TYPE >;
 
-  using NodePtr = NodePtr_ < LABEL_TYPE, DATA_TYPE > ;
+  using NodePtr = NodePtr_ < LABEL_TYPE, DATA_TYPE, ROI_TYPE >;
 
   //----------------------------------------------------------------------------
 
@@ -66,13 +66,13 @@ public:
 
   //----------------------------------------------------------------------------
 
-  HistogramPtr predict(const DATA_TYPE& data) const
+  HistogramPtr predict(const DATA_TYPE& data, const ROI_TYPE roi) const
   {
     if (!m_root)
     {
       throw std::runtime_error("The tree has not been trained yet!");
     }
-    return HistogramPtr(new HistogramType(m_root->predict(data)));
+    return HistogramPtr(new HistogramType(m_root->predict(data, roi)));
   }
 
   void print_dot_format(std::ostream& stream) const
@@ -96,7 +96,7 @@ private:
     if (depth > m_params.m_max_depth || samples.size() < m_params.m_min_samples ||
       hist_samples->entropy() == 0)
     {
-      NodePtr leaf = std::make_unique<LeafNode<LABEL_TYPE, DATA_TYPE>>();
+      NodePtr leaf = std::make_unique<LeafNode<LABEL_TYPE, DATA_TYPE, ROI_TYPE>>();
       leaf->setHistogram(std::move(hist_samples));
       return leaf;
     }
@@ -107,7 +107,7 @@ private:
     node->split(samples, samples_left, samples_right);
 	if (samples_left.size() == 0 || samples_right.size() == 0)
 	{
-		NodePtr leaf = std::make_unique<LeafNode<LABEL_TYPE, DATA_TYPE>>();
+		NodePtr leaf = std::make_unique<LeafNode<LABEL_TYPE, DATA_TYPE, ROI_TYPE>>();
 		leaf->setHistogram(std::move(hist_samples));
 		return leaf;
 	}

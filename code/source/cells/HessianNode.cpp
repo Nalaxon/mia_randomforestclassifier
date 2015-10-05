@@ -1,7 +1,7 @@
 #include "HessianNode.hpp"
 #include "Tools/ImageTools.hpp"
 
-HessianNode::Direction HessianNode::split(const cv::Mat& mat) const
+HessianNode::Direction HessianNode::split(const std::vector<cv::Mat>& mat, const cv::Rect& roi) const
 {
 	double result = 0.;
 	// create gradient

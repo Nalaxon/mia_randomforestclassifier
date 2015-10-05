@@ -26,7 +26,7 @@ public:
 
 protected:
 
-  virtual Direction split(const cv::Mat& data) const;
+	virtual Direction split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const;
 
 private:
   std::vector<unsigned int> m_x_1;

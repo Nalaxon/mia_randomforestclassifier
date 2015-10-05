@@ -1,10 +1,10 @@
 #include "MedianNode.hpp"
 #include "Tools/ImageTools.hpp"
 
-MedianNode::Direction MedianNode::split(const cv::Mat& mat) const
+MedianNode::Direction MedianNode::split(const std::vector<cv::Mat>& mat, const cv::Rect& roi) const
 {
 	float median = 0.0;
-	int mat_size = mat.rows*mat.cols;
+	int mat_size = (mat[0]).rows*(mat[0]).cols;
 	std::vector<cv::Mat> channels = ImageTools::extract_channels<4>(mat);
 	cv::Mat row = channels[3].reshape(1, mat_size), sorted;
 	cv::sortIdx(row, sorted, CV_SORT_EVERY_ROW + CV_SORT_ASCENDING);

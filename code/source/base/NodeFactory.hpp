@@ -10,27 +10,27 @@
 #include <boost/random/random_device.hpp>
 
 // forward declaration for friend declaration
-template<typename LABEL_TYPE, typename DATA_TYPE>
+template<typename LABEL_TYPE, typename DATA_TYPE, typename ROI_TYPE >
 class UniversalNodeFactory;
 
 
-template<typename LABEL_TYPE, typename DATA_TYPE>
+template<typename LABEL_TYPE, typename DATA_TYPE, typename ROI_TYPE>
 class NodeFactory
 {
   // this is necessary to get access to createRandomNode()...
-  friend UniversalNodeFactory < LABEL_TYPE, DATA_TYPE > ;
+	friend UniversalNodeFactory < LABEL_TYPE, DATA_TYPE, ROI_TYPE >;
 
 public:
 
-  using NodeType = Node < LABEL_TYPE, DATA_TYPE > ;
+	using NodeType = Node < LABEL_TYPE, DATA_TYPE, ROI_TYPE >;
 
-  using NodePtr = NodePtr_ < LABEL_TYPE, DATA_TYPE > ;
+	using NodePtr = NodePtr_ < LABEL_TYPE, DATA_TYPE, ROI_TYPE >;
 
-  using SampleVector = SampleVector_ < LABEL_TYPE, DATA_TYPE > ;
+	using SampleVector = SampleVector_ < LABEL_TYPE, DATA_TYPE, ROI_TYPE >;
 
-  using HistogramType = Histogram < LABEL_TYPE, DATA_TYPE > ;
+	using HistogramType = Histogram < LABEL_TYPE, DATA_TYPE, ROI_TYPE >;
 
-  using HistogramPtr = HistogramPtr_ < LABEL_TYPE, DATA_TYPE > ;
+	using HistogramPtr = HistogramPtr_ < LABEL_TYPE, DATA_TYPE, ROI_TYPE >;
 
   //----------------------------------------------------------------------------
   // Constructor
@@ -64,8 +64,8 @@ public:
   {
     auto hist_samples = std::make_unique<HistogramType>(samples);
 
-    std::vector<Sample<LABEL_TYPE, DATA_TYPE>> samples_left;
-    std::vector<Sample<LABEL_TYPE, DATA_TYPE>> samples_right;
+	std::vector<Sample<LABEL_TYPE, DATA_TYPE, ROI_TYPE>> samples_left;
+	std::vector<Sample<LABEL_TYPE, DATA_TYPE, ROI_TYPE>> samples_right;
 
     float max_info_gain = -0.1f;
     NodePtr max_node;

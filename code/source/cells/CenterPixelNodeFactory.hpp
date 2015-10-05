@@ -8,7 +8,7 @@
 
 /// class CenterPixelNodeFactory - 
 
-class CenterPixelNodeFactory : public NodeFactory<CellLabel, cv::Mat>
+class CenterPixelNodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>
 {
 public:
 

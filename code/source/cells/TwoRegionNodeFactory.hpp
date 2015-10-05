@@ -8,7 +8,7 @@
 #include <boost/random.hpp>
 #include <opencv2/core/core.hpp>
 
-class TwoRegionNodeFactory : public NodeFactory<CellLabel, cv::Mat>
+class TwoRegionNodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>
 {
 public:
   TwoRegionNodeFactory(const PatchParameter& params) 

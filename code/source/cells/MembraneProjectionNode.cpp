@@ -1,7 +1,7 @@
 #include "MembraneProjectionNode.hpp"
 #include "Tools/ImageTools.hpp"
 
-MembraneProjectionNode::Direction MembraneProjectionNode::split(const cv::Mat& mat) const
+MembraneProjectionNode::Direction MembraneProjectionNode::split(const std::vector<cv::Mat>& mat, const cv::Rect& roi) const
 {
 	double result = 0.;
 	// create gradient

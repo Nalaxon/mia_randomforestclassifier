@@ -8,7 +8,7 @@
 #include <boost/random.hpp>
 #include <opencv2/core/core.hpp>
 
-class CannyEdgeMoment00NodeFactory : public NodeFactory<CellLabel, cv::Mat>
+class CannyEdgeMoment00NodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>
 {
 public:
 	CannyEdgeMoment00NodeFactory(const PatchParameter& params)

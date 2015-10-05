@@ -8,7 +8,7 @@
 #include <boost/random.hpp>
 #include <opencv2/core/core.hpp>
 
-class GaussPyrNodeFactory : public NodeFactory<CellLabel, cv::Mat>
+class GaussPyrNodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>
 {
 public:
 	GaussPyrNodeFactory(const PatchParameter& params)

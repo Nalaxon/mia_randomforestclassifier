@@ -8,7 +8,7 @@
 #include <boost/random.hpp>
 #include <opencv2/core/core.hpp>
 
-class GaborNodeFactory : public NodeFactory<CellLabel, cv::Mat>
+class GaborNodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>
 {
 public:
 	GaborNodeFactory(const PatchParameter& params)

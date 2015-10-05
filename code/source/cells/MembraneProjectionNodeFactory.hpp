@@ -9,7 +9,7 @@
 #include <boost/random.hpp>
 #include <opencv2/core/core.hpp>
 
-class MembraneProjectionNodeFactory : public NodeFactory<CellLabel, cv::Mat>
+class MembraneProjectionNodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>
 {
 public:
 	MembraneProjectionNodeFactory(const PatchParameter& params)

@@ -48,9 +48,9 @@
 
 
 
-std::unique_ptr<Histogram<CellLabel, cv::Mat>>
-sum_ensemble(const std::vector<Histogram<CellLabel, cv::Mat>>&histograms) {
-    auto sum = std::make_unique<Histogram<CellLabel, cv::Mat >> ();
+std::unique_ptr<Histogram<CellLabel, std::vector<cv::Mat>, cv::Rect>>
+sum_ensemble(const std::vector<Histogram<CellLabel, std::vector<cv::Mat>, cv::Rect>>&histograms) {
+	auto sum = std::make_unique<Histogram<CellLabel, std::vector<cv::Mat>, cv::Rect >>();
     for (const auto& hist : histograms) {
         *sum += hist;
     }
@@ -86,12 +86,12 @@ int Program::run(int argc, char** argv) {
         m_test_image_index = dist_test_image(rng);
     }
 
-    std::vector<Sample<CellLabel, cv::Mat>> pure_samples;
+	std::vector<Sample<CellLabel, std::vector<cv::Mat>, cv::Rect>> pure_samples;
 
     extract_training_samples(pure_samples);
 
     // construct forest/tree parameters
-    RFParameter<CellLabel, cv::Mat> rf_params;
+	RFParameter<CellLabel, std::vector<cv::Mat>> rf_params;
     rf_params.m_bagging = m_bagging;
     rf_params.m_num_trees = m_num_trees;
     rf_params.m_tree_params.m_max_depth = m_max_depth;
@@ -105,7 +105,7 @@ int Program::run(int argc, char** argv) {
     patch_params.max_value = 1.0;
 
     // construct the universalnodefactory
-    std::vector<std::shared_ptr<NodeFactory<CellLabel, cv::Mat>>> factory_list;
+	std::vector<std::shared_ptr<NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>>> factory_list;
     
 	factory_list.push_back(std::make_shared<TwoRegionNodeFactory>(patch_params));
 	factory_list.push_back(std::make_shared<TwoRegionsGradientNodeFactory>(patch_params));
@@ -131,13 +131,13 @@ int Program::run(int argc, char** argv) {
 	factory_list.push_back(std::make_shared<BilateralNodeFactory>(patch_params));
 	factory_list.push_back(std::make_shared<GaussPyrNodeFactory>(patch_params));
 
-    std::shared_ptr<UniversalNodeFactory<CellLabel, cv::Mat >>
-            factory(new UniversalNodeFactory<CellLabel, cv::Mat>(factory_list));
+	std::shared_ptr<UniversalNodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect >>
+		factory(new UniversalNodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>(factory_list));
 
 	m_log_stream = new std::ofstream(std::string("../bin/log.txt").c_str(), std::ofstream::out);
 	factory->setLogStream(m_log_stream);
 
-    RandomForest<CellLabel, cv::Mat> forest(rf_params, factory);
+    RandomForest<CellLabel, std::vector<cv::Mat>, cv::Rect> forest(rf_params, factory);
 
     if (m_use_xvalidation) {
         double accuracy = xvalidation(forest, pure_samples, m_num_xvalidation_sets);
@@ -170,7 +170,7 @@ int Program::run(int argc, char** argv) {
 
         truth_image.convertTo(truth_image, CV_32FC1, 1 / 255.);
 
-        cv::Mat test_image_prepared = prepare_image(test_image);
+        std::vector<cv::Mat> test_image_prepared = prepare_image(test_image);
         //cv::namedWindow("inputwindow", CV_WINDOW_AUTOSIZE);
         //cv::imshow("inputwindow", test_image); 
         cv::Mat prop_image = classify_image(forest, test_image_prepared);
@@ -283,7 +283,7 @@ int Program::run(int argc, char** argv) {
 		cv::waitKey(0);*/
         
 		cv::Mat test_image = cv::imread(test_volume_path.string(), CV_LOAD_IMAGE_COLOR);
-		cv::Mat test_image_prepared = prepare_image(test_image);
+		std::vector<cv::Mat> test_image_prepared = prepare_image(test_image);
 		cv::Mat prob_image = classify_image(forest, test_image_prepared);
         cv::Mat classify_image;
         cv::threshold(prob_image, classify_image, 0.5f, 1.0f, cv::THRESH_BINARY);
@@ -410,7 +410,7 @@ bool Program::parse_command_line(int argc, char** argv) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void Program::extract_training_samples(std::vector<Sample<CellLabel, cv::Mat>>&samples) const {
+void Program::extract_training_samples(std::vector<Sample<CellLabel, std::vector<cv::Mat>, cv::Rect>>&samples) const {
 #if NDEBUG
 #pragma omp parallel for
 #endif
@@ -443,7 +443,7 @@ void Program::extract_training_samples(std::vector<Sample<CellLabel, cv::Mat>>&s
 		}
 
         // prepare sample image for better classification
-        cv::Mat data_image = prepare_image(volume);
+        std::vector<cv::Mat> data_image = prepare_image(volume);
 
         // convert ground truth to grayscalce if needed
         if (truth.channels() != 1) {
@@ -455,15 +455,16 @@ void Program::extract_training_samples(std::vector<Sample<CellLabel, cv::Mat>>&s
         unsigned int num_background = 0;
         unsigned int samples_per_class = m_num_samples_per_image / 2;
         while (num_background < samples_per_class || num_foreground < samples_per_class) {
-            cv::Mat sample_image;
+            std::vector<cv::Mat> sample_image;
             bool foreground;
             // unpack the tuple
-            std::tie(sample_image, foreground) = sample_extractor.extractRandomSample();
+			cv::Rect roi;
+            std::tie(sample_image, foreground) = sample_extractor.extractRandomSample(roi);
 
             auto& effected_sample_counter = foreground ? num_foreground : num_background;
             if (effected_sample_counter < samples_per_class) {
                 ++effected_sample_counter;
-                Sample<CellLabel, cv::Mat> sample(foreground ? CellLabel::Border() : CellLabel::Cell(), sample_image);
+				Sample<CellLabel, std::vector<cv::Mat>, cv::Rect> sample(foreground ? CellLabel::Border() : CellLabel::Cell(), sample_image, roi);
 #if NDEBUG
 #pragma omp critical
 #endif
@@ -481,27 +482,37 @@ void Program::extract_training_samples(std::vector<Sample<CellLabel, cv::Mat>>&s
 
 //----------------------------------------------------------------------------------------------------------------------
 
-cv::Mat Program::prepare_image(const cv::Mat& image) const {
-    cv::Mat prepared;
-    prepared.create(image.rows, image.cols, CV_32FC4);
-    auto channels = ImageTools::extract_channels<4>(prepared);
-
+std::vector<cv::Mat> Program::prepare_image(const cv::Mat& image) const {
+	int ddepth = CV_32F;
+	std::vector<cv::Mat> prepared;
+    //auto channels = ImageTools::extract_channels<4>(image);
+	
+	//Original grayscale image
+	cv::Mat gray;
     if (image.channels() != 1) {
-        cv::cvtColor(image, channels[0], CV_BGR2GRAY);
+        cv::cvtColor(image, gray, CV_BGR2GRAY);
+
     }
 	else {
-		channels[0] = image.clone();
+		gray = image;
 	}
-
-    cv::equalizeHist(channels[0], channels[0]);
-
-    // create gradient
+	prepared.push_back(gray.clone());
+	cv::equalizeHist(prepared[0], prepared[0]);
+	// create integral image
+	gray.convertTo(gray, CV_32FC1, 1 / 255.);
+	push_integral(gray, prepared, ddepth);
+	
+    // create gaussian
     int scale = 1;
     int delta = 0;
-    int ddepth = CV_32F;
     int blur_kernel_size = 15;
     cv::Mat blurred, blurred_f;
-    cv::GaussianBlur(channels[0], blurred, cv::Size(blur_kernel_size, blur_kernel_size), 1., 1.);
+	cv::GaussianBlur(prepared[0], blurred, cv::Size(blur_kernel_size, blur_kernel_size), 1., 1.);
+	blurred.convertTo(blurred_f, CV_32F, 1.0f / 255.);
+	prepared.push_back(blurred_f.clone());
+	push_integral(blurred_f, prepared, ddepth);
+
+	// create Gradient
     /// Gradient X
 	cv::Mat grad_abs;
     cv::Mat grad_x, grad_y;
@@ -515,22 +526,8 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
 	cv::addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad_abs);
 	cv::Mat grad_abs_f;
 	grad_abs.convertTo(grad_abs_f, CV_32F, 1.0f / 255.0f);
-    cv::integral(grad_abs_f, channels[1], ddepth);
-
-    // create integral image
-    channels[0].convertTo(channels[0], CV_32FC1, 1 / 255.);
-    cv::integral(channels[0], channels[2], ddepth);
-
-    // cut off first row and col from integral images
-	cv::Rect roi(1, 1, channels[0].cols, channels[0].rows);
-    channels[1] = cv::Mat(channels[1], roi);
-    channels[2] = cv::Mat(channels[2], roi);
-
-	//gaussian image
-	blurred.convertTo(blurred_f, CV_32F, 1.0f / 255.);
-    channels[3] = blurred_f.clone();
-
-    cv::merge(channels, prepared);
+	prepared.push_back(grad_abs_f);
+	push_integral(grad_abs_f, prepared, ddepth);
 
     return prepared;
 }
@@ -538,21 +535,24 @@ cv::Mat Program::prepare_image(const cv::Mat& image) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-cv::Mat Program::classify_image(const RandomForest<CellLabel, cv::Mat>& forest, const cv::Mat& image) const {
-    cv::Mat border_image;
-    cv::copyMakeBorder(image, border_image,
-            m_sample_size / 2, m_sample_size / 2, m_sample_size / 2, m_sample_size / 2,
-            cv::BORDER_REFLECT);
-
+cv::Mat Program::classify_image(const RandomForest<CellLabel, std::vector<cv::Mat>, cv::Rect>& forest, const std::vector<cv::Mat>& images) const {
+	std::vector<cv::Mat> border_images;
+	for (int i = 0; i < images.size(); ++i)
+	{
+		cv::Mat border_image;
+		cv::copyMakeBorder(images[i], border_image,
+			m_sample_size / 2, m_sample_size / 2, m_sample_size / 2, m_sample_size / 2,
+			cv::BORDER_REFLECT);
+		border_images.push_back(border_image.clone());
+	}
     cv::Mat classification_image;
-    classification_image.create(image.rows, image.cols, CV_32FC1);
+    classification_image.create(images[0].rows, images[0].cols, CV_32FC1);
 
     for (int row = 0; row < classification_image.rows; ++row) {
         for (int col = 0; col < classification_image.cols; ++col) {
             cv::Rect patch_definition(col, row, m_sample_size, m_sample_size);
-            cv::Mat patch(border_image, patch_definition);
 
-            float pixel_value = forest.predict_prob(patch, CellLabel::Cell(), sum_ensemble);
+            float pixel_value = forest.predict_prob(border_images, patch_definition, CellLabel::Cell(), sum_ensemble);
             classification_image.at<float>(row, col) = pixel_value;
         }
     }
@@ -570,9 +570,9 @@ Program::PathTuple Program::resolve_data_path(unsigned int id) const {
     return std::make_tuple(m_dataset_path / volume_file_name.str(), m_dataset_path / truth_file_name.str());
 }
 
-double Program::xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std::vector<Sample<CellLabel, cv::Mat>>& pure_samples, unsigned int validations) {
+double Program::xvalidation(RandomForest<CellLabel, std::vector<cv::Mat>, cv::Rect> &forest, const std::vector<Sample<CellLabel, std::vector<cv::Mat>, cv::Rect>>& pure_samples, unsigned int validations) {
 
-    std::vector<Sample<CellLabel, cv::Mat>> ground_truth, samples;
+	std::vector<Sample<CellLabel, std::vector<cv::Mat>, cv::Rect>> ground_truth, samples;
     auto offset = pure_samples.size() / validations;
     double accuracy = 0.0;
 	
@@ -606,7 +606,7 @@ double Program::xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std:
 		// test the forest
 		int sum_correct = 0;
 		for (unsigned int i = 0; i < samples.size(); ++i) {
-			if (forest.predict(samples[i].get_data(), sum_ensemble) == samples[i].get_label())
+			if (forest.predict(samples[i].get_data(), samples[i].get_roi(), sum_ensemble) == samples[i].get_label())
 			{
 				++sum_correct;
 			}
@@ -697,4 +697,14 @@ cv::Mat Program::watershed_image(const cv::Mat& classify_image, const cv::Mat& p
 	cv::waitKey(0);
 
 	return markers_wshd;
+}
+
+void Program::push_integral(cv::Mat input, std::vector<cv::Mat> prepared, int ddepth) const
+{
+	cv::Mat tmp;
+	cv::integral(input, tmp, ddepth);
+
+	// cut off first row and col from integral images
+	cv::Rect roi(1, 1, prepared[0].cols, prepared[0].rows);
+	prepared.push_back(cv::Mat(tmp, roi));
 }

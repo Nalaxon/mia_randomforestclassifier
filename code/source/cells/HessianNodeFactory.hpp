@@ -8,7 +8,7 @@
 #include <boost/random.hpp>
 #include <opencv2/core/core.hpp>
 
-class HessianNodeFactory : public NodeFactory<CellLabel, cv::Mat>
+class HessianNodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>
 {
 public:
 	HessianNodeFactory(const PatchParameter& params)

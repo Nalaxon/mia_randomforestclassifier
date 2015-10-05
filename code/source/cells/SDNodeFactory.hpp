@@ -8,7 +8,7 @@
 #include <boost/random.hpp>
 #include <opencv2/core/core.hpp>
 
-class SDNodeFactory : public NodeFactory<CellLabel, cv::Mat>
+class SDNodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>
 {
 public:
 	SDNodeFactory(const PatchParameter& params)

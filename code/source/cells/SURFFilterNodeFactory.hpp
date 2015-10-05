@@ -10,7 +10,7 @@
 #include <boost/random.hpp>
 
 /// class SURFFilterNodeFactory - 
-class SURFFilterNodeFactory : public NodeFactory<CellLabel, cv::Mat>
+class SURFFilterNodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>
 {
   public:
 

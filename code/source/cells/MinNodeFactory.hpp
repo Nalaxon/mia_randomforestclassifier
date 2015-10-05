@@ -8,7 +8,7 @@
 #include <boost/random.hpp>
 #include <opencv2/core/core.hpp>
 
-class MinNodeFactory : public NodeFactory<CellLabel, cv::Mat>
+class MinNodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>
 {
 public:
 	MinNodeFactory(const PatchParameter& params)

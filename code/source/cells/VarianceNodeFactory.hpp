@@ -8,7 +8,7 @@
 #include <boost/random.hpp>
 #include <opencv2/core/core.hpp>
 
-class VarianceNodeFactory : public NodeFactory<CellLabel, cv::Mat>
+class VarianceNodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>
 {
 public:
 	VarianceNodeFactory(const PatchParameter& params)

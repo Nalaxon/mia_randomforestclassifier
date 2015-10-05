@@ -115,14 +115,14 @@ private:
      * @param image the input image
      * @return the classification image
      */
-    cv::Mat classify_image(const RandomForest<CellLabel, cv::Mat>& forest, const cv::Mat& image) const;
+    cv::Mat classify_image(const RandomForest<CellLabel, std::vector<cv::Mat>, cv::Rect>& forest, const std::vector<cv::Mat>& images) const;
 
     /**
      * Extracts the training samples from the dataset.
      *
      * @param foreground_samples all foreground samples will be in there.
      */
-    void extract_training_samples(std::vector<Sample<CellLabel, cv::Mat>>& samples) const;
+	void extract_training_samples(std::vector<Sample<CellLabel, std::vector<cv::Mat>, cv::Rect>>& samples) const;
 
     /**
      * Reads the configuration from the commandline.
@@ -136,16 +136,17 @@ private:
      * Prepares an input image for better training/classification. It will convert the image to grayscale and do
      * histogram equalization.
      */
-    cv::Mat prepare_image(const cv::Mat& image) const;
+	std::vector<cv::Mat> prepare_image(const cv::Mat& image) const;
     
     PathTuple resolve_data_path(unsigned int id) const;
 
-    double xvalidation(RandomForest<CellLabel, cv::Mat> &forest, const std::vector < Sample<CellLabel, cv::Mat>> &pure_samples, const unsigned int validations);
+	double xvalidation(RandomForest<CellLabel, std::vector<cv::Mat>, cv::Rect> &forest, const std::vector < Sample<CellLabel, std::vector<cv::Mat>, cv::Rect>> &pure_samples, const unsigned int validations);
 
 	int MAX_IMAGES = 30;
 
 	cv::Mat segment_image(const cv::Mat& classify_image, const cv::Mat& prop_image, std::string options);
 	cv::Mat watershed_image(const cv::Mat& classify_image, const cv::Mat& prop_image);
+	void push_integral(cv::Mat input, std::vector<cv::Mat> prepared, int ddepth) const;
 };
 
 
