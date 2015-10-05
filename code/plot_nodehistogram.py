@@ -22,7 +22,16 @@ if __name__ == "__main__":
         'Haar4WaveletNode':0,
 		'HoGNode':0,
                 'CannyEdgeMoment00Node':0,
-                'GaborNode':0
+                'GaborNode':0,
+                'MinNode':0,
+                'MaxNode':0,
+                'MedianNode':0,
+                'SDNode':0,
+                'VarianceNode':0,
+                'HessianNode':0,
+                'MembraneProjectionNode':0,
+                'BilateralNode':0,
+                'GaussPyrNode':0
 	}
 
 	with open(dot_file) as f:
