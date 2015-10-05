@@ -32,6 +32,7 @@
 #include "cells\HessianNodeFactory.hpp"
 #include "cells\MembraneProjectionNodeFactory.hpp"
 #include "cells\BilateralNodeFactory.hpp"
+#include "cells\GaussPyrNodeFactory.hpp"
 
 #include <iomanip>
 #include <chrono>
@@ -128,6 +129,7 @@ int Program::run(int argc, char** argv) {
 	factory_list.push_back(std::make_shared<HessianNodeFactory>(patch_params));
 	factory_list.push_back(std::make_shared<MembraneProjectionNodeFactory>(patch_params));
 	factory_list.push_back(std::make_shared<BilateralNodeFactory>(patch_params));
+	factory_list.push_back(std::make_shared<GaussPyrNodeFactory>(patch_params));
 
     std::shared_ptr<UniversalNodeFactory<CellLabel, cv::Mat >>
             factory(new UniversalNodeFactory<CellLabel, cv::Mat>(factory_list));
