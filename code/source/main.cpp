@@ -23,6 +23,7 @@ int main(int argc, char** argv) {
         return program.run(argc, argv);
     } catch (...) {
         std::cerr << "Unexpected exception:" << find_exception_msg() << std::endl;
+		getchar();
         return EXIT_FAILURE;
     }
 }
