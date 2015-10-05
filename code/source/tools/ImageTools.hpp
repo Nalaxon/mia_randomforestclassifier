@@ -75,8 +75,32 @@ namespace ImageTools
     std::vector<cv::Mat> channels(N);
     cv::split(channelImg, channels);
     return channels;
-  } 
-  
+  }
+
+  static void adjust_line(int &start, int &end, const int &constraint)
+  {
+	  int tmp = 0;
+	  if ((start + end) >= constraint)
+	  {
+		  tmp = constraint - start - 2;
+		  if ((tmp <= 0))
+		  {
+			  start = (end / 2);
+			  end = (end == 0) ? 1 : end / 2;
+		  }
+		  else
+			  end = tmp;
+	  }
+	  else if (end == 0)
+		  end = 1;
+
+  }
+
+  static void adjust_region(cv::Rect &region, const int const_width, const int const_height)
+  {
+	  adjust_line(region.x, region.width, const_width);
+	  adjust_line(region.y, region.height, const_height);
+  }
 }
 
 #endif
