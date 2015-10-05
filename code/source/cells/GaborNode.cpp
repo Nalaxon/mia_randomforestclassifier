@@ -9,13 +9,12 @@ GaborNode::Direction GaborNode::split(const cv::Mat& mat) const
 	cv::Mat dest;
 	cv::filter2D(ImageTools::extract_channels<4>(mat)[0], dest, CV_32F, kernel);
 
-	cv::Scalar mean;
-	mean = cv::mean(dest);
+	double mean = std::abs(cv::mean(dest).val[0]);
 
 	if (m_log_stream != nullptr)
-		*m_log_stream << "GaborNode;" << mean.val[0] << ";" << std::endl;
+		*m_log_stream << "GaborNode;" << mean << ";" << std::endl;
 
-	if (mean.val[0] < m_threshold)
+	if (mean < m_threshold)
     {
         return Direction::LEFT;
     }
