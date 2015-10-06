@@ -12,8 +12,14 @@ m_dist_col(0, sample_image[0].cols-1),
 m_dist_row(0, sample_image[0].rows-1),
 m_sample_size(sample_size),
 m_ground_truth(ground_truth) 
-{   
-    cv::copyMakeBorder(sample_image, m_sample_image, sample_size / 2, sample_size / 2, sample_size / 2, sample_size / 2, cv::BORDER_REPLICATE);
+{
+    for (int i = 0; i < sample_image.size(); ++i)
+    {
+        cv::Mat tmp;
+        cv::copyMakeBorder(sample_image[i], tmp, sample_size / 2, sample_size / 2, sample_size / 2, sample_size / 2, cv::BORDER_REPLICATE);
+        m_sample_image.push_back(tmp.clone());
+    }
+    
 }
 
 std::tuple<std::vector<cv::Mat>, bool> SampleExtractor::extractRandomSample(cv::Rect& roi) {
