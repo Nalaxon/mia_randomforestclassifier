@@ -15,7 +15,7 @@ public:
 		m_determine(th_determine), m_orientation(th_orientation), m_first(th_firsteigen),
 		m_second(th_secondeigen), m_sgned(th_sgned), m_gnsed(th_gnsed), m_log_stream(log_stream) {}
   
-	virtual Direction split(const std::vector<cv::Mat>& mat, const cv::Rect& roi) const;
+	virtual Direction split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const;
   
 private:
   

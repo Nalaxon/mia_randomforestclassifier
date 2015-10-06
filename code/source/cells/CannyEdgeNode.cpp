@@ -3,8 +3,8 @@
 
 CannyEdgeNode::Direction CannyEdgeNode::split(const std::vector<cv::Mat>& mat, const cv::Rect& roi) const
 {
-	cv::Mat detected_edges = ImageTools::extract_channels<4>(mat)[0];
-	detected_edges.convertTo(detected_edges, CV_8UC1, 255.);
+	cv::Mat detected_edges;
+    mat[0].convertTo(detected_edges, CV_8UC1, 255.);
 	
 	//std::vector <cv::Mat> channels = ImageTools::extract_channels<4>(mat);
 	//channels[0].convertTo(detected_edges, CV_8U, 255.);

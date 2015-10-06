@@ -39,42 +39,37 @@ namespace ImageTools
 //    }
 //  }
   
-  template<typename PixelType, unsigned int num_channels, unsigned int channel>
-  static const PixelType& get_pixel(const std::vector<cv::Mat>& mat, unsigned int row, unsigned int col)
+  template<typename PixelType>
+  static const PixelType& get_pixel(const cv::Mat& mat,
+	  unsigned int row, unsigned int col)
   {
-	  return mat[channel].at<PixelType>(row, col);
+	  return mat.at<PixelType>(row, col);
   }
   
-  template<typename PixelType, unsigned int num_channels, unsigned int channel>
-  static const PixelType& get_center_pixel(const std::vector<cv::Mat>& mat)
+  template<typename PixelType>
+  static const PixelType& get_center_pixel(const cv::Mat& mat)
   {
-	  int center_col = mat[0].cols / 2;
-	  int center_row = mat[0].rows / 2;
-    return get_pixel<PixelType, num_channels, channel>(mat, center_row, center_col);
+	  int center_col = mat.cols / 2;
+	  int center_row = mat.rows / 2;
+	  return get_pixel<PixelType>(mat, center_row, center_col);
   }
   
-  template<typename PixelType, unsigned int num_channels, unsigned int channel>
-  static PixelType sum_from_integral(const std::vector<cv::Mat>& mat, cv::Rect region)
+  template<typename PixelType>
+  static PixelType sum_from_integral(const cv::Mat& mat, cv::Rect region)
   {
-    const auto& left_up = get_pixel<PixelType, num_channels, channel>(mat, region.y, region.x);
-    const auto& left_bottom = get_pixel<PixelType, num_channels, channel>(mat, region.y + region.height, region.x);
-    const auto& right_up = get_pixel<PixelType, num_channels, channel>(mat, region.y, region.x + region.width);
-    const auto& right_bottom = get_pixel<PixelType, num_channels, channel>(mat, region.y + region.height, region.x + region.width);
+      const auto& left_up = get_pixel<PixelType>(mat, region.y, region.x);
+      const auto& left_bottom = get_pixel<PixelType>(mat, region.y + region.height, region.x);
+      const auto& right_up = get_pixel<PixelType>(mat, region.y, region.x + region.width);
+      const auto& right_bottom = get_pixel<PixelType>(mat, region.y + region.height, region.x + region.width);
     return right_bottom - right_up - left_bottom + left_up;
   }
   
-  template<typename PixelType, unsigned int num_channels, unsigned int channel>
-  static PixelType mean_from_integral(const std::vector<cv::Mat>& mat, cv::Rect region)
+  template<typename PixelType>
+  static PixelType mean_from_integral(const cv::Mat& mat, cv::Rect region)
   {
-    return sum_from_integral<PixelType, num_channels, channel>(mat, region) / region.area();
+      return sum_from_integral<PixelType>(mat, region) / region.area();
   }
   
-  template<unsigned int N>
-  static std::vector<cv::Mat> extract_channels(const std::vector<cv::Mat>& channelImg)
-  {
-    return channelImg;
-  }
-
   static void adjust_line(int &start, int &end, const int &constraint)
   {
 	  int tmp = 0;

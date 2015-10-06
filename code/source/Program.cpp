@@ -654,7 +654,7 @@ cv::Mat Program::watershed_image(const cv::Mat& classify_image, const cv::Mat& p
 		{
 			cv::Rect patchPosition(cv::Point(x, y), marker_size);
 			//cv::Mat patch(classify_integral, patchPosition);
-			if (ImageTools::mean_from_integral<double, 1, 0>(classify_integral, patchPosition) < 0.1)
+			if (ImageTools::mean_from_integral<double>(classify_integral, patchPosition) < 0.1)
 				//if (cv::countNonZero(patch) == 0)
 			{
 				cv::rectangle(markers, patchPosition, 128, CV_FILLED);
@@ -669,7 +669,7 @@ cv::Mat Program::watershed_image(const cv::Mat& classify_image, const cv::Mat& p
 		{
 			cv::Rect patchPosition(cv::Point(x, y), marker_size);
 			//cv::Mat patch(classify_image, patchPosition);
-			if (ImageTools::mean_from_integral<double, 1, 0>(classify_integral, patchPosition) > 0.9)
+			if (ImageTools::mean_from_integral<double>(classify_integral, patchPosition) > 0.9)
 				//if (cv::countNonZero(patch) == marker_size.area())
 			{
 				cv::rectangle(markers, patchPosition, 255, CV_FILLED);

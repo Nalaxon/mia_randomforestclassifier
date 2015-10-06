@@ -1,7 +1,7 @@
 #include "MembraneProjectionNode.hpp"
 #include "Tools/ImageTools.hpp"
 
-MembraneProjectionNode::Direction MembraneProjectionNode::split(const std::vector<cv::Mat>& mat, const cv::Rect& roi) const
+MembraneProjectionNode::Direction MembraneProjectionNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {
 	double result = 0.;
 	// create gradient
@@ -11,8 +11,7 @@ MembraneProjectionNode::Direction MembraneProjectionNode::split(const std::vecto
 	int kernel_size = 19;
 	int kernel_half = kernel_size / 2;
 
-	cv::vector<cv::Mat> channels = ImageTools::extract_channels<4>(mat);
-	cv::Mat grad = channels[3];
+	cv::Mat grad = data[2];
 
 	std::string test;
 	double thresh = 0.;

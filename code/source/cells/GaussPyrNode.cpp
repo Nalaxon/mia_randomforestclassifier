@@ -1,12 +1,10 @@
 #include "GaussPyrNode.hpp"
 #include "Tools/ImageTools.hpp"
 
-GaussPyrNode::Direction GaussPyrNode::split(const std::vector<cv::Mat>& mat, const cv::Rect& roi) const
-{
-	std::vector<cv::Mat> channels = ImageTools::extract_channels<4>(mat);
-	
-	cv::Mat act = channels[0], down, up, laplace;
-	int act_size = channels[0].cols / 2;
+GaussPyrNode::Direction GaussPyrNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
+{	
+	cv::Mat act = data[0], down, up, laplace;
+	int act_size = data[0].cols / 2;
 	int level = 1;
 	while ((act_size > 0) && (act_size % 2 == 0))
 	{

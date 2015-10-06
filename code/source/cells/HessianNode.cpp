@@ -1,7 +1,7 @@
 #include "HessianNode.hpp"
 #include "Tools/ImageTools.hpp"
 
-HessianNode::Direction HessianNode::split(const std::vector<cv::Mat>& mat, const cv::Rect& roi) const
+HessianNode::Direction HessianNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {
 	double result = 0.;
 	// create gradient
@@ -10,12 +10,11 @@ HessianNode::Direction HessianNode::split(const std::vector<cv::Mat>& mat, const
 	int ddepth = CV_32F;
 	int blur_kernel_size = 15;
 
-	cv::vector<cv::Mat> channels = ImageTools::extract_channels<4>(mat);
 	cv::Mat grad_x, grad_y, grad_xx, grad_yy, grad_xy;
 	std::vector<cv::Mat> grads;
 	//Gradients:
 	//X
-	cv::Sobel(channels[3], grad_x, ddepth, 1, 0, 3, scale, delta, cv::BORDER_REPLICATE);
+	cv::Sobel(data[2], grad_x, ddepth, 1, 0, 3, scale, delta, cv::BORDER_REPLICATE);
 	//XX
 	cv::Sobel(grad_x, grad_xx, ddepth, 1, 0, 3, scale, delta, cv::BORDER_REPLICATE);
 	normalizeImage(grad_xx);
@@ -25,7 +24,7 @@ HessianNode::Direction HessianNode::split(const std::vector<cv::Mat>& mat, const
 	normalizeImage(grad_xy);
 	grads.push_back(grad_xy);
 	//Y
-	cv::Sobel(channels[3], grad_y, ddepth, 0, 1, 3, scale, delta, cv::BORDER_REPLICATE);
+	cv::Sobel(data[2], grad_y, ddepth, 0, 1, 3, scale, delta, cv::BORDER_REPLICATE);
 	//YY
 	cv::Sobel(grad_y, grad_yy, ddepth, 0, 1, 3, scale, delta, cv::BORDER_REPLICATE);
 	normalizeImage(grad_yy);

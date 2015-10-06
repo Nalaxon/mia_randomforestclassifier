@@ -1,11 +1,10 @@
 #include "VarianceNode.hpp"
 #include "Tools/ImageTools.hpp"
 
-VarianceNode::Direction VarianceNode::split(const std::vector<cv::Mat>& mat, const cv::Rect& roi) const
+VarianceNode::Direction VarianceNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {
-	std::vector<cv::Mat> channels = ImageTools::extract_channels<4>(mat);
 	cv::Mat psd;
-	cv::dft(channels[3].mul(channels[3]), psd);
+	cv::dft(data[2].mul(data[2]), psd);
 	float var = cv::mean(psd).val[0];
 
 	if (m_log_stream != nullptr)

@@ -1,16 +1,16 @@
 #include "SDNode.hpp"
 #include "Tools/ImageTools.hpp"
 
-SDNode::Direction SDNode::split(const std::vector<cv::Mat>& mat, const cv::Rect& roi) const
+SDNode::Direction SDNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {
 	cv::Mat mean, stdev;
 
-	cv::meanStdDev(mat, mean, stdev);
+	cv::meanStdDev(data[2], mean, stdev);
 	
 	if (m_log_stream != nullptr)
-		*m_log_stream << "SDNode;" << m_threshold << ";" << stdev.at<double>(3) << "; " << std::endl;
+		*m_log_stream << "SDNode;" << m_threshold << ";" << stdev.at<double>(0) << "; " << std::endl;
 
-	if (stdev.at<double>(3) < m_threshold)
+	if (stdev.at<double>(0) < m_threshold)
     {
         return Direction::LEFT;
     }
