@@ -496,10 +496,12 @@ std::vector<cv::Mat> Program::prepare_image(const cv::Mat& image) const {
 	else {
 		gray = image;
 	}
-	prepared.push_back(gray.clone());
-	cv::equalizeHist(prepared[0], prepared[0]);
-	// create integral image
-	gray.convertTo(gray, CV_32FC1, 1 / 255.);
+    
+	cv::equalizeHist(gray, gray);
+    gray.convertTo(gray, CV_32FC1, 1 / 255.);
+    prepared.push_back(gray.clone());
+    
+    // create integral image
 	push_integral(gray, prepared, ddepth);
 	
     // create gaussian
