@@ -38,56 +38,56 @@ HessianNode::Direction HessianNode::split(const std::vector<cv::Mat>& data, cons
 		test = "module";
 		result = calc_module(grads);
 		thresh = m_module;
-		//break;
+		break;
 	}
 	case 1:
 	{
 		test = "trace";
 		result = calc_trace(grads);
 		thresh = m_trace;
-		//break;
+		break;
 	}
 	case 2:
 	{
 		test = "determine";
 		result = calc_determine(grads);
 		thresh = m_determine;
-		//break;
+		break;
 	}
 	case 3:
 	{
 		test = "firsteigen";
 		result = calc_firsteigenvalue(grads);
 		thresh = m_first;
-		//break;
+		break;
 	}
 	case 4:
 	{
 		test = "secondeigen";
 		result = calc_secondeigenvalue(grads);
 		thresh = m_second;
-		//break;
+		break;
 	}
 	case 5:
 	{
 		test = "orientation";
 		result = calc_orientation(grads);
 		thresh = m_orientation;
-		//break;
+		break;
 	}
 	case 6:
 	{
 		test = "gnsed";
 		result = calc_gnsed(grads);
 		thresh = m_gnsed;
-		//break;
+		break;
 	}
 	case 7:
 	{
 		test = "sgned";
 		result = calc_sgned(grads);
 		thresh = m_sgned;
-		//break;
+		break;
 	}
 	}
 
