@@ -1,12 +1,13 @@
 #include "MedianNode.hpp"
 #include "Tools/ImageTools.hpp"
+#include "tools\utils.hpp"
 
 MedianNode::Direction MedianNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {
 	float median = 0.0;
 	int mat_size = (data[0]).rows*(data[0]).cols;
 	
-	cv::Mat row = data[2].reshape(1, mat_size), sorted;
+    cv::Mat row = convert_to_row_vector<float>(data[2]), sorted;
 	cv::sortIdx(row, sorted, CV_SORT_EVERY_ROW + CV_SORT_ASCENDING);
 
 	if (mat_size % 2 != 0)
