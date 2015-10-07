@@ -499,10 +499,9 @@ std::vector<cv::Mat> Program::prepare_image(const cv::Mat& image) const {
     
 	cv::equalizeHist(gray, gray);
     gray.convertTo(gray, CV_32FC1, 1 / 255.);
-    prepared.push_back(gray.clone());
-    
+     
     // create integral image
-	push_integral(gray, prepared, ddepth);
+    push_tuble(gray, prepared, ddepth);
 	
     // create gaussian
     int scale = 1;
@@ -511,8 +510,7 @@ std::vector<cv::Mat> Program::prepare_image(const cv::Mat& image) const {
     cv::Mat blurred, blurred_f;
 	cv::GaussianBlur(prepared[0], blurred, cv::Size(blur_kernel_size, blur_kernel_size), 1., 1.);
 	blurred.convertTo(blurred_f, CV_32F, 1.0f / 255.);
-	prepared.push_back(blurred_f.clone());
-	push_integral(blurred_f, prepared, ddepth);
+    push_tuble(blurred_f, prepared, ddepth);
 
 	// create Gradient
     /// Gradient X
@@ -528,8 +526,7 @@ std::vector<cv::Mat> Program::prepare_image(const cv::Mat& image) const {
 	cv::addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad_abs);
 	cv::Mat grad_abs_f;
 	grad_abs.convertTo(grad_abs_f, CV_32F, 1.0f / 255.0f);
-	prepared.push_back(grad_abs_f);
-	push_integral(grad_abs_f, prepared, ddepth);
+    push_tuble(grad_abs_f, prepared, ddepth);
 
     return prepared;
 }
@@ -701,9 +698,12 @@ cv::Mat Program::watershed_image(const cv::Mat& classify_image, const cv::Mat& p
 	return markers_wshd;
 }
 
-void Program::push_integral(cv::Mat input, std::vector<cv::Mat> prepared, int ddepth) const
+void Program::push_tuble(cv::Mat input, std::vector<cv::Mat>& prepared, int ddepth) const
 {
-	cv::Mat tmp;
+	//push original image
+    prepared.push_back(input);
+
+    cv::Mat tmp;
 	cv::integral(input, tmp, ddepth);
 
 	// cut off first row and col from integral images

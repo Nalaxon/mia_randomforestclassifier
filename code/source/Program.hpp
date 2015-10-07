@@ -146,7 +146,7 @@ private:
 
 	cv::Mat segment_image(const cv::Mat& classify_image, const cv::Mat& prop_image, std::string options);
 	cv::Mat watershed_image(const cv::Mat& classify_image, const cv::Mat& prop_image);
-	void push_integral(cv::Mat input, std::vector<cv::Mat> prepared, int ddepth) const;
+	void push_tuble(cv::Mat input, std::vector<cv::Mat>& prepared, int ddepth) const;
 };
 
 
