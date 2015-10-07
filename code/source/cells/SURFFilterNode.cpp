@@ -17,9 +17,10 @@ SURFFilterNode::Direction SURFFilterNode::split(const std::vector<cv::Mat>& data
   double middle_part = 0;
   if (m_is_vertical)
       middle_part = ImageTools::sum_from_integral<float>(data[1],
-          cv::Rect(0, fst_row_idx, max_col_idx, snd_row_idx));
+          cv::Rect(0, fst_row_idx, max_col_idx, snd_row_idx - fst_row_idx));
   else
-      middle_part = ImageTools::sum_from_integral<float>(data[1], cv::Rect(fst_col_idx, 0, snd_col_idx, max_row_idx));
+      middle_part = ImageTools::sum_from_integral<float>(data[1],
+      cv::Rect(fst_col_idx, 0, snd_col_idx - fst_row_idx, max_row_idx));
 
 
   double diff = (sum - 2 * middle_part);
