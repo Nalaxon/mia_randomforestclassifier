@@ -263,13 +263,13 @@ int Program::run(int argc, char** argv) {
         std::cout << "Training done! Took " << elapsed_seconds << " seconds." << std::endl;
 
         if (m_tree_output_stream) {
-            std::cout << "Tree structure:" << std::endl;
-            forest.print_dot_format(std::cout);
+            //std::cout << "Tree structure:" << std::endl;
+            forest.print_dot_format(*m_tree_output_stream);
         }
 
 		// test the forest
 		boost::filesystem::path test_volume_path;
-		std::tie(test_volume_path, std::ignore) = resolve_data_path(60);
+		std::tie(test_volume_path, std::ignore) = resolve_data_path(30);
 
 		/*cv::Mat test_image = cv::imread(test_volume_path.string(), CV_LOAD_IMAGE_COLOR);
 		cv::Mat test_image_prepared = prepare_image(test_image);
