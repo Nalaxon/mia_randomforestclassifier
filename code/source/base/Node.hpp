@@ -108,15 +108,15 @@ public:
              SampleVector& samples_left,
              SampleVector& samples_right) const
   {
-    for (const auto& sample : samples)
+    for (unsigned int i = 0; i < samples.size(); ++i)//(const auto& sample : samples)
     {
-      Direction direction = split(sample.get_data(), sample.get_roi());
+        Direction direction = split(samples[i].get_data(), samples[i].get_roi());
       if (direction == Direction::LEFT)
       {
-        samples_left.push_back(sample);
+          samples_left.push_back(samples[i]);
       } else if (direction == Direction::RIGHT)
       {
-        samples_right.push_back(sample);
+          samples_right.push_back(samples[i]);
       }
     }
   }
