@@ -3,9 +3,9 @@
 
 SDNode::Direction SDNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {
-	cv::Mat mean, stdev;
+    cv::Mat mean, stdev, mat = cv::Mat(data[2], roi);
 
-	cv::meanStdDev(data[2], mean, stdev);
+	cv::meanStdDev(mat, mean, stdev);
 	
 	if (m_log_stream != nullptr)
 		*m_log_stream << "SDNode;" << m_threshold << ";" << stdev.at<double>(0) << "; " << std::endl;

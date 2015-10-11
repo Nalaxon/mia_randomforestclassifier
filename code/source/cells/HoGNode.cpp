@@ -3,13 +3,14 @@
 
 HoGNode::Direction HoGNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {
-	cv::HOGDescriptor hog(data[0].size(), cv::Size(16, 16), cv::Size(8, 8), cv::Size(8, 8), 8);
+    cv::Mat  mat = cv::Mat(data[0], roi);
+    cv::HOGDescriptor hog(mat.size(), cv::Size(16, 16), cv::Size(8, 8), cv::Size(8, 8), 8);
 	//cv::HOGDescriptor hog;
 	std::vector<float> ders;
 	std::vector<cv::Point>locs;
 	std::vector<cv::Rect> locations;
 
-	cv::Mat gray = data[0];
+	cv::Mat gray = mat;
 	gray.convertTo(gray, CV_8UC1, 255.);
 
 	//hog.detectMultiScale(gray, locations, m_threshold, cv::Size(8, 8));

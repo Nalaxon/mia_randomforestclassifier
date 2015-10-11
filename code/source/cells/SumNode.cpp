@@ -3,10 +3,11 @@
 
 SumNode::Direction SumNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {
-  int max_row_idx = data[1].rows - 1;
-  int max_col_idx = data[1].cols - 1;
+    cv::Mat  mat = cv::Mat(data[1], roi);
+    int max_row_idx = mat.rows - 1;
+  int max_col_idx = mat.cols - 1;
 
-  double sum = ImageTools::sum_from_integral<float>(data[1], cv::Rect(0, 0, max_row_idx, max_col_idx));
+  double sum = ImageTools::sum_from_integral<float>(mat, cv::Rect(0, 0, max_row_idx, max_col_idx));
 
   if (m_log_stream != nullptr)
 	  *m_log_stream << "SumNode;" << sum << ";" << std::endl;

@@ -3,7 +3,7 @@
 
 MembraneProjectionNode::Direction MembraneProjectionNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {
-	double result = 0.;
+    double result = 0.;
 	// create gradient
 	int scale = 1;
 	int delta = 0;
@@ -11,7 +11,7 @@ MembraneProjectionNode::Direction MembraneProjectionNode::split(const std::vecto
 	int kernel_size = 19;
 	int kernel_half = kernel_size / 2;
 
-	cv::Mat grad = data[2];
+    cv::Mat grad = cv::Mat(data[2], roi);
 
 	std::string test;
 	double thresh = 0.;

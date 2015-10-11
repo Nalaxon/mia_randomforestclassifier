@@ -4,11 +4,12 @@
 
 TwoPixelGradientNode::Direction TwoPixelGradientNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {
+    cv::Mat  mat = cv::Mat(data[4], roi);
 	float sum = 0;
 	for (unsigned int i = 0; i < m_x_1.size(); ++i)
 	{
-		const auto& pixel1 = data[4].at<float>(m_y_1[i], m_x_1[i]);
-		const auto& pixel2 = data[4].at<float>(m_y_2[i], m_x_2[i]);
+		const auto& pixel1 = mat.at<float>(m_y_1[i], m_x_1[i]);
+		const auto& pixel2 = mat.at<float>(m_y_2[i], m_x_2[i]);
 		if (pixel1 < pixel2)
 			++sum;
 	}

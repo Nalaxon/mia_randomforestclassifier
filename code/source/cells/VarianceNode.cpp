@@ -3,8 +3,8 @@
 
 VarianceNode::Direction VarianceNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {
-	cv::Mat psd;
-	cv::dft(data[2].mul(data[2]), psd);
+    cv::Mat psd, mat = cv::Mat(data[2], roi);
+	cv::dft(mat.mul(mat), psd);
 	float var = cv::mean(psd).val[0];
 
 	if (m_log_stream != nullptr)

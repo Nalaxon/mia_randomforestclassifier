@@ -1,10 +1,11 @@
 #include "CannyEdgeMoment00Node.hpp"
 #include "Tools/ImageTools.hpp"
 
-CannyEdgeMoment00Node::Direction CannyEdgeMoment00Node::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
+CannyEdgeMoment00Node::Direction CannyEdgeMoment00Node::split(const std::vector<cv::Mat>& data,
+    const cv::Rect& roi) const
 {
-	cv::Mat detected_edges;
-	data[0].convertTo(detected_edges, CV_8UC1, 255.);
+    cv::Mat detected_edges, mat = cv::Mat(data[0], roi);
+    mat.convertTo(detected_edges, CV_8UC1, 255.);
 	
 	cv::Canny(detected_edges, detected_edges, m_canny_threshold, m_canny_threshold * 3, 3);
 

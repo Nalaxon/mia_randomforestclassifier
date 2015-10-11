@@ -4,9 +4,10 @@
 
 GradientNode::Direction GradientNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {
-  int max_row_idx = data[5].rows - 1;
-  int max_col_idx = data[5].cols - 1;
-  double sum = ImageTools::sum_from_integral<float>(data[5], cv::Rect(0, 0, max_row_idx, max_col_idx));
+    cv::Mat mat = cv::Mat(data[5], roi);
+  int max_row_idx = mat.rows - 1;
+  int max_col_idx = mat.cols - 1;
+  double sum = ImageTools::sum_from_integral<float>(mat, cv::Rect(0, 0, max_row_idx, max_col_idx));
 
   if (m_log_stream != nullptr)
 	  *m_log_stream << "GradientNode;" << sum << ";" << std::endl;

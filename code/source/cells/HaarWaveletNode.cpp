@@ -4,16 +4,17 @@
 
 HaarWaveletNode::Direction HaarWaveletNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {
-  int max_row_idx = data[1].rows - 1;
-  int max_col_idx = data[1].cols - 1;
-  int mean_row_idx = data[1].rows / 2;
-  int mean_col_idx = data[1].cols / 2;
+    cv::Mat  mat = cv::Mat(data[1], roi);
+  int max_row_idx = mat.rows - 1;
+  int max_col_idx = mat.cols - 1;
+  int mean_row_idx = mat.rows / 2;
+  int mean_col_idx = mat.cols / 2;
 
-  double base = ImageTools::get_pixel<float>(data[1], 0, 0);
-  double top_left = ImageTools::get_pixel<float>(data[1], 0, max_col_idx);
-  double bottom_right = ImageTools::get_pixel<float>(data[1], max_row_idx, 0);
+  double base = ImageTools::get_pixel<float>(mat, 0, 0);
+  double top_left = ImageTools::get_pixel<float>(mat, 0, max_col_idx);
+  double bottom_right = ImageTools::get_pixel<float>(mat, max_row_idx, 0);
 
-  double sum = ImageTools::get_pixel<float>(data[1], max_row_idx, max_col_idx)
+  double sum = ImageTools::get_pixel<float>(mat, max_row_idx, max_col_idx)
     - top_left
     - bottom_right
     + base;
@@ -21,16 +22,16 @@ HaarWaveletNode::Direction HaarWaveletNode::split(const std::vector<cv::Mat>& da
   double diff = 0;
   if (m_is_vertical)
   {
-      diff = ImageTools::get_pixel<float>(data[1], mean_row_idx, max_col_idx)
+      diff = ImageTools::get_pixel<float>(mat, mean_row_idx, max_col_idx)
       - top_left
-      - ImageTools::get_pixel<float>(data[1], mean_row_idx, 0)
+      - ImageTools::get_pixel<float>(mat, mean_row_idx, 0)
       + base;
   } 
   else
   {
-      diff = ImageTools::get_pixel<float>(data[1], max_row_idx, mean_col_idx)
+      diff = ImageTools::get_pixel<float>(mat, max_row_idx, mean_col_idx)
       - bottom_right
-      - ImageTools::get_pixel<float>(data[1], 0, mean_col_idx)
+      - ImageTools::get_pixel<float>(mat, 0, mean_col_idx)
       + base;
   }
 

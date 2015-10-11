@@ -4,8 +4,9 @@
 
 CenterPixelNode::Direction CenterPixelNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {
-    const auto& center_pixel = ImageTools::get_center_pixel<float>(data[0]);
-    const auto& other_pixel = ImageTools::get_pixel<float>(data[0], m_y, m_x);
+    cv::Mat mat = cv::Mat(data[0], roi);
+    const auto& center_pixel = ImageTools::get_center_pixel<float>(mat);
+    const auto& other_pixel = ImageTools::get_pixel<float>(mat, m_y, m_x);
 
 	if (m_log_stream != nullptr)
 		*m_log_stream << "CenterPixelNode;" << (center_pixel - other_pixel) << ";" << std::endl;

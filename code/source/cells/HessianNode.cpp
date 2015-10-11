@@ -3,6 +3,7 @@
 
 HessianNode::Direction HessianNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {
+    cv::Mat  mat = cv::Mat(data[2], roi);
 	double result = 0.;
 	// create gradient
 	int scale = 1;
@@ -14,7 +15,7 @@ HessianNode::Direction HessianNode::split(const std::vector<cv::Mat>& data, cons
 	std::vector<cv::Mat> grads;
 	//Gradients:
 	//X
-	cv::Sobel(data[2], grad_x, ddepth, 1, 0, 3, scale, delta, cv::BORDER_REPLICATE);
+	cv::Sobel(mat, grad_x, ddepth, 1, 0, 3, scale, delta, cv::BORDER_REPLICATE);
 	//XX
 	cv::Sobel(grad_x, grad_xx, ddepth, 1, 0, 3, scale, delta, cv::BORDER_REPLICATE);
 	normalizeImage(grad_xx);
@@ -24,7 +25,7 @@ HessianNode::Direction HessianNode::split(const std::vector<cv::Mat>& data, cons
 	normalizeImage(grad_xy);
 	grads.push_back(grad_xy);
 	//Y
-	cv::Sobel(data[2], grad_y, ddepth, 0, 1, 3, scale, delta, cv::BORDER_REPLICATE);
+	cv::Sobel(mat, grad_y, ddepth, 0, 1, 3, scale, delta, cv::BORDER_REPLICATE);
 	//YY
 	cv::Sobel(grad_y, grad_yy, ddepth, 0, 1, 3, scale, delta, cv::BORDER_REPLICATE);
 	normalizeImage(grad_yy);
