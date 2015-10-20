@@ -535,27 +535,43 @@ std::vector<cv::Mat> Program::prepare_image(const cv::Mat& image) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-cv::Mat Program::classify_image(const RandomForest<CellLabel, std::vector<cv::Mat>, cv::Rect>& forest, const std::vector<cv::Mat>& images) const {
-	std::vector<cv::Mat> border_images;
+cv::Mat Program::classify_image(const RandomForest<CellLabel, std::vector<cv::Mat>, cv::Rect>& forest, const std::vector<cv::Mat>& images) const {   
+    std::vector<cv::Mat> border_images;
+    int border = m_sample_size / 2;
+#if NDEBUG
+#pragma omp parallel for
+#endif
 	for (int i = 0; i < images.size(); ++i)
 	{
 		cv::Mat border_image;
 		cv::copyMakeBorder(images[i], border_image,
-			m_sample_size / 2, m_sample_size / 2, m_sample_size / 2, m_sample_size / 2,
-			cv::BORDER_REFLECT);
-		border_images.push_back(border_image.clone());
+            border, border, border, border,
+            cv::BORDER_DEFAULT);
+#if NDEBUG
+#pragma omp critical
+#endif
+        {
+            border_images.push_back(border_image.clone());
+        }
 	}
+
     cv::Mat classification_image;
     classification_image.create(images[0].rows, images[0].cols, CV_32FC1);
 
+    std::cout << "Start image classification... " << std::endl;
+    auto c_start = std::chrono::system_clock::now();
+
     for (int row = 0; row < classification_image.rows; ++row) {
         for (int col = 0; col < classification_image.cols; ++col) {
-            cv::Rect patch_definition(col, row, m_sample_size, m_sample_size);
-
-            float pixel_value = forest.predict_prob(border_images, patch_definition, CellLabel::Cell(), sum_ensemble);
+            float pixel_value = forest.predict_prob(border_images,
+                cv::Rect(col, row, m_sample_size, m_sample_size), CellLabel::Cell(), sum_ensemble);
             classification_image.at<float>(row, col) = pixel_value;
         }
     }
+
+    auto c_end = std::chrono::system_clock::now();
+    auto elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(c_end - c_start).count();
+    std::cout << "Classification done! Took " << elapsed_seconds << " seconds." << std::endl;
 
     return classification_image;
 }
