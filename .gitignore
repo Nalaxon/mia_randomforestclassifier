@@ -26,8 +26,14 @@
 *.exe
 *.out
 *.app
+*.pdf
+*.tcp
+*.tps
 
 # Folders
 bin/
 build/
 output/
+
+# Archive files
+*.zip
