@@ -12,6 +12,8 @@
 /// class GradientNodeFactory - 
 class GradientNodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>
 {
+    using SampleType = Sample < CellLabel, std::vector<cv::Mat>, cv::Rect >;
+
   public:
 
     GradientNodeFactory(PatchParameter params) 
@@ -20,7 +22,7 @@ class GradientNodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, 
     }
 
   protected:
-	  virtual NodePtr createRandomNode(std::ostream* log_stream);
+      virtual NodePtr createRandomNode(std::ostream* log_stream);
 	  virtual std::string get_ClassName() { return (typeid(*this)).name(); };
 
   private:

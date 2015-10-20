@@ -15,6 +15,8 @@ public:
   
 	using SuperType = NodeFactory<LABEL_TYPE, DATA_TYPE, ROI_TYPE>;
 
+    using SampleType = Sample < LABEL_TYPE, DATA_TYPE, ROI_TYPE >;
+
   //----------------------------------------------------------------------------
   UniversalNodeFactory(std::vector<std::shared_ptr<SuperType>> factory_list)
   : m_dist(0, factory_list.size() - 1),

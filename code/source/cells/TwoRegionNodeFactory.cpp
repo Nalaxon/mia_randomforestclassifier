@@ -13,7 +13,7 @@ TwoRegionNodeFactory::NodePtr TwoRegionNodeFactory::createRandomNode(std::ostrea
 	ImageTools::adjust_region(region1, m_params.patch_height, m_params.patch_width);
 	ImageTools::adjust_region(region2, m_params.patch_height, m_params.patch_width);
     float threshold = m_threshold_dist(m_rng);
-	return std::make_unique<TwoRegionsNode>(region1, region2, threshold, log_stream);
+ 	return std::make_unique<TwoRegionsNode>(region1, region2, threshold, log_stream);
 }
 
 

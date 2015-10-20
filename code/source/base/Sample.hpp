@@ -11,6 +11,14 @@ class Sample
 public:
 
   //----------------------------------------------------------------------------
+    Sample()
+    {
+        m_label = LABEL_TYPE();
+        m_data = DATA_TYPE();
+        m_roi = ROI_TYPE();
+
+    }
+  //----------------------------------------------------------------------------
 	Sample(LABEL_TYPE m_label, DATA_TYPE m_data, ROI_TYPE m_roi) :
 	  m_label(m_label), m_data(m_data), m_roi(m_roi)
   {

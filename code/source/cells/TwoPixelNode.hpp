@@ -25,7 +25,12 @@ protected:
 
 	virtual Direction split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const;
 
+    virtual void setThreshold(const std::vector<cv::Mat>& data, const cv::Rect& roi);
+
 private:
+
+    float calc_thresh(const std::vector<cv::Mat>& data, const cv::Rect& roi) const;
+
   unsigned int m_x_1;
   unsigned int m_y_1;
   unsigned int m_x_2;

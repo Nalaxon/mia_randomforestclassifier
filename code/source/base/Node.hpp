@@ -120,6 +120,14 @@ public:
       }
     }
   }
+
+  void setThreshold(const SampleVector& samples)
+  {
+      boost::random::random_device m_rng;
+      boost::random::uniform_int_distribution<> m_index_dist(0, samples.size() - 1);
+      int index = m_index_dist(m_rng);
+      setThreshold(samples[index].get_data(), samples[index].get_roi());
+  }
   
   void print_dot_format(std::ostream& stream, unsigned int& node_id) const
   {
@@ -166,6 +174,8 @@ protected:
 
   //----------------------------------------------------------------------------
 	virtual Direction split(const DATA_TYPE& data, const ROI_TYPE& roi) const = 0;
+
+    virtual void setThreshold(const DATA_TYPE& data, const ROI_TYPE& roi) = 0;
 
 } ;
 

@@ -10,6 +10,8 @@
 
 class BilateralNodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>
 {
+    using SampleType = Sample < CellLabel, std::vector<cv::Mat>, cv::Rect >;
+
 public:
 	BilateralNodeFactory(const PatchParameter& params)
 		: m_params(params), m_threshold_dist(0.1, 0.9), m_space_dist(50., 100.),
@@ -20,7 +22,7 @@ public:
   
 protected:
   
-	virtual NodePtr createRandomNode(std::ostream* log_stream);
+    virtual NodePtr createRandomNode(std::ostream* log_stream);
 	virtual std::string get_ClassName() { return (typeid(*this)).name(); };
 
 private:

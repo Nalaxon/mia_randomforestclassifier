@@ -26,6 +26,7 @@ public:
 
 	using NodePtr = NodePtr_ < LABEL_TYPE, DATA_TYPE, ROI_TYPE >;
 
+    using SampleType = Sample < LABEL_TYPE, DATA_TYPE, ROI_TYPE >;
 	using SampleVector = SampleVector_ < LABEL_TYPE, DATA_TYPE, ROI_TYPE >;
 
 	using HistogramType = Histogram < LABEL_TYPE, DATA_TYPE, ROI_TYPE >;
@@ -64,8 +65,8 @@ public:
   {
     auto hist_samples = std::make_unique<HistogramType>(samples);
 
-	std::vector<Sample<LABEL_TYPE, DATA_TYPE, ROI_TYPE>> samples_left;
-	std::vector<Sample<LABEL_TYPE, DATA_TYPE, ROI_TYPE>> samples_right;
+	std::vector<SampleType> samples_left;
+	std::vector<SampleType> samples_right;
 
     float max_info_gain = -0.1f;
     NodePtr max_node;
@@ -74,6 +75,7 @@ public:
 		NodePtr node(createRandomNode(m_log_stream));
       samples_left.clear();
       samples_right.clear();
+      //node->setThreshold(samples);
       node->split(samples, samples_left, samples_right);
 
       HistogramType hist_left(samples_left);
@@ -102,12 +104,21 @@ protected:
 
   //----------------------------------------------------------------------------
   virtual NodePtr createRandomNode(std::ostream* log_stream) = 0;
+  //virtual NodePtr createRandomNode(std::ostream* log_stream, SampleType sample);
   virtual std::string get_ClassName() = 0;
 
   // a random number generator
   boost::random::random_device m_rng;
 
   std::ostream* m_log_stream;
+
+
+private:
+    const SampleType pickRandomSample(const SampleVector& samples)
+    {
+        boost::random::uniform_int_distribution<> index(0, samples.size() -1);
+        return samples[index(m_rng)];
+    }
 
 };
 

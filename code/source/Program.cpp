@@ -107,29 +107,30 @@ int Program::run(int argc, char** argv) {
     // construct the universalnodefactory
 	std::vector<std::shared_ptr<NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>>> factory_list;
     
-	factory_list.push_back(std::make_shared<TwoRegionNodeFactory>(patch_params));
+    factory_list.push_back(std::make_shared<TwoPixelGradientNodeFactory>(patch_params));
+    factory_list.push_back(std::make_shared<MaxNodeFactory>(patch_params));
+    factory_list.push_back(std::make_shared<SDNodeFactory>(patch_params));
+    factory_list.push_back(std::make_shared<VarianceNodeFactory>(patch_params));
+    factory_list.push_back(std::make_shared<MedianNodeFactory>(patch_params));
+    factory_list.push_back(std::make_shared<TwoRegionNodeFactory>(patch_params));
 	factory_list.push_back(std::make_shared<TwoRegionsGradientNodeFactory>(patch_params));
 	factory_list.push_back(std::make_shared<CenterPixelNodeFactory>(patch_params));
     factory_list.push_back(std::make_shared<GradientNodeFactory>(patch_params));
     factory_list.push_back(std::make_shared<TwoPixelNodeFactory>(patch_params));
+    factory_list.push_back(std::make_shared<SumNodeFactory>(patch_params));
+    factory_list.push_back(std::make_shared<GaussPyrNodeFactory>(patch_params));
     factory_list.push_back(std::make_shared<HaarWaveletNodeFactory>(patch_params));
     factory_list.push_back(std::make_shared<SURFFilterNodeFactory>(patch_params));
-    factory_list.push_back(std::make_shared<SumNodeFactory>(patch_params));
-	factory_list.push_back(std::make_shared<TwoPixelGradientNodeFactory>(patch_params));
-	factory_list.push_back(std::make_shared<CannyEdgeNodeFactory>(patch_params));
-	factory_list.push_back(std::make_shared<Haar4WaveletNodeFactory>(patch_params));
+    factory_list.push_back(std::make_shared<Haar4WaveletNodeFactory>(patch_params));
 	factory_list.push_back(std::make_shared<HoGNodeFactory>(patch_params));
-	factory_list.push_back(std::make_shared<CannyEdgeMoment00NodeFactory>(patch_params));
 	factory_list.push_back(std::make_shared<GaborNodeFactory>(patch_params));
 	factory_list.push_back(std::make_shared<MinNodeFactory>(patch_params));
-	factory_list.push_back(std::make_shared<MaxNodeFactory>(patch_params));
-	factory_list.push_back(std::make_shared<SDNodeFactory>(patch_params));
-	factory_list.push_back(std::make_shared<VarianceNodeFactory>(patch_params));
-	factory_list.push_back(std::make_shared<MedianNodeFactory>(patch_params));
-	factory_list.push_back(std::make_shared<HessianNodeFactory>(patch_params));
+    factory_list.push_back(std::make_shared<CannyEdgeNodeFactory>(patch_params));
+    factory_list.push_back(std::make_shared<CannyEdgeMoment00NodeFactory>(patch_params));
+    factory_list.push_back(std::make_shared<HessianNodeFactory>(patch_params));
 	factory_list.push_back(std::make_shared<MembraneProjectionNodeFactory>(patch_params));
-	factory_list.push_back(std::make_shared<BilateralNodeFactory>(patch_params));
-	factory_list.push_back(std::make_shared<GaussPyrNodeFactory>(patch_params));
+	//factory_list.push_back(std::make_shared<BilateralNodeFactory>(patch_params));
+	
 
 	std::shared_ptr<UniversalNodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect >>
 		factory(new UniversalNodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>(factory_list));
@@ -271,22 +272,20 @@ int Program::run(int argc, char** argv) {
 		boost::filesystem::path test_volume_path;
 		std::tie(test_volume_path, std::ignore) = resolve_data_path(30);
 
-		/*cv::Mat test_image = cv::imread(test_volume_path.string(), CV_LOAD_IMAGE_COLOR);
-		cv::Mat test_image_prepared = prepare_image(test_image);
-		cv::namedWindow("inputwindow", CV_WINDOW_AUTOSIZE);
-		cv::imshow("inputwindow", test_image);
-		cv::waitKey(0);
-        
-        cv::Mat prob_image = classify_image(forest, test_image_prepared);
-        cv::namedWindow("resultwindow", CV_WINDOW_AUTOSIZE);
-        cv::imshow("resultwindow", prob_image);
-		cv::waitKey(0);*/
+        std::cout << "Evaluating image: " << test_volume_path << std::endl;
         
 		cv::Mat test_image = cv::imread(test_volume_path.string(), CV_LOAD_IMAGE_COLOR);
 		std::vector<cv::Mat> test_image_prepared = prepare_image(test_image);
 		cv::Mat prob_image = classify_image(forest, test_image_prepared);
         cv::Mat classify_image;
         cv::threshold(prob_image, classify_image, 0.5f, 1.0f, cv::THRESH_BINARY);
+
+        cv::namedWindow("inputwindow", CV_WINDOW_AUTOSIZE);
+        cv::imshow("inputwindow", test_image);
+
+        cv::namedWindow("probwindow", CV_WINDOW_AUTOSIZE);
+        cv::imshow("probwindow", prob_image);
+
         cv::namedWindow("binClassify", CV_WINDOW_AUTOSIZE);
         cv::imshow("binClassify", classify_image);
 		cv::waitKey(0);
@@ -464,7 +463,8 @@ void Program::extract_training_samples(std::vector<Sample<CellLabel, std::vector
             auto& effected_sample_counter = foreground ? num_foreground : num_background;
             if (effected_sample_counter < samples_per_class) {
                 ++effected_sample_counter;
-				Sample<CellLabel, std::vector<cv::Mat>, cv::Rect> sample(foreground ? CellLabel::Border() : CellLabel::Cell(), sample_image, roi);
+                Sample<CellLabel, std::vector<cv::Mat>, cv::Rect> sample(foreground ? CellLabel::Border() : CellLabel::Cell(), sample_image,
+                    cv::Rect(0, 0, m_sample_size, m_sample_size));
 #if NDEBUG
 #pragma omp critical
 #endif
@@ -510,7 +510,7 @@ std::vector<cv::Mat> Program::prepare_image(const cv::Mat& image) const {
     cv::Mat blurred, blurred_f;
 	cv::GaussianBlur(prepared[0], blurred, cv::Size(blur_kernel_size, blur_kernel_size), 1., 1.);
 	blurred.convertTo(blurred_f, CV_32F, 1.0f / 255.);
-    push_tuble(blurred_f, prepared, ddepth);
+    push_tuble(blurred, prepared, ddepth);
 
 	// create Gradient
     /// Gradient X
@@ -523,10 +523,11 @@ std::vector<cv::Mat> Program::prepare_image(const cv::Mat& image) const {
     cv::Sobel(blurred, grad_y, ddepth, 0, 1, 3, scale, delta, cv::BORDER_DEFAULT);
     cv::convertScaleAbs(grad_y, abs_grad_y);
     /// Total Gradient (approximate)
-	cv::addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad_abs);
+    cv::addWeighted(grad_x, 0.5, grad_y, 0.5, 0, grad_abs);
+	//cv::addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad_abs);
 	cv::Mat grad_abs_f;
 	grad_abs.convertTo(grad_abs_f, CV_32F, 1.0f / 255.0f);
-    push_tuble(grad_abs_f, prepared, ddepth);
+    push_tuble(grad_abs, prepared, ddepth);
 
     return prepared;
 }

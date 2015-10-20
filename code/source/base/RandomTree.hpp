@@ -104,6 +104,7 @@ private:
     SampleVector samples_left, samples_right;
 
     NodePtr node = m_nodeFactory->create(samples, m_params.m_num_tests_per_split);
+    
     node->split(samples, samples_left, samples_right);
 	if (samples_left.size() == 0 || samples_right.size() == 0)
 	{

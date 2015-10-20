@@ -14,7 +14,11 @@ public:
 	virtual Direction split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const;
   virtual std::string get_ClassName() { return (typeid(*this)).name(); };
   
+  virtual void setThreshold(const std::vector<cv::Mat>& data, const cv::Rect& roi);
+
 private:
+
+    float calc_thresh(const std::vector<cv::Mat>& data, const cv::Rect& roi) const;
   
   cv::Rect m_region1, m_region2;
   float m_threshold;

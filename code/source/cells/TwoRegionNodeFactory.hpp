@@ -10,6 +10,8 @@
 
 class TwoRegionNodeFactory : public NodeFactory<CellLabel, std::vector<cv::Mat>, cv::Rect>
 {
+    using SampleType = Sample < CellLabel, std::vector<cv::Mat>, cv::Rect >;
+
 public:
   TwoRegionNodeFactory(const PatchParameter& params) 
 	  : m_params(params), m_row_start_dist(0, params.patch_width - 2),

@@ -8,5 +8,7 @@ TwoPixelNodeFactory::NodePtr TwoPixelNodeFactory::createRandomNode(std::ostream*
     int x2 = m_dist_cols(m_rng);
     int y2 = m_dist_rows(m_rng);
     float threshold = m_dist_threshold(m_rng);
+    *log_stream << "createRandomNode: " << threshold << std::endl;
+
 	return std::make_unique<TwoPixelNode>(x1, y1, x2, y2, threshold, log_stream);
 }

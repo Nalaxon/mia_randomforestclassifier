@@ -17,9 +17,13 @@ public:
   
 	virtual Direction split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const;
   
+    virtual void setThreshold(const std::vector<cv::Mat>& data, const cv::Rect& roi);
+
 private:
+
+    float calc_thresh(const std::vector<cv::Mat>& data, const cv::Rect& roi) const;
   
-  float m_module, m_trace, m_determine, m_orientation, m_first, m_second, m_sgned, m_gnsed;
+    float m_threshold, m_module, m_trace, m_determine, m_orientation, m_first, m_second, m_sgned, m_gnsed;
   int m_test;
   cv::Point2d m_pixel;
   std::ostream* m_log_stream;

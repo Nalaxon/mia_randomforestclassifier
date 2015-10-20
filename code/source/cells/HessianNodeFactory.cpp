@@ -13,7 +13,7 @@ HessianNodeFactory::NodePtr HessianNodeFactory::createRandomNode(std::ostream* l
 	double second = m_secondeigen_dist(m_rng);
 	double sgned = m_sgned_dist(m_rng);
 	double gnsed = m_gnsed_dist(m_rng);
-	double test = m_test_dist(m_rng);
+	int test = m_test_dist(m_rng);
 	cv::Point2d pixel = cv::Point2d(m_pixel_x_dist(m_rng), m_pixel_y_dist(m_rng));
 
 	return std::make_unique<HessianNode>(test, pixel, module, trace, determine,

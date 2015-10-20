@@ -16,7 +16,11 @@ public:
   {
   }
   
+    virtual void setThreshold(const std::vector<cv::Mat>& data, const cv::Rect& roi);
+
 private:
+
+    float calc_thresh(const std::vector<cv::Mat>& data, const cv::Rect& roi) const;
   int m_x;
   int m_y;
   float m_threshold;

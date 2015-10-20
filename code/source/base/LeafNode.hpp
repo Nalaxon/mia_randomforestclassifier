@@ -29,6 +29,8 @@ protected:
     return SuperType::Direction::NONE;
   }
 
+  virtual void setThreshold(const DATA_TYPE& data, const ROI_TYPE& roi) {};
+
 public:
 
 } ;
