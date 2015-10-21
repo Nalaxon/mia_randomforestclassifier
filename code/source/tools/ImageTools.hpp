@@ -94,6 +94,13 @@ namespace ImageTools
 	  adjust_line(region.x, region.width, const_width);
 	  adjust_line(region.y, region.height, const_height);
   }
+
+  static void normalizeImage(cv::Mat &image)
+  {
+      double minVal, maxVal;
+      cv::minMaxLoc(image, &minVal, &maxVal);
+      image.convertTo(image, image.type(), 1. / (maxVal - minVal), minVal / (maxVal - minVal));
+  }
 }
 
 #endif

@@ -509,18 +509,29 @@ std::vector<cv::Mat> Program::prepare_image(const cv::Mat& image) const {
     int blur_kernel_size = 15;
     cv::Mat blurred, blurred_f;
 	cv::GaussianBlur(prepared[0], blurred, cv::Size(blur_kernel_size, blur_kernel_size), 1., 1.);
+    cv::equalizeHist(blurred, blurred);
 	blurred.convertTo(blurred_f, CV_32F, 1.0f / 255.);
     push_tuble(blurred, prepared, ddepth);
 
 	// create Gradient
     /// Gradient X
 	cv::Mat grad_abs;
-    cv::Mat grad_x, grad_y;
+    cv::Mat grad_x, grad_xx, grad_y, grad_yy, grad_xy;
     cv::Mat abs_grad_x, abs_grad_y;
-    cv::Sobel(blurred, grad_x, ddepth, 1, 0, 3, scale, delta, cv::BORDER_DEFAULT);
+    cv::Sobel(blurred, grad_x, ddepth, 1, 0, 3, scale, delta, cv::BORDER_REPLICATE);
+    ImageTools::normalizeImage(grad_x);
+    cv::Sobel(grad_x, grad_xx, ddepth, 1, 0, 3, scale, delta, cv::BORDER_REPLICATE);
+    ImageTools::normalizeImage(grad_x);
+
+    cv::Sobel(grad_x, grad_xy, ddepth, 1, 0, 3, scale, delta, cv::BORDER_REPLICATE);
+    ImageTools::normalizeImage(grad_x);
+
     cv::convertScaleAbs(grad_x, abs_grad_x);
     /// Gradient Y
-    cv::Sobel(blurred, grad_y, ddepth, 0, 1, 3, scale, delta, cv::BORDER_DEFAULT);
+    cv::Sobel(blurred, grad_y, ddepth, 0, 1, 3, scale, delta, cv::BORDER_REPLICATE);
+    ImageTools::normalizeImage(grad_x);
+    cv::Sobel(grad_y, grad_yy, ddepth, 0, 1, 3, scale, delta, cv::BORDER_REPLICATE);
+    ImageTools::normalizeImage(grad_x);
     cv::convertScaleAbs(grad_y, abs_grad_y);
     /// Total Gradient (approximate)
     cv::addWeighted(grad_x, 0.5, grad_y, 0.5, 0, grad_abs);
@@ -528,6 +539,10 @@ std::vector<cv::Mat> Program::prepare_image(const cv::Mat& image) const {
 	cv::Mat grad_abs_f;
 	grad_abs.convertTo(grad_abs_f, CV_32F, 1.0f / 255.0f);
     push_tuble(grad_abs, prepared, ddepth);
+
+    prepared.push_back(grad_xx);
+    prepared.push_back(grad_xy);
+    prepared.push_back(grad_yy);
 
     return prepared;
 }

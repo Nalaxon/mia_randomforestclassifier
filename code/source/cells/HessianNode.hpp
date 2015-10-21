@@ -36,7 +36,6 @@ private:
   double calc_orientation(const std::vector<cv::Mat> &grads) const;
   double calc_gnsed(const std::vector<cv::Mat> &grads) const;
   double calc_sgned(const std::vector<cv::Mat> &grads) const;
-  void normalizeImage(cv::Mat &image) const;
 } ;
 
 #endif	/* HESSIANNODE_HPP */

@@ -75,13 +75,6 @@ double HessianNode::calc_sgned(const std::vector<cv::Mat> &grads) const
 		4. * grads[1].at<float>(m_pixel)*grads[1].at<float>(m_pixel));
 }
 
-void HessianNode::normalizeImage(cv::Mat &image) const
-{
-	double minVal, maxVal;
-	cv::minMaxLoc(image, &minVal, &maxVal);
-	image.convertTo(image, image.type(), 1. / (maxVal - minVal), minVal / (maxVal - minVal));
-}
-
 float HessianNode::calc_thresh(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {
     cv::Mat  mat = cv::Mat(data[2], roi);
@@ -99,17 +92,17 @@ float HessianNode::calc_thresh(const std::vector<cv::Mat>& data, const cv::Rect&
     cv::Sobel(mat, grad_x, ddepth, 1, 0, 3, scale, delta, cv::BORDER_REPLICATE);
     //XX
     cv::Sobel(grad_x, grad_xx, ddepth, 1, 0, 3, scale, delta, cv::BORDER_REPLICATE);
-    normalizeImage(grad_xx);
+    ImageTools::normalizeImage(grad_xx);
     grads.push_back(grad_xx);
     //XY
     cv::Sobel(grad_x, grad_xy, ddepth, 0, 1, 3, scale, delta, cv::BORDER_REPLICATE);
-    normalizeImage(grad_xy);
+    ImageTools::normalizeImage(grad_xy);
     grads.push_back(grad_xy);
     //Y
     cv::Sobel(mat, grad_y, ddepth, 0, 1, 3, scale, delta, cv::BORDER_REPLICATE);
     //YY
     cv::Sobel(grad_y, grad_yy, ddepth, 0, 1, 3, scale, delta, cv::BORDER_REPLICATE);
-    normalizeImage(grad_yy);
+    ImageTools::normalizeImage(grad_yy);
     grads.push_back(grad_yy);
 
     std::string test;
