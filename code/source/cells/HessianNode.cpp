@@ -77,33 +77,12 @@ double HessianNode::calc_sgned(const std::vector<cv::Mat> &grads) const
 
 float HessianNode::calc_thresh(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {
-    cv::Mat  mat = cv::Mat(data[2], roi);
-    double result = 0.;
-    // create gradient
-    int scale = 1;
-    int delta = 0;
-    int ddepth = CV_32F;
-    int blur_kernel_size = 15;
-
-    cv::Mat grad_x, grad_y, grad_xx, grad_yy, grad_xy;
+    double result;
+ 
     std::vector<cv::Mat> grads;
-    //Gradients:
-    //X
-    cv::Sobel(mat, grad_x, ddepth, 1, 0, 3, scale, delta, cv::BORDER_REPLICATE);
-    //XX
-    cv::Sobel(grad_x, grad_xx, ddepth, 1, 0, 3, scale, delta, cv::BORDER_REPLICATE);
-    ImageTools::normalizeImage(grad_xx);
-    grads.push_back(grad_xx);
-    //XY
-    cv::Sobel(grad_x, grad_xy, ddepth, 0, 1, 3, scale, delta, cv::BORDER_REPLICATE);
-    ImageTools::normalizeImage(grad_xy);
-    grads.push_back(grad_xy);
-    //Y
-    cv::Sobel(mat, grad_y, ddepth, 0, 1, 3, scale, delta, cv::BORDER_REPLICATE);
-    //YY
-    cv::Sobel(grad_y, grad_yy, ddepth, 0, 1, 3, scale, delta, cv::BORDER_REPLICATE);
-    ImageTools::normalizeImage(grad_yy);
-    grads.push_back(grad_yy);
+    grads.push_back(cv::Mat(data.at(data.size() -3), roi));
+    grads.push_back(cv::Mat(data.at(data.size() - 2), roi));
+    grads.push_back(cv::Mat(data.at(data.size() -1), roi));
 
     std::string test;
     switch (m_test){

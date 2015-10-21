@@ -509,7 +509,7 @@ std::vector<cv::Mat> Program::prepare_image(const cv::Mat& image) const {
     int blur_kernel_size = 15;
     cv::Mat blurred, blurred_f;
 	cv::GaussianBlur(prepared[0], blurred, cv::Size(blur_kernel_size, blur_kernel_size), 1., 1.);
-    cv::equalizeHist(blurred, blurred);
+    ImageTools::normalizeImage(blurred);
 	blurred.convertTo(blurred_f, CV_32F, 1.0f / 255.);
     push_tuble(blurred, prepared, ddepth);
 
