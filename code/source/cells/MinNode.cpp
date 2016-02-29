@@ -1,5 +1,5 @@
 #include "MinNode.hpp"
-#include "Tools/ImageTools.hpp"
+#include "tools/ImageTools.hpp"
 
 MinNode::Direction MinNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {

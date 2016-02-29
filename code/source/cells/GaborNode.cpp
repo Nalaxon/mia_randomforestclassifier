@@ -1,5 +1,5 @@
 #include "GaborNode.hpp"
-#include "Tools/ImageTools.hpp"
+#include "tools/ImageTools.hpp"
 
 GaborNode::Direction GaborNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {

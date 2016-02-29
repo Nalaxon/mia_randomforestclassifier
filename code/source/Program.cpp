@@ -25,14 +25,14 @@
 #include "cells/CannyEdgeMoment00NodeFactory.hpp"
 #include "cells/GaborNodeFactory.hpp"
 #include "cells/MinNodeFactory.hpp"
-#include "cells\MaxNodeFactory.hpp"
-#include "cells\SDNodeFactory.hpp"
-#include "cells\VarianceNodeFactory.hpp"
-#include "cells\MedianNodeFactory.hpp"
-#include "cells\HessianNodeFactory.hpp"
-#include "cells\MembraneProjectionNodeFactory.hpp"
-#include "cells\BilateralNodeFactory.hpp"
-#include "cells\GaussPyrNodeFactory.hpp"
+#include "cells/MaxNodeFactory.hpp"
+#include "cells/SDNodeFactory.hpp"
+#include "cells/VarianceNodeFactory.hpp"
+#include "cells/MedianNodeFactory.hpp"
+#include "cells/HessianNodeFactory.hpp"
+#include "cells/MembraneProjectionNodeFactory.hpp"
+#include "cells/BilateralNodeFactory.hpp"
+#include "cells/GaussPyrNodeFactory.hpp"
 
 #include <iomanip>
 #include <chrono>

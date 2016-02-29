@@ -1,5 +1,5 @@
 #include "CannyEdgeMoment00Node.hpp"
-#include "Tools/ImageTools.hpp"
+#include "tools/ImageTools.hpp"
 
 CannyEdgeMoment00Node::Direction CannyEdgeMoment00Node::split(const std::vector<cv::Mat>& data,
     const cv::Rect& roi) const

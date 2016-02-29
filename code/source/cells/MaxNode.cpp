@@ -1,5 +1,5 @@
 #include "MaxNode.hpp"
-#include "Tools/ImageTools.hpp"
+#include "tools/ImageTools.hpp"
 
 MaxNode::Direction MaxNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {

@@ -1,5 +1,5 @@
 #include "BilateralNode.hpp"
-#include "Tools/ImageTools.hpp"
+#include "tools/ImageTools.hpp"
 
 BilateralNode::Direction BilateralNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {

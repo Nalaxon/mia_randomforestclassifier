@@ -1,5 +1,6 @@
 #include "HessianNode.hpp"
-#include "Tools/ImageTools.hpp"
+#include "tools/ImageTools.hpp"
+#include <cmath>
 
 HessianNode::Direction HessianNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {
@@ -15,7 +16,7 @@ HessianNode::Direction HessianNode::split(const std::vector<cv::Mat>& data, cons
 
 double HessianNode::calc_module(const std::vector<cv::Mat> &grads) const
 {
-	return std::sqrtf(grads[0].at<float>(m_pixel) * grads[0].at<float>(m_pixel) +
+	return std::sqrt(grads[0].at<float>(m_pixel) * grads[0].at<float>(m_pixel) +
 		grads[1].at<float>(m_pixel) * grads[1].at<float>(m_pixel) +
 		grads[2].at<float>(m_pixel) * grads[2].at<float>(m_pixel));
 }
@@ -34,7 +35,7 @@ double HessianNode::calc_determine(const std::vector<cv::Mat> &grads) const
 double HessianNode::calc_firsteigenvalue(const std::vector<cv::Mat> &grads) const
 {
 	double half = 0.5 * (grads[0].at<float>(m_pixel) +grads[2].at<float>(m_pixel));
-	double sqrt = std::sqrtf((4. * grads[1].at<float>(m_pixel)*grads[1].at<float>(m_pixel) +
+	double sqrt = std::sqrt((4. * grads[1].at<float>(m_pixel)*grads[1].at<float>(m_pixel) +
 		(grads[0].at<float>(m_pixel) -grads[2].at<float>(m_pixel))*
 		(grads[0].at<float>(m_pixel) -grads[2].at<float>(m_pixel))) * 0.5);
 
@@ -44,7 +45,7 @@ double HessianNode::calc_firsteigenvalue(const std::vector<cv::Mat> &grads) cons
 double HessianNode::calc_secondeigenvalue(const std::vector<cv::Mat> &grads) const
 {
 	double half = 0.5 * (grads[0].at<float>(m_pixel) +grads[2].at<float>(m_pixel));
-	double sqrt = std::sqrtf((4. * grads[1].at<float>(m_pixel)*grads[1].at<float>(m_pixel) +
+	double sqrt = std::sqrt((4. * grads[1].at<float>(m_pixel)*grads[1].at<float>(m_pixel) +
 		(grads[0].at<float>(m_pixel) -grads[2].at<float>(m_pixel))*
 		(grads[0].at<float>(m_pixel) -grads[2].at<float>(m_pixel))) * 0.5);
 
@@ -53,7 +54,7 @@ double HessianNode::calc_secondeigenvalue(const std::vector<cv::Mat> &grads) con
 
 double HessianNode::calc_orientation(const std::vector<cv::Mat> &grads) const
 {
-	return 0.5 * std::acosf((4. * grads[1].at<float>(m_pixel)*grads[1].at<float>(m_pixel) +
+	return 0.5 * std::acos((4. * grads[1].at<float>(m_pixel)*grads[1].at<float>(m_pixel) +
 		(grads[0].at<float>(m_pixel) -grads[2].at<float>(m_pixel))*
 		(grads[0].at<float>(m_pixel) -grads[2].at<float>(m_pixel))));
 }
@@ -69,7 +70,7 @@ double HessianNode::calc_gnsed(const std::vector<cv::Mat> &grads) const
 
 double HessianNode::calc_sgned(const std::vector<cv::Mat> &grads) const
 {
-	return std::powf(1., 3./2.) *
+	return std::pow(1., 3./2.) *
 		((grads[0].at<float>(m_pixel) -grads[2].at<float>(m_pixel))*
 		(grads[0].at<float>(m_pixel) -grads[2].at<float>(m_pixel)) +
 		4. * grads[1].at<float>(m_pixel)*grads[1].at<float>(m_pixel));

@@ -2,7 +2,7 @@
 #include "TwoRegionsNode.hpp"
 #include "NodeFactory.hpp"
 #include "memory.hpp"
-#include "tools\ImageTools.hpp"
+#include "tools/ImageTools.hpp"
 
 TwoRegionNodeFactory::NodePtr TwoRegionNodeFactory::createRandomNode(std::ostream* log_stream)
 {

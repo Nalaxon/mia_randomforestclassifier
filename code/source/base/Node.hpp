@@ -8,6 +8,8 @@
 
 #include <iostream>
 #include <sstream>
+#include <boost/random/random_device.hpp>
+#include <boost/random.hpp>
 
 template <typename LABEL_TYPE, typename DATA_TYPE, typename ROI_TYPE>
 class Node

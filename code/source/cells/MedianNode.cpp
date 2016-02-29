@@ -1,6 +1,6 @@
 #include "MedianNode.hpp"
-#include "Tools/ImageTools.hpp"
-#include "tools\utils.hpp"
+#include "tools/ImageTools.hpp"
+#include "tools/utils.hpp"
 
 MedianNode::Direction MedianNode::split(const std::vector<cv::Mat>& data, const cv::Rect& roi) const
 {

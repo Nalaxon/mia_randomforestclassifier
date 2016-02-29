@@ -2,7 +2,7 @@
 #include "TwoRegionsGradientNode.hpp"
 #include "NodeFactory.hpp"
 #include "memory.hpp"
-#include "tools\ImageTools.hpp"
+#include "tools/ImageTools.hpp"
 TwoRegionsGradientNodeFactory::NodePtr TwoRegionsGradientNodeFactory::createRandomNode(std::ostream* log_stream)
 {
 	cv::Rect region1(m_col_start_dist(m_rng), m_row_start_dist(m_rng),

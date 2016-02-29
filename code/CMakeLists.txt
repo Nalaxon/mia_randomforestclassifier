@@ -52,8 +52,8 @@ add_definitions(-DBOOST_ALL_DYN_LINK)
 find_package(Boost 1.45.0 COMPONENTS system filesystem random regex program_options REQUIRED) 
 
 #ITK
-FIND_PACKAGE(ITK REQUIRED)
-INCLUDE(${ITK_USE_FILE})
+#FIND_PACKAGE(ITK REQUIRED)
+#INCLUDE(${ITK_USE_FILE})
 
 
 include_directories(${Boost_INCLUDE_DIRS}) 
