@@ -53,7 +53,7 @@ void Multilabelseg::watershed(const cv::Mat &prob_img, const boost::filesystem::
     markerMask = cv::Scalar::all(0);
     cv::findContours(markerMask, contours, hierarchy, cv::RETR_CCOMP, cv::CHAIN_APPROX_SIMPLE);
 
-    if (!contours.empty())
+    /*if (!contours.empty())
     {
       int compCount;
       markers = cv::Scalar::all(0);
@@ -62,13 +62,11 @@ void Multilabelseg::watershed(const cv::Mat &prob_img, const boost::filesystem::
          cv::drawContours(markers, contours, idx, cv::Scalar::all(compCount+1), -1, 8, hierarchy, INT_MAX);
       for(int i =0; i < compCount; ++i)
         colorTab.push_back(cv::Vec3b((b*idx) % 255, (g*idx) %255, (r*idx)%255));
-    }
+    }*/
     
     //Write probability map
     cv::Mat prob_display;
     prob_img.convertTo(prob_display, CV_8UC1, 255);
-    cv::imshow("float", prob_img);
-    cv::imshow("display", prob_display);
     boost::filesystem::path prob_file(out_file);
     prob_file += "_prob.png";
     cv::imwrite(prob_file.string(), prob_display);
@@ -95,7 +93,7 @@ void Multilabelseg::watershed(const cv::Mat &prob_img, const boost::filesystem::
 
     cv::Mat wshed(markers.size(), CV_8UC3);
     // paint the watershed image
-    for(int i = 0; i < markers.rows; ++i )
+    /*for(int i = 0; i < markers.rows; ++i )
        for(int j = 0; j < markers.cols; ++j )
        {
          int index = markers.at<int>(i,j);
@@ -105,7 +103,7 @@ void Multilabelseg::watershed(const cv::Mat &prob_img, const boost::filesystem::
             wshed.at<cv::Vec3b>(i,j) = cv::Vec3b(0,0,0);
          else
             wshed.at<cv::Vec3b>(i,j) = colorTab[index - 1];
-       }
+       }*/
     markers.convertTo(wshed, CV_8UC1, 255);
     boost::filesystem::path segmentation_file(out_file);
     segmentation_file += "_watershed.png";
