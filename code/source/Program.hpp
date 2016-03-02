@@ -15,6 +15,8 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/ml/ml.hpp>
 
+#include <vector>
+
 /**
  * This class contains the logic of the program.
  */
@@ -97,11 +99,13 @@ private:
      * The number of cross validation sets.
      */
     unsigned int m_num_xvalidation_sets;
+
+    bool m_test;
     
     /**
      * Index of testing image which was not used for training
      */
-    int m_test_image_index;
+    std::vector<int> m_test_image_index;
 
 	/**
 	* Path to directory for logging data. nothing will be stored if ""
@@ -124,6 +128,9 @@ private:
      */
 	void extract_training_samples(std::vector<Sample<CellLabel, std::vector<cv::Mat>, cv::Rect>>& samples) const;
 
+	void extract_testing_samples(std::vector<Sample<CellLabel, std::vector<cv::Mat>, cv::Rect>>& samples) const;
+
+	void extract_test_images(std::vector<std::vector<cv::Mat>>& test_images) const;
     /**
      * Reads the configuration from the commandline.
      *
@@ -144,8 +151,6 @@ private:
 
 	int MAX_IMAGES = 30;
 
-	cv::Mat segment_image(const cv::Mat& classify_image, const cv::Mat& prop_image, std::string options);
-	cv::Mat watershed_image(const cv::Mat& classify_image, const cv::Mat& prop_image);
 	void push_tuble(cv::Mat input, std::vector<cv::Mat>& prepared, int ddepth) const;
 };
 

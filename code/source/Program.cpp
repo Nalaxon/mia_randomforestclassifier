@@ -4,17 +4,21 @@
 
 #include "Program.hpp"
 #include "SampleExtractor.hpp"
+#include "Multilabelseg.hpp"
+
 #include "tools/utils.hpp"
+#include "tools/ImageTools.hpp"
+
 #include "base/RandomForest.hpp"
+#include "base/UniversalNodeFactory.hpp"
+
 #include "cells/PatchParameter.hpp"
 #include "cells/CellLabel.hpp"
 #include "cells/CenterPixelNodeFactory.hpp"
-#include "tools/ImageTools.hpp"
 #include "cells/GradientNodeFactory.hpp"
 #include "cells/TwoPixelNodeFactory.hpp"
 #include "cells/HaarWaveletNodeFactory.hpp"
 #include "cells/SURFFilterNodeFactory.hpp"
-#include "UniversalNodeFactory.hpp"
 #include "cells/TwoRegionNodeFactory.hpp"
 #include "cells/SumNodeFactory.hpp"
 #include "cells/TwoPixelGradientNodeFactory.hpp"
@@ -38,7 +42,7 @@
 #include <chrono>
 #include <fstream>
 #include <algorithm>
-#include <vector>
+//#include <vector>
 
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -80,18 +84,16 @@ int Program::run(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
-    if (m_use_xvalidation) {
+    if (!m_use_xvalidation) {
         boost::random::random_device rng;
-		boost::random::uniform_int_distribution<> dist_test_image(1, MAX_IMAGES);
-        m_test_image_index = dist_test_image(rng);
+	boost::random::uniform_int_distribution<> dist_test_image(1, MAX_IMAGES);
+        m_test_image_index.push_back(dist_test_image(rng));
     }
 
-	std::vector<Sample<CellLabel, std::vector<cv::Mat>, cv::Rect>> pure_samples;
-
-    extract_training_samples(pure_samples);
+    std::vector<Sample<CellLabel, std::vector<cv::Mat>, cv::Rect>> pure_samples;
 
     // construct forest/tree parameters
-	RFParameter<CellLabel, std::vector<cv::Mat>> rf_params;
+    RFParameter<CellLabel, std::vector<cv::Mat>> rf_params;
     rf_params.m_bagging = m_bagging;
     rf_params.m_num_trees = m_num_trees;
     rf_params.m_tree_params.m_max_depth = m_max_depth;
@@ -142,27 +144,26 @@ int Program::run(int argc, char** argv) {
 
     if (m_use_xvalidation) {
         double accuracy = xvalidation(forest, pure_samples, m_num_xvalidation_sets);
-		std::cout << "training finished" << std::endl << "starting testing..." << std::endl;
-			 
+	/*std::cout << "training finished" << std::endl << "starting testing..." << std::endl;
         // test the forest on image
         boost::filesystem::path test_volume_path, truth_file_path;
         std::tie(test_volume_path, truth_file_path) = resolve_data_path(m_test_image_index);
-		//std::cout << "get image: " << test_volume_path.string() << std::endl;
-		cv::Mat test_image = cv::imread(test_volume_path.string(), CV_LOAD_IMAGE_COLOR);
-       // std::cout << "test: cols: " << test_image.cols << " rows: " << test_image.rows << " type: " << test_image.type() << std::endl;
+	//std::cout << "get image: " << test_volume_path.string() << std::endl;
+	cv::Mat test_image = cv::imread(test_volume_path.string(), CV_LOAD_IMAGE_COLOR);
+        // std::cout << "test: cols: " << test_image.cols << " rows: " << test_image.rows << " type: " << test_image.type() << std::endl;
         cv::Mat tmp = cv::imread(truth_file_path.string(), CV_LOAD_IMAGE_GRAYSCALE);
 		
-		if ((test_image.type() != CV_32FC1) && (test_image.channels() == 1)) {
-			test_image.convertTo(test_image, CV_32FC1);
-		}
+	if ((test_image.type() != CV_32FC1) && (test_image.channels() == 1)) {
+		test_image.convertTo(test_image, CV_32FC1);
+	}
 
-		cv::Mat truth_image;
-		if ((test_image.cols < tmp.cols) || (test_image.rows < tmp.rows))
-			cv::pyrDown(tmp, truth_image, cv::Size(test_image.cols, test_image.rows));
-		else if ((test_image.cols > tmp.cols) || (test_image.rows > tmp.rows))
-			cv::pyrUp(tmp, truth_image, cv::Size(test_image.cols, test_image.rows));
-		else
-			truth_image = tmp;
+	cv::Mat truth_image;
+	if ((test_image.cols < tmp.cols) || (test_image.rows < tmp.rows))
+		cv::pyrDown(tmp, truth_image, cv::Size(test_image.cols, test_image.rows));
+	else if ((test_image.cols > tmp.cols) || (test_image.rows > tmp.rows))
+		cv::pyrUp(tmp, truth_image, cv::Size(test_image.cols, test_image.rows));
+	else
+		truth_image = tmp;
 
         // convert ground truth to grayscalce if needed
         if (truth_image.channels() != 1) {
@@ -224,8 +225,9 @@ int Program::run(int argc, char** argv) {
         cv::imwrite((m_log_path / diff).string(), absdiff_image);
         log = output_base.str() + "-log.txt";
 
-		//Watershed
-		cv::Mat watershed = segment_image(classify_image, prop_image, "watershed");
+	//Watershed
+        //Multilabelseg segmentation;
+        //segmentation.watershed(prop_image, "./validation-" + 
 		
         boost::filesystem::path logfile_path = m_log_path / log;
         std::ofstream logfile(logfile_path.string());
@@ -252,9 +254,19 @@ int Program::run(int argc, char** argv) {
         else
         {
             std::cerr << "Can't open file " << logfile_path << std::endl;
-        }
+        }*/
+
+    }
+    else if (m_test) {
+        cv::Mat test = cv::imread("segmented-0-1_prob.png", CV_LOAD_IMAGE_GRAYSCALE), test_gray, t;
+        test.convertTo(test_gray, CV_32FC1, 1/255);
+        Multilabelseg seg;
+        seg.watershed(test_gray, "test"); 
+
 
     } else {
+        extract_training_samples(pure_samples);
+        
         //train forest
         std::cout << "Start training... " << std::endl;
         auto start = std::chrono::system_clock::now();
@@ -270,15 +282,18 @@ int Program::run(int argc, char** argv) {
 
 		// test the forest
 		boost::filesystem::path test_volume_path;
-		std::tie(test_volume_path, std::ignore) = resolve_data_path(30);
+		std::tie(test_volume_path, std::ignore) = resolve_data_path(m_test_image_index[0]);
 
         std::cout << "Evaluating image: " << test_volume_path << std::endl;
         
-		cv::Mat test_image = cv::imread(test_volume_path.string(), CV_LOAD_IMAGE_COLOR);
-		std::vector<cv::Mat> test_image_prepared = prepare_image(test_image);
-		cv::Mat prob_image = classify_image(forest, test_image_prepared);
+	cv::Mat test_image = cv::imread(test_volume_path.string(), CV_LOAD_IMAGE_COLOR);
+	std::vector<cv::Mat> test_image_prepared = prepare_image(test_image);
+	cv::Mat prob_image = classify_image(forest, test_image_prepared);
         cv::Mat classify_image;
         cv::threshold(prob_image, classify_image, 0.5f, 1.0f, cv::THRESH_BINARY);
+
+        Multilabelseg segmentation;
+        segmentation.watershed(prob_image, "./");
 
         cv::namedWindow("inputwindow", CV_WINDOW_AUTOSIZE);
         cv::imshow("inputwindow", test_image);
@@ -286,16 +301,29 @@ int Program::run(int argc, char** argv) {
         cv::namedWindow("probwindow", CV_WINDOW_AUTOSIZE);
         cv::imshow("probwindow", prob_image);
 
-        cv::namedWindow("binClassify", CV_WINDOW_AUTOSIZE);
-        cv::imshow("binClassify", classify_image);
-		cv::waitKey(0);
 
 		
     }
-    cv::waitKey(0);
 
+    cv::waitKey(0);
     return EXIT_SUCCESS;
 }
+
+
+void Program::extract_test_images(std::vector<std::vector<cv::Mat>>& test_images) const {
+  boost::filesystem::path test_volume_path;
+  
+  for(int i = 0; i < m_test_image_index.size(); ++i)
+  {
+    std::tie(test_volume_path, std::ignore) = resolve_data_path(m_test_image_index[i]);
+    cv::Mat test_image = cv::imread(test_volume_path.string(), CV_LOAD_IMAGE_COLOR);
+    std::vector<cv::Mat> test_image_prepared = prepare_image(test_image);
+    test_images.push_back(test_image_prepared);
+
+    std::cout << "Evaluating image: " << test_volume_path << std::endl;
+  }
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -341,8 +369,11 @@ bool Program::parse_command_line(int argc, char** argv) {
             ("num_xvalidations", po::value<unsigned int>()->default_value(10),
             "the number of validation sets for xvalidation.")
 
-			("log", po::value<std::string>()->default_value("."),
-			"define output folder to log performance and images, must not empty");
+		("log", po::value<std::string>()->default_value("."),
+		"define output folder to log performance and images, must not empty")
+
+           ("test", po::bool_switch()->default_value(false),
+           "use test section in main");
 
     // parse commandline input
     po::variables_map given_options;
@@ -387,6 +418,8 @@ bool Program::parse_command_line(int argc, char** argv) {
     m_use_xvalidation = given_options["use_xvalidation"].as<bool>();
     
     m_num_xvalidation_sets = given_options["num_xvalidations"].as<unsigned int>();
+  
+    m_test = given_options["test"].as<bool>();
 
 	fs::path log_path(given_options["log"].as<std::string>());
 	m_log_path = log_path.string();
@@ -409,37 +442,107 @@ bool Program::parse_command_line(int argc, char** argv) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+
+void Program::extract_testing_samples(std::vector<Sample<CellLabel, std::vector<cv::Mat>, cv::Rect>>& samples) const {
+#if NDEBUG
+#pragma omp parallel for
+#endif
+    int index;
+    for (int i = 0; i < m_test_image_index.size(); ++i) {
+	index = m_test_image_index[i];
+
+       	namespace fs = boost::filesystem;
+       	fs::path volume_file, truth_file;
+       	std::tie(volume_file, truth_file) = resolve_data_path(index);
+
+	cv::Mat volume = cv::imread(volume_file.string(), CV_LOAD_IMAGE_COLOR);
+	cv::Mat tmp = cv::imread(truth_file.string(), CV_LOAD_IMAGE_GRAYSCALE);
+		
+	//make same size for gt and volume
+	cv::Mat truth;
+	if ((volume.cols < tmp.cols) || (volume.rows < tmp.rows))
+		cv::pyrDown(tmp, truth, cv::Size(volume.cols, volume.rows));
+	else if ((volume.cols > tmp.cols) || (volume.rows > tmp.rows))
+		cv::pyrUp(tmp, truth, cv::Size(volume.cols, volume.rows));
+	else
+		truth = tmp;
+
+	if ((volume.type() != CV_32FC1) && (volume.channels() == 1)) {
+		volume.convertTo(volume, CV_32FC1);
+	}
+
+        // prepare sample image for better classification
+        std::vector<cv::Mat> data_image = prepare_image(volume);
+
+        // convert ground truth to grayscalce if needed
+        if (truth.channels() != 1) {
+            cv::cvtColor(truth, truth, CV_BGR2GRAY);
+        }
+
+        SampleExtractor sample_extractor(data_image, truth, m_sample_size);
+        unsigned int num_foreground = 0;
+        unsigned int num_background = 0;
+        unsigned int samples_per_class = m_num_samples_per_image / 2;
+        while (num_background < samples_per_class || num_foreground < samples_per_class) {
+            std::vector<cv::Mat> sample_image;
+            bool foreground;
+            // unpack the tuple
+			cv::Rect roi;
+            std::tie(sample_image, foreground) = sample_extractor.extractRandomSample(roi);
+
+            auto& effected_sample_counter = foreground ? num_foreground : num_background;
+            if (effected_sample_counter < samples_per_class) {
+                ++effected_sample_counter;
+                Sample<CellLabel, std::vector<cv::Mat>, cv::Rect> sample(foreground ? CellLabel::Border() : CellLabel::Cell(), sample_image,
+                    cv::Rect(0, 0, m_sample_size, m_sample_size));
+#if NDEBUG
+#pragma omp critical
+#endif
+                {
+                    samples.push_back(sample);
+                }
+            }
+        }
+    }
+    
+    // shuffle samples to obtain a uniform distribution
+    std::random_shuffle(samples.begin(), samples.end());
+
+}
+
+
 void Program::extract_training_samples(std::vector<Sample<CellLabel, std::vector<cv::Mat>, cv::Rect>>&samples) const {
 #if NDEBUG
 #pragma omp parallel for
 #endif
-	for (int i_file = 1; i_file <= MAX_IMAGES; ++i_file) {
+    for (int i_file = 1; i_file <= MAX_IMAGES; ++i_file) {
 
-		if (m_use_xvalidation && (i_file == m_test_image_index)) {
-			std::cout << "test image index: " << i_file << std::endl;
-			continue;
-		}
+	if ((m_use_xvalidation == false) &&
+            (std::find(m_test_image_index.begin(), m_test_image_index.end(), i_file) != m_test_image_index.end())) {
+		std::cout << "test image index: " << i_file << std::endl;
+		continue;
+	}
             
 
-        namespace fs = boost::filesystem;
-        fs::path volume_file, truth_file;
-        std::tie(volume_file, truth_file) = resolve_data_path(i_file);
+       	namespace fs = boost::filesystem;
+       	fs::path volume_file, truth_file;
+       	std::tie(volume_file, truth_file) = resolve_data_path(i_file);
 
-		cv::Mat volume = cv::imread(volume_file.string(), CV_LOAD_IMAGE_COLOR);
-		cv::Mat tmp = cv::imread(truth_file.string(), CV_LOAD_IMAGE_GRAYSCALE);
+	cv::Mat volume = cv::imread(volume_file.string(), CV_LOAD_IMAGE_COLOR);
+	cv::Mat tmp = cv::imread(truth_file.string(), CV_LOAD_IMAGE_GRAYSCALE);
 		
-		//make same size for gt and volume
-		cv::Mat truth;
-		if ((volume.cols < tmp.cols) || (volume.rows < tmp.rows))
-			cv::pyrDown(tmp, truth, cv::Size(volume.cols, volume.rows));
-		else if ((volume.cols > tmp.cols) || (volume.rows > tmp.rows))
-			cv::pyrUp(tmp, truth, cv::Size(volume.cols, volume.rows));
-		else
-			truth = tmp;
+	//make same size for gt and volume
+	cv::Mat truth;
+	if ((volume.cols < tmp.cols) || (volume.rows < tmp.rows))
+		cv::pyrDown(tmp, truth, cv::Size(volume.cols, volume.rows));
+	else if ((volume.cols > tmp.cols) || (volume.rows > tmp.rows))
+		cv::pyrUp(tmp, truth, cv::Size(volume.cols, volume.rows));
+	else
+		truth = tmp;
 
-		if ((volume.type() != CV_32FC1) && (volume.channels() == 1)) {
-			volume.convertTo(volume, CV_32FC1);
-		}
+	if ((volume.type() != CV_32FC1) && (volume.channels() == 1)) {
+		volume.convertTo(volume, CV_32FC1);
+	}
 
         // prepare sample image for better classification
         std::vector<cv::Mat> data_image = prepare_image(volume);
@@ -572,28 +675,33 @@ Program::PathTuple Program::resolve_data_path(unsigned int id) const {
 
 double Program::xvalidation(RandomForest<CellLabel, std::vector<cv::Mat>, cv::Rect> &forest, const std::vector<Sample<CellLabel, std::vector<cv::Mat>, cv::Rect>>& pure_samples, unsigned int validations) {
 
-	std::vector<Sample<CellLabel, std::vector<cv::Mat>, cv::Rect>> ground_truth, samples;
-    auto offset = pure_samples.size() / validations;
+	std::vector<Sample<CellLabel, std::vector<cv::Mat>, cv::Rect>> train_samples, test_samples;
+        std::vector<std::vector<cv::Mat>> test_images;
+    auto offset = MAX_IMAGES / validations;
     double accuracy = 0.0;
+    Multilabelseg segmentation;
 	
+        for(int o = 1; o <= offset; ++o)
+          m_test_image_index.push_back(o);
+
 	for (unsigned int i = 0; i < validations; ++i) {
-		ground_truth.clear();
-		samples.clear();
+		if (i != 0)
+                {
+                  
+        		for(int o = 0; o < offset; ++o)
+          			m_test_image_index[o] += offset;
 
-		for (unsigned int j = i * offset; j < (i + 1) * offset; ++j)
-		{
-			samples.push_back(pure_samples[j]);
-		}
+                }
+		train_samples.clear();
+		test_samples.clear();
+                test_images.clear();
 
-		for (unsigned int e = (i + 1) * offset; e < pure_samples.size() - 1; ++e)
-		{
-			ground_truth.push_back(pure_samples[e]);
-		}
+                extract_training_samples(train_samples);
 
 		//train forest
 		std::cout << "Start training... " << i + 1 << std::endl;
 		auto start = std::chrono::system_clock::now();
-		forest.train(samples);
+		forest.train(train_samples);
 		auto end = std::chrono::system_clock::now();
 		auto elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
 		std::cout << "Training done! Took " << elapsed_seconds << " seconds." << std::endl;
@@ -604,17 +712,27 @@ double Program::xvalidation(RandomForest<CellLabel, std::vector<cv::Mat>, cv::Re
 		}
 
 		// test the forest
+                extract_testing_samples(test_samples);
+                extract_test_images(test_images);
+                   
 		int sum_correct = 0;
-		for (unsigned int i = 0; i < samples.size(); ++i) {
-			if (forest.predict(samples[i].get_data(), samples[i].get_roi(), sum_ensemble) == samples[i].get_label())
-			{
-				++sum_correct;
-			}
+		for (unsigned int t = 0; t < test_samples.size(); ++t) {
+		  if (forest.predict(test_samples[t].get_data(), test_samples[t].get_roi(), sum_ensemble) == test_samples[t].get_label())
+		  {
+		    ++sum_correct;
+		  }
 		}
 
-		accuracy += (float)sum_correct / (float)samples.size();
-		std::cout << sum_correct << " correct classification of " << samples.size() << std::endl;
+                for (int t = 0; t < test_images.size(); ++t) {
+                  //segmentation
+                  cv::Mat image_prob = classify_image(forest, test_images[t]);
+                  segmentation.watershed(image_prob, std::string("segmented-") + boost::lexical_cast<std::string>(i) + 
+                                                     std::string("-") + boost::lexical_cast<std::string>(m_test_image_index[t]));
+                }
 
+		accuracy += (float)sum_correct / (float)test_samples.size();
+		std::cout << sum_correct << " correct classification of " << test_samples.size() << std::endl;
+                
 	}
 
     accuracy /= validations;
@@ -624,80 +742,11 @@ double Program::xvalidation(RandomForest<CellLabel, std::vector<cv::Mat>, cv::Re
 
 }
 
-cv::Mat Program::segment_image(const cv::Mat& classify_image, const cv::Mat& prop_image, std::string options)
+/*cv::Mat Program::segment_image(const cv::Mat& classify_image, const cv::Mat& prop_image, std::string options)
 {
 	if (options == "watershed")
 		return watershed_image(classify_image, prop_image);
-}
-
-cv::Mat Program::watershed_image(const cv::Mat& classify_image, const cv::Mat& prop_image)
-{
-	//Watershed
-	cv::Mat markers = cv::Mat::zeros(classify_image.rows, classify_image.cols, CV_8U);
-
-	/*cv::threshold(prop_image, markers, 200, 1, CV_THRESH_BINARY);
-	//markers.convertTo(markers, CV_32SC1);
-	for (int x = 0; x < prop_image.cols; ++x)
-	{
-	for (int y = 0; y < prop_image.rows; ++y)
-	{
-	if (prop_image.at<char>(y, x) < 200 && prop_image.at<char>(y, x) > 100)
-	markers.at<int>(y, x) = -1;
-	}
-	}*/
-	cv::Mat classify_integral;
-	cv::integral(classify_image, classify_integral);
-	cv::Size marker_size(10, 10);
-	for (int x = 0; x < classify_integral.cols - marker_size.width - 1; x += marker_size.width)
-	{
-		for (int y = 0; y < classify_integral.rows - marker_size.height - 1; y += marker_size.height)
-		{
-			cv::Rect patchPosition(cv::Point(x, y), marker_size);
-			//cv::Mat patch(classify_integral, patchPosition);
-			if (ImageTools::mean_from_integral<double>(classify_integral, patchPosition) < 0.1)
-				//if (cv::countNonZero(patch) == 0)
-			{
-				cv::rectangle(markers, patchPosition, 128, CV_FILLED);
-			}
-		}
-	}
-
-	marker_size = cv::Size(5, 5);
-	for (int x = 0; x < classify_image.cols - marker_size.width - 1; x += marker_size.width)
-	{
-		for (int y = 0; y < classify_image.rows - marker_size.height - 1; y += marker_size.height)
-		{
-			cv::Rect patchPosition(cv::Point(x, y), marker_size);
-			//cv::Mat patch(classify_image, patchPosition);
-			if (ImageTools::mean_from_integral<double>(classify_integral, patchPosition) > 0.9)
-				//if (cv::countNonZero(patch) == marker_size.area())
-			{
-				cv::rectangle(markers, patchPosition, 255, CV_FILLED);
-			}
-		}
-	}
-
-	//cv::Mat markers_display;
-	//markers.convertTo(markers_display, CV_8UC1, 255.);
-	cv::namedWindow("markerwindow", CV_WINDOW_AUTOSIZE);
-	cv::imshow("markerwindow", markers);
-	cv::waitKey(0);
-
-	cv::Mat classification_rgb;
-	cv::cvtColor(prop_image, classification_rgb, CV_GRAY2BGR);
-	//prop_image.convertTo(classification_rgb, CV_8UC1, 255);
-	//cv::cvtColor(classification_rgb, classification_rgb, CV_GRAY2BGR);
-	cv::Mat markers_wshd;
-	markers.convertTo(markers_wshd, CV_32S);
-	cv::watershed(classification_rgb, markers_wshd);
-	cv::Mat watershed_display;
-	markers_wshd.convertTo(watershed_display, CV_8UC1, 255.);
-	cv::namedWindow("watershedwindow", CV_WINDOW_AUTOSIZE);
-	cv::imshow("watershedwindow", watershed_display);
-	cv::waitKey(0);
-
-	return markers_wshd;
-}
+}*/
 
 void Program::push_tuble(cv::Mat input, std::vector<cv::Mat>& prepared, int ddepth) const
 {
